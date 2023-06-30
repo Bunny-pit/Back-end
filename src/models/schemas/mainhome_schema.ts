@@ -1,7 +1,7 @@
 import { Schema, model, Document } from "mongoose";
 
 interface IMainhome extends Document {
-  id: string;
+  user_id: string;
   name: string;
   profileImage: string;
   content: string;
@@ -9,7 +9,7 @@ interface IMainhome extends Document {
 
 const MainhomeSchema = new Schema<IMainhome>(
   {
-    id: {
+    user_id: {
       type: String,
       required: true,
     },
