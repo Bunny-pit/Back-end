@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+import user from "./routers/user";
 
 const app = express();
 dotenv.config();
@@ -22,6 +23,7 @@ app.use(express.static("public")); // 정적 파일 서비스
 app.use(cors());
 app.use(express.json()); // JSON 요청 바디 파싱
 app.use(express.urlencoded({ extended: true })); // URL-encoded 요청 바디 파싱
+app.use("/user", user);
 
 // 에러 핸들러
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
