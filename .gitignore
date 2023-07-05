@@ -1,15 +1,5 @@
-# Dependency directories
 node_modules/
-
-# Built output
-dist/
-
-# Environment variables
 .env
-
-# IDE files
-.vscode/
-.idea/
-
-# Logs
-*.log
+logs/
+dist/
+.cache/
