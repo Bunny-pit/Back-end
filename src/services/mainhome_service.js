@@ -1,5 +1,4 @@
-import mongoose from "mongoose";
-import { Mainhome } from "../models/Mainhome";
+const { Mainhome } = require("../models/Mainhome");
 
 const MainhomeService = {
   createPost: async data => {
@@ -42,4 +41,4 @@ const MainhomeService = {
   },
 };
 
-export default MainhomeService;
+module.exports = MainhomeService;

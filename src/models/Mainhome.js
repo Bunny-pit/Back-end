@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
-const mainhomeSchema = new mongoose.schema(
+const mainhomeSchema = new mongoose.Schema(
   {
     userid: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      // required: true,
     },
     name: {
       type: String,
@@ -13,7 +13,7 @@ const mainhomeSchema = new mongoose.schema(
     },
     profileImage: {
       type: String,
-      required: true,
+      // required: truedh
     },
     title: {
       type: String,
