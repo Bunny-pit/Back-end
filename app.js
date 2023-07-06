@@ -9,7 +9,7 @@ import { dirname } from "path";
 
 //라우터 import
 import mainhomeRouter from "./src/routers/Mainhome_router.js";
-import registerRouter from "./src/routers/register_router.js"
+import userRouter from "./src/routers/user_router.js"
 
 dotenv.config();
 const app = express();
@@ -38,7 +38,7 @@ app.get("/", (req, res) => {
 
 //여기에 라우터 app.use 작성하기
 app.use("/api/mainhome", mainhomeRouter);
-app.use("/api/register", registerRouter);
+app.use("/api/user", userRouter);
 
 
 Promise.all(

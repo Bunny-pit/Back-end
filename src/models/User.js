@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
     role: {
         type: Number,
         // 0은 일반 유저 1은 관리자.
-        deafault: 0,
+        default: 0,
     },
 },
     { timestamps: true }
