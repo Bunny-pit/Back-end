@@ -5,10 +5,11 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import mainhomeRouter from "./src/routers/Mainhome_router.js";
 
 dotenv.config();
 const app = express();
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
@@ -30,9 +31,11 @@ app.get("/", (req, res) => {
   res.send("여기는 버니톡의 백엔드 페이지입니다!");
 });
 
+app.use("/api/mainhome", mainhomeRouter);
+
 Promise.all(
   files.map(async file => {
-    if (file.endsWith(".js")) {
+    if (file.endsWith(".js") && file !== "Mainhome_router.js") {
       const route = await import(path.join(routesPath, file));
       app.use(route.default);
     }
