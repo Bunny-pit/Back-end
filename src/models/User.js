@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-const userSchema = new mongoose.schema({
+const userSchema = new mongoose.Schema({
     userName: {
         type: String,
         maxlength: 8,
@@ -15,16 +15,17 @@ const userSchema = new mongoose.schema({
     password: {
         type: String,
         trim: true,
+        minlength : 8,
         required: true
     },
     role: {
         type: Number,
         // 0은 일반 유저 1은 관리자.
         deafault: 0,
-
     },
-    
-})
+},
+    { timestamps: true }
+)
 
 const User = mongoose.model('User', userSchema)
-module.exports = { User }
+export default User

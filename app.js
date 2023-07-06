@@ -6,14 +6,17 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
+
 //라우터 import
 import mainhomeRouter from "./src/routers/Mainhome_router.js";
+import registerRouter from "./src/routers/register_router.js"
 
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 mongoose
   .connect(process.env.MONGODB_URI, {
@@ -35,11 +38,13 @@ app.get("/", (req, res) => {
 
 //여기에 라우터 app.use 작성하기
 app.use("/api/mainhome", mainhomeRouter);
+app.use("/api/register", registerRouter);
+
 
 Promise.all(
   files.map(async file => {
     if (file.endsWith(".js") && file !== "Mainhome_router.js") {
-      const route = await import(path.join(routesPath, file));
+      const route = await import(path.join("file://", routesPath, file));
       app.use(route.default);
     }
   }),
