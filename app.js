@@ -1,14 +1,17 @@
-require("dotenv").config();
-const express = require("express");
-const mongoose = require("mongoose");
-const fs = require("fs");
-const path = require("path");
+import dotenv from "dotenv";
+import express from "express";
+import mongoose from "mongoose";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+dotenv.config();
 const app = express();
 const port = process.env.PORT || 8000;
 
 app.use(express.json());
 
-// 환경변수로부터 MongoDB URI 불러와서 연결하기
 mongoose
   .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
@@ -17,19 +20,25 @@ mongoose
   .then(() => console.log("몽고디비 연결에 성공했습니다."))
   .catch(e => console.error(e));
 
-// 라우터 연결하기
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const routesPath = path.join(__dirname, "src", "routers");
-fs.readdirSync(routesPath).forEach(file => {
-  if (file.endsWith(".js")) {
-    const route = require(path.join(routesPath, file));
-    app.use(route);
-  }
-});
+const files = fs.readdirSync(routesPath);
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.send("여기는 버니톡의 백엔드 페이지입니다!");
 });
 
-app.listen(port, () => {
-  console.log(`서버가 http://localhost:${port}에 성공적으로 연결되었습니다.`);
+Promise.all(
+  files.map(async file => {
+    if (file.endsWith(".js")) {
+      const route = await import(path.join(routesPath, file));
+      app.use(route.default);
+    }
+  }),
+).then(() => {
+  app.listen(port, () => {
+    console.log(`서버가 http://localhost:${port}에 성공적으로 연결되었습니다.`);
+  });
 });

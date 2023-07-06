@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const mainhomeSchema = new mongoose.Schema(
   {
@@ -13,7 +13,7 @@ const mainhomeSchema = new mongoose.Schema(
     },
     profileImage: {
       type: String,
-      // required: truedh
+      // required: true,
     },
     title: {
       type: String,
@@ -28,4 +28,4 @@ const mainhomeSchema = new mongoose.Schema(
 );
 
 const Mainhome = mongoose.model("Mainhome", mainhomeSchema);
-module.exports = { Mainhome };
+export default Mainhome;

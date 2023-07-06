@@ -1,17 +1,18 @@
-const express = require("express");
-const router = express.Router();
-const MainhomeController = require("../controllers/Mainhome_controller");
+import express from "express";
+import MainhomeController from "../controllers/Mainhome_controller.js";
 
-// 게시글 생성
-router.post("/", MainhomeController.createPost);
+const mainhome_router = express.Router();
 
-// 게시글 모두 불러오기
-router.get("/", MainhomeController.getAllPosts);
+//게시글 작성
+mainhome_router.post("/", MainhomeController.createPost);
 
-// 게시글 수정하기
-router.patch("/:id", MainhomeController.updatePost);
+//게시글 전부 불러오기
+mainhome_router.get("/", MainhomeController.getAllPosts);
 
-// 게시글 삭제하기
-router.delete("/:id", MainhomeController.deletePost);
+//게시글 수정하기
+mainhome_router.patch("/:id", MainhomeController.updatePost);
 
-module.exports = router;
+//게시글 삭제하기
+mainhome_router.delete("/:id", MainhomeController.deletePost);
+
+export default mainhome_router;

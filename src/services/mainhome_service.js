@@ -1,4 +1,4 @@
-const { Mainhome } = require("../models/Mainhome");
+import Mainhome from "../models/Mainhome.js";
 
 const MainhomeService = {
   createPost: async data => {
@@ -41,4 +41,4 @@ const MainhomeService = {
   },
 };
 
-module.exports = MainhomeService;
+export default MainhomeService;

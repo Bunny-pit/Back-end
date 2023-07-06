@@ -1,4 +1,4 @@
-const { MainhomeService } = require("../services/Mainhome_service");
+import MainhomeService from "../services/Mainhome_service.js";
 
 const MainhomeController = {
   async createPost(req, res) {
@@ -52,4 +52,4 @@ const MainhomeController = {
   },
 };
 
-module.exports = MainhomeController;
+export default MainhomeController;
