@@ -5,6 +5,8 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+
+//라우터 import
 import mainhomeRouter from "./src/routers/Mainhome_router.js";
 
 dotenv.config();
@@ -31,6 +33,7 @@ app.get("/", (req, res) => {
   res.send("여기는 버니톡의 백엔드 페이지입니다!");
 });
 
+//여기에 라우터 app.use 작성하기
 app.use("/api/mainhome", mainhomeRouter);
 
 Promise.all(
