@@ -1,7 +1,7 @@
 import MainhomeService from "../services/Mainhome_service.js";
 
 const MainhomeController = {
-  async createPost(req, res) {
+  async createMainhomePost(req, res) {
     try {
       const newPost = await MainhomeService.createPost(req.body);
 
@@ -11,7 +11,7 @@ const MainhomeController = {
     }
   },
 
-  async getAllPosts(req, res) {
+  async getAllMainhomePosts(req, res) {
     try {
       const posts = await MainhomeService.getAllPosts();
 
@@ -21,7 +21,7 @@ const MainhomeController = {
     }
   },
 
-  async updatePost(req, res) {
+  async updateMainhomePost(req, res) {
     try {
       const { id } = req.params;
       const updatedPost = await MainhomeService.updatePost(id, req.body);
@@ -36,7 +36,7 @@ const MainhomeController = {
     }
   },
 
-  async deletePost(req, res) {
+  async deleteMainhomePost(req, res) {
     try {
       const { id } = req.params;
       const deletedPost = await MainhomeService.deletePost(id);

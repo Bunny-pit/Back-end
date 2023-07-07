@@ -1,7 +1,7 @@
 import Mainhome from "../models/Mainhome.js";
 
 const MainhomeService = {
-  createPost: async data => {
+  createMainhomePost: async data => {
     const newPost = new Mainhome(data);
     try {
       await newPost.save();
@@ -11,7 +11,7 @@ const MainhomeService = {
     }
   },
 
-  getAllPosts: async () => {
+  getAllMainhomePosts: async () => {
     try {
       const posts = await Mainhome.find();
       return posts;
@@ -20,7 +20,7 @@ const MainhomeService = {
     }
   },
 
-  updatePost: async (postId, data) => {
+  updateMainhomePost: async (postId, data) => {
     try {
       const updatedPost = await Mainhome.findByIdAndUpdate(postId, data, {
         new: true,
@@ -31,7 +31,7 @@ const MainhomeService = {
     }
   },
 
-  deletePost: async postId => {
+  deleteMainhomePost: async postId => {
     try {
       const deletedPost = await Mainhome.findByIdAndDelete(postId);
       return deletedPost;
