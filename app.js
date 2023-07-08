@@ -6,25 +6,27 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
+import logger from 'winston';
+import cors from 'cors';
+import passport from 'passport';
+
+//passport에 strategy 적용
+import { applyPassportStrategy } from "./src/lib/passport.js";
 
 //라우터 import
 import mainhomeRouter from "./src/routers/Mainhome_router.js";
 import userRouter from "./src/routers/user_router.js"
 
-dotenv.config();
 const app = express();
-const port = process.env.PORT || 3000;
 
+//express 탑재 body-parser 사용, cors 설정
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
-mongoose
-  .connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("몽고디비 연결에 성공했습니다."))
-  .catch(e => console.error(e));
+//환경 설정
+dotenv.config();
+const port = process.env.PORT || 3000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -32,11 +34,11 @@ const __dirname = dirname(__filename);
 const routesPath = path.join(__dirname, "src", "routers");
 const files = fs.readdirSync(routesPath);
 
+// route
 app.get("/", (req, res) => {
   res.send("여기는 버니톡의 백엔드 페이지입니다!");
 });
-
-//여기에 라우터 app.use 작성하기
+// API
 app.use("/api/mainhome", mainhomeRouter);
 app.use("/api/user", userRouter);
 
@@ -50,6 +52,14 @@ Promise.all(
   }),
 ).then(() => {
   app.listen(port, () => {
-    console.log(`서버가 http://localhost:${port}에 성공적으로 연결되었습니다.`);
+    logger.info(`서버가 http://localhost:${port}에 성공적으로 연결되었습니다.`);
+    mongoose
+      .connect(process.env.MONGODB_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      })
+      .then(() => logger.info("몽고디비 연결에 성공했습니다."))
+      .catch(e => console.error(e));
   });
 });
+

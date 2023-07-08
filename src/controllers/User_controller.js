@@ -36,3 +36,4 @@ export default UserController;
     // jwt로 password 업데이트. jwt를 db에 저장해서 보안성 강화하는 방법도 있음.(근데 jwt는 db안쓰려고 사용.)
     // 구글 원격 강제 로그아웃기능 이 방식으로 구현.
     //jwt는 로그아웃이 안되니 만료를 짧게.
+    //유저컨트롤러 수정 필요.

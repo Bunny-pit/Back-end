@@ -1,4 +1,4 @@
-import User from '../models/User.js'
+import User from '../database/models/user_model.js'
 
 const UserService = {
     createUser: async (registerData) => {
