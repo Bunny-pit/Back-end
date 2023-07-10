@@ -14,7 +14,7 @@ import passport from "passport";
 import { applyPassportStrategy } from "./src/lib/passport.js";
 
 //라우터 import
-import mainhomeRouter from "./src/routers/mainhome_router.js";
+import MainhomeRouter from "./src/routers/mainhome_router.js";
 import userRouter from "./src/routers/user_router.js";
 
 const app = express();
@@ -39,7 +39,7 @@ app.get("/", (req, res) => {
   res.send("여기는 버니톡의 백엔드 페이지입니다!");
 });
 // API
-app.use("/api/mainhome", mainhomeRouter);
+app.use("/api/mainhome", MainhomeRouter);
 app.use("/api/user", userRouter);
 
 Promise.all(
