@@ -33,7 +33,6 @@ userSchema.methods.comparePassword = function comparePassword(password){
     return this.hashedPassword === sha256(password)
 };
 
-
 const User = mongoose.model('User', userSchema);
 export default User;
 

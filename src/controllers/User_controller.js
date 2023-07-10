@@ -1,6 +1,63 @@
 import UserService from "../services/user_service.js";
+import jwt from 'jsonwebtoken';
+
+import { validationResult } from 'express-validator';
+
+import {
+    generateHashedPassword,
+    generateServerErrorCode,
+    registerValidation,
+    loginValidation,
+} from '../lib/utils.js';
+
+import {
+    SOME_THING_WENT_WRONG,
+    USER_EXISTS_ALREADY,
+    WRONG_PASSWORD,
+    USER_DOES_NOT_EXIST,
+} from '../lib/constant.js';
+import User from "../database/models/user_model.js";
 
 const UserController = {
+    async loginUser(req, res) {
+        try {
+            const errorsAfterValidation = validationResult(req);
+            if (!errorsAfterValidation.isEmpty()) {
+                return res.status(400).json({
+                    code: 400,
+                    errors: errorsAfterValidation.mapped()
+                });
+            }
+            const { email, password } = req.body;
+            const user = await User.findOne({ email });
+            if (user && user.email) {
+                const isPasswordMatched = user.comparePassword(password);
+                if (isPasswordMatched) {
+                    const token = jwt.sign({ email }, process.env.JWT_SECRET_KEY,
+                        { expiresIn: 1000 * 60 * 60 }); // 1시간 뒤 만료
+                    const userToReturn = { ...user.toJSON(), ...{token}};
+                    delete userToReturn.hashedPassword;
+                    res.status(200).json(userToReturn);
+                } else {
+                    generateServerErrorCode(res, 403, '로그인 패스워드 오류', WRONG_PASSWORD, 'password')
+                }
+            } else {
+                generateServerErrorCode(res, 404, '로그인 이메일 오류', USER_DOES_NOT_EXIST, 'email');
+            }
+
+            const userData = {
+                email,
+                password
+            }
+            const userInfo = await UserService.loginUser(userData);
+            if (!userInfo) {
+
+            }
+            res.status(201).json(userInfo)
+        } catch (err) {
+            throw err;
+        }
+    },
     async createUser(req, res) {
         try {
             const { userName, email, password } = req.body
