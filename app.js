@@ -6,16 +6,16 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
-import logger from 'winston';
-import cors from 'cors';
-import passport from 'passport';
+import logger from "winston";
+import cors from "cors";
+import passport from "passport";
 
 //passport에 strategy 적용
 import { applyPassportStrategy } from "./src/lib/passport.js";
 
 //라우터 import
-import mainhomeRouter from "./src/routers/Mainhome_router.js";
-import userRouter from "./src/routers/user_router.js"
+import mainhomeRouter from "./src/routers/mainhome_router.js";
+import userRouter from "./src/routers/user_router.js";
 
 const app = express();
 
@@ -26,7 +26,7 @@ app.use(cors());
 
 //환경 설정
 dotenv.config();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -41,7 +41,6 @@ app.get("/", (req, res) => {
 // API
 app.use("/api/mainhome", mainhomeRouter);
 app.use("/api/user", userRouter);
-
 
 Promise.all(
   files.map(async file => {
@@ -62,4 +61,3 @@ Promise.all(
       .catch(e => console.error(e));
   });
 });
-
