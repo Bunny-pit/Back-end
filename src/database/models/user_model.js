@@ -1,11 +1,18 @@
 import mongoose from 'mongoose';
+import uuid from 'uuid;'
 import sha256 from 'sha256'
 
 const userSchema = new mongoose.Schema({
+    userId : {
+        type : String,
+        default : uuid.v4,
+        unique : true,
+        required : true,
+    },
     userName: {
         type: String,
         maxlength: 8,
-        unique: 1,
+        unique: true,
         required: true
     },
     email: {

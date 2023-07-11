@@ -87,6 +87,12 @@ const UserController = {
             res.status(500).json({ err: err.message })
         }
     },
+    // async deleteUser(req, res){
+    //     try{
+    //         const { email, password } = req.body;
+            
+    //     }
+    // }
 }
 export default UserController;
 
