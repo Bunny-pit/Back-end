@@ -16,6 +16,7 @@ import { applyPassportStrategy } from "./src/lib/passport.js";
 //라우터 import
 import mainhomeRouter from "./src/routers/Mainhome_router.js";
 import userRouter from "./src/routers/user_router.js"
+import postRouter from "./src/routers/post_router.js"
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.get("/", (req, res) => {
 // API
 app.use("/api/mainhome", mainhomeRouter);
 app.use("/api/user", userRouter);
+app.use("/api/post", postRouter);
 
 
 Promise.all(
