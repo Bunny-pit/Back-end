@@ -1,6 +1,8 @@
 import UserService from "../services/user_service.js";
 import jwt from 'jsonwebtoken';
 
+import User from '../database/models/user_model.js'
+
 import { validationResult } from 'express-validator';
 
 import {
@@ -16,9 +18,33 @@ import {
     WRONG_PASSWORD,
     USER_DOES_NOT_EXIST,
 } from '../lib/constant.js';
-import User from "../database/models/user_model.js";
+
 
 const UserController = {
+    async createUser(req, res) {
+        try {
+            const { userName, email, password } = req.body
+            const registerData = {
+                userName,
+                email,
+                password
+            }
+            const newUser = await UserService.createUser(registerData);
+            console.log('newUser', newUser);
+            res.status(201).json({ newUser: newUser });
+        } catch (err) {
+            res.status(500).json({ err: err.message })
+        }
+    },
+    async getUser(req, res){
+        try{
+            const savedUser = await User.find({})
+            res.send(savedUser);
+            return;
+        } catch (err){
+            console.log(err)
+        }
+    },
     async loginUser(req, res) {
         try {
             const errorsAfterValidation = validationResult(req);
@@ -35,7 +61,7 @@ const UserController = {
                 if (isPasswordMatched) {
                     const token = jwt.sign({ email }, process.env.JWT_SECRET_KEY,
                         { expiresIn: 1000 * 60 * 60 }); // 1시간 뒤 만료
-                    const userToReturn = { ...user.toJSON(), ...{token}};
+                    const userToReturn = { ...user.toJSON(), ...{ token } };
                     delete userToReturn.hashedPassword;
                     res.status(200).json(userToReturn);
                 } else {
@@ -58,21 +84,6 @@ const UserController = {
             throw err;
         }
     },
-    async createUser(req, res) {
-        try {
-            const { userName, email, password } = req.body
-            const registerData = {
-                userName,
-                email,
-                password
-            }
-            const newUser = await UserService.createUser(registerData);
-
-            res.status(201).json(newUser);
-        } catch (err) {
-            res.status(500).json({ err: err.message })
-        }
-    },
     async updateUser(req, res) {
         try {
             const { userName, password } = req.body
@@ -87,11 +98,11 @@ const UserController = {
             res.status(500).json({ err: err.message })
         }
     },
-    async deleteUser(req, res){
-        try{
+    async deleteUser(req, res) {
+        try {
             const { email, userName, password } = req.body;
-            
-        } catch (err){
+
+        } catch (err) {
             console.log("유저삭제 실패")
         }
     }

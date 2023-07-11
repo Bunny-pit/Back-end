@@ -15,6 +15,28 @@ import {
 } from '../lib/constant.js';
 
 const UserService = {
+    createUser: async (registerData, res) => {
+        try {
+            const userData = {
+                userName: registerData.userName,
+                email: registerData.email,
+                password: generateHashedPassword(registerData.password)
+            }
+            const existingUserCheck = await User.findOne({ email: userData.email });
+            console.log('existingUserCheck', existingUserCheck)
+            if (existingUserCheck) {
+                generateServerErrorCode(res, 403, '이미 사용중인 이메일입니다.', USER_EXISTS_ALREADY, 'email')
+            } else {
+                const newUser = new User(userData);
+                await newUser.save();
+                console.log('service newUser', newUser);
+                return newUser;
+            }
+
+        } catch (err) {
+            generateServerErrorCode(res, 500, err, SOME_THING_WENT_WRONG);
+        }
+    },
     loginUser: async (userData) => {
         try {
             const userInfo = await User.findOne({
@@ -24,26 +46,6 @@ const UserService = {
             return userInfo;
         } catch (err) {
             throw err;
-        }
-    },
-    createUser: async (registerData, res) => {
-        try {
-            const userData = {
-                userName: registerData.userName,
-                email: registerData.email,
-                password: generateHashedPassword(registerData.password)
-            }
-            const existingUserCheck = await User.findOne({ email: registerData.email });
-            if (!existingUserCheck) {
-                const newUser = new User(userData);
-                await newUser.save();
-                return newUser;
-            } else {
-                generateServerErrorCode(res, 403, 'register email error', USER_EXISTS_ALREADY, 'email')
-            }
-
-        } catch (err) {
-            generateServerErrorCode(res, 500, err, SOME_THING_WENT_WRONG);
         }
     },
     updateUser: async (userId, newUserData) => {

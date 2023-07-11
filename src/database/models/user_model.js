@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
         // 0은 일반 유저 1은 관리자.
         default: 0,
         // 유저가 역할을 입력하더라도 0으로 고정
-        set: () => 0
+        // set: () => 0
     },
 },
     { timestamps: true }
