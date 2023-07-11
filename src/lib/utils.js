@@ -25,7 +25,7 @@ export function generateServerErrorCode(
     }
     return res.status(code).json({
         code,
-        fullErrors,
+        fullError,
         errors
     })
 }

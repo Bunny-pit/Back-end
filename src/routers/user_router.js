@@ -8,9 +8,8 @@ userRouter.get("/", (req, res) => {
     res.send('유저 루트 페이지');
 })
 userRouter.post("/register", UserController.createUser);
-
+userRouter.post("/login", UserController.loginUser);
 userRouter.patch("/edit", UserController.updateUser);
-
-// app.delete("/delete", UserController.deleteUser);
+userRouter.delete("/delete", UserController.deleteUser);
 
 export default userRouter;
