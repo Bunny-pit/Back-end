@@ -27,5 +27,5 @@ const mainhomeSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-const Mainhome = mongoose.model("Mainhome", mainhomeSchema);
-export default Mainhome;
+const mainhome = mongoose.model("Mainhome", mainhomeSchema);
+export default mainhome;

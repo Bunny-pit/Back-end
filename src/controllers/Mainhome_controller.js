@@ -1,9 +1,9 @@
-import MainhomeService from "../services/Mainhome_service.js";
+import mainhomeService from "../services/mainhome_service.js";
 
-const MainhomeController = {
+const mainhomeController = {
   async createMainhomePost(req, res) {
     try {
-      const newPost = await MainhomeService.createMainhomePost(req.body);
+      const newPost = await mainhomeService.createMainhomePost(req.body);
 
       res.status(201).json(newPost);
     } catch (error) {
@@ -13,7 +13,7 @@ const MainhomeController = {
 
   async getAllMainhomePosts(req, res) {
     try {
-      const posts = await MainhomeService.getAllMainhomePosts();
+      const posts = await mainhomeService.getAllMainhomePosts();
 
       res.json(posts);
     } catch (error) {
@@ -24,7 +24,7 @@ const MainhomeController = {
   async updateMainhomePost(req, res) {
     try {
       const { id } = req.params;
-      const updatedPost = await MainhomeService.updateMainhomePost(
+      const updatedPost = await mainhomeService.updateMainhomePost(
         id,
         req.body,
       );
@@ -42,7 +42,7 @@ const MainhomeController = {
   async deleteMainhomePost(req, res) {
     try {
       const { id } = req.params;
-      const deletedPost = await MainhomeService.deleteMainhomePost(id);
+      const deletedPost = await mainhomeService.deleteMainhomePost(id);
 
       if (!deletedPost) {
         return res.status(404).json({ error: "게시글을 찾지 못했습니다." });
@@ -55,4 +55,4 @@ const MainhomeController = {
   },
 };
 
-export default MainhomeController;
+export default mainhomeController;

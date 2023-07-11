@@ -1,18 +1,18 @@
 import express from "express";
-import MainhomeController from "../controllers/Mainhome_controller.js";
+import mainhomeController from "../controllers/mainhome_controller.js";
 
-const MainhomeRouter = express.Router();
+const mainhomeRouter = express.Router();
 
 //게시글 작성
-MainhomeRouter.post("/", MainhomeController.createMainhomePost);
+mainhomeRouter.post("/", mainhomeController.createMainhomePost);
 
 //게시글 전부 불러오기
-MainhomeRouter.get("/", MainhomeController.getAllMainhomePosts);
+mainhomeRouter.get("/", mainhomeController.getAllMainhomePosts);
 
 //게시글 수정하기
-MainhomeRouter.patch("/:id", MainhomeController.updateMainhomePost);
+mainhomeRouter.patch("/:id", mainhomeController.updateMainhomePost);
 
 //게시글 삭제하기
-MainhomeRouter.delete("/:id", MainhomeController.deleteMainhomePost);
+mainhomeRouter.delete("/:id", mainhomeController.deleteMainhomePost);
 
-export default MainhomeRouter;
+export default mainhomeRouter;

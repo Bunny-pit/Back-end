@@ -1,8 +1,8 @@
-import Mainhome from "../database/models/Mainhome_model.js";
+import mainhome from "../database/models/mainhome_model.js";
 
-const MainhomeService = {
+const mainhomeService = {
   createMainhomePost: async data => {
-    const newPost = new Mainhome(data);
+    const newPost = new mainhome(data);
     try {
       await newPost.save();
       return newPost;
@@ -13,7 +13,7 @@ const MainhomeService = {
 
   getAllMainhomePosts: async () => {
     try {
-      const posts = await Mainhome.find();
+      const posts = await mainhome.find();
       return posts;
     } catch (err) {
       throw err;
@@ -22,7 +22,7 @@ const MainhomeService = {
 
   updateMainhomePost: async (postId, data) => {
     try {
-      const updatedPost = await Mainhome.findByIdAndUpdate(postId, data, {
+      const updatedPost = await mainhome.findByIdAndUpdate(postId, data, {
         new: true,
       });
       return updatedPost;
@@ -33,7 +33,7 @@ const MainhomeService = {
 
   deleteMainhomePost: async postId => {
     try {
-      const deletedPost = await Mainhome.findByIdAndDelete(postId);
+      const deletedPost = await mainhome.findByIdAndDelete(postId);
       return deletedPost;
     } catch (err) {
       throw err;
@@ -41,4 +41,4 @@ const MainhomeService = {
   },
 };
 
-export default MainhomeService;
+export default mainhomeService;
