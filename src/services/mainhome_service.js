@@ -1,4 +1,4 @@
-import Mainhome from "../database/models/Mainhome.js";
+import Mainhome from "../database/models/mainhome_model.js";
 
 const MainhomeService = {
   createMainhomePost: async data => {
