@@ -14,7 +14,7 @@ import passport from "passport";
 import { applyPassportStrategy } from "./src/lib/passport.js";
 
 //라우터 import
-import MainhomeRouter from "./src/routers/mainhome_router.js";
+import MainhomeRouter from "./src/routers/Mainhome_router.js";
 import userRouter from "./src/routers/user_router.js";
 
 const app = express();

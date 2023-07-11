@@ -1,4 +1,4 @@
-import MainhomeService from "../services/mainhome_service.js";
+import MainhomeService from "../services/Mainhome_service.js";
 
 const MainhomeController = {
   async createMainhomePost(req, res) {
