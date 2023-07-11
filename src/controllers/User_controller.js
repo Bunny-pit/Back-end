@@ -87,12 +87,14 @@ const UserController = {
             res.status(500).json({ err: err.message })
         }
     },
-    // async deleteUser(req, res){
-    //     try{
-    //         const { email, password } = req.body;
+    async deleteUser(req, res){
+        try{
+            const { email, userName, password } = req.body;
             
-    //     }
-    // }
+        } catch (err){
+            console.log("유저삭제 실패")
+        }
+    }
 }
 export default UserController;
 

@@ -57,12 +57,19 @@ const UserService = {
         }
     },
 
-    deleteUser: async (userId) => {
+    deleteUser: async (userData) => {
         try {
-            const deletedUser = await User.findByIdAndDelete(userId);
-            return deletedUser;
+            const { email, userName, password } = userData;
+            const existingUserCheck = await User.findOne({ email })
+            if (existingUserCheck) {
+                const deleteUser = await User.findByIdAndDelete(userId);
+                return deleteUser;
+            }else {
+                generateServerErrorCode(res, 403, 'deleting user error', 'USER_ID_NOT_FOUND', 'deleteUser')
+            }
+           
         } catch (err) {
-            throw err;
+            generateServerErrorCode(res, 500, err, SOME_THING_WENT_WRONG)
         }
     },
 };
