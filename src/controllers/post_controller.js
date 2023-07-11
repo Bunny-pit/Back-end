@@ -1,4 +1,4 @@
-import PostService from "../Services/post_service.js";
+import PostService from "../services/post_service.js";
 
 const PostController = {
   async createPost(req, res) {
@@ -24,10 +24,7 @@ const PostController = {
   async updatePost(req, res) {
     try {
       const { postId } = req.params;
-      const updatedPost = await PostService.updatePost(
-        postId,
-        req.body,
-      );
+      const updatedPost = await PostService.updatePost(postId, req.body);
 
       if (!updatedPost) {
         return res.status(404).json({ error: "게시글을 찾지 못했습니다." });
