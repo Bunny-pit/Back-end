@@ -2,15 +2,23 @@ import PostService from "../services/post_service.js";
 
 const PostController = {
   async createPost(req, res) {
-    try {
-      const { userId, content } = req.body;
-      const images = req.files.map((file) => file.path);
+    // try {
+    //   const { userId, content } = req.body;
+    //   const { files } = req;
+    //   console.log("userId = ",userId,"content = ", content,"files=", files)
 
-      const newPost = await PostService.createPost(userId, content, images);
-      res.status(201).json(newPost);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+    //   const newPost = await PostService.createPost(userId, content, files);
+    //   res.status(201).json(newPost);
+    // } catch (error) {
+    //   res.status(500).json({ error: error.message });
+    // }
+    try {
+      const result = await PostService.createPost(req);
+      res.status(200).send(result);
+    } catch (err) {
+      res.status(500).send({ success: false, message: err.message });
     }
+
   },
 
   async getAllPosts(req, res) {
