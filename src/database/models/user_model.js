@@ -1,46 +1,41 @@
-import mongoose from 'mongoose';
-import { v4 as uuidv4 } from 'uuid';
+import mongoose from "mongoose";
+// import { v4 as uuidv4 } from 'uuid';
 
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema(
+  {
     userId: {
-        type: String,
-        default: uuidv4,
-        unique: true,
-        required: true
+      type: String,
+      //   default: uuidv4,
+      unique: true,
+      required: true,
     },
     userName: {
-        type: String,
-        maxlength: 8,
-        unique: true,
-        required: true
+      type: String,
+      maxlength: 8,
+      unique: true,
+      required: true,
     },
     email: {
-        type: String,
-        unique: 1,
-        required: true
+      type: String,
+      unique: 1,
+      required: true,
     },
     password: {
-        type: String,
-        trim: true,
-        minlength: 8,
-        required: true
+      type: String,
+      trim: true,
+      minlength: 8,
+      required: true,
     },
     role: {
-        type: Number,
-        // 0은 일반 유저 1은 관리자.
-        default: 0,
-        // 유저가 역할을 입력하더라도 0으로 고정
-        // set: () => 0
+      type: Number,
+      // 0은 일반 유저 1은 관리자.
+      default: 0,
+      // 유저가 역할을 입력하더라도 0으로 고정
+      // set: () => 0
     },
-},
-    { timestamps: true }
+  },
+  { timestamps: true },
 );
 
-
-
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 export default User;
-
-
-
-
