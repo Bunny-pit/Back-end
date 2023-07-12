@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
-import sha256 from 'sha256'
 
 const userSchema = new mongoose.Schema({
     userId: {
@@ -37,10 +36,7 @@ const userSchema = new mongoose.Schema({
     { timestamps: true }
 );
 
-// @param {*} password
-userSchema.methods.comparePassword = function comparePassword(password) {
-    return this.hashedPassword === sha256(password)
-};
+
 
 const User = mongoose.model('User', userSchema);
 export default User;

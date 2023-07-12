@@ -1,6 +1,6 @@
 import UserService from "../services/user_service.js";
 import jwt from 'jsonwebtoken';
-
+import dotenv from 'dotenv';
 import User from '../database/models/user_model.js'
 
 import { validationResult } from 'express-validator';
@@ -10,6 +10,7 @@ import {
     generateServerErrorCode,
     registerValidation,
     loginValidation,
+    comparePassword
 } from '../lib/utils.js';
 
 import {
@@ -19,6 +20,7 @@ import {
     USER_DOES_NOT_EXIST,
 } from '../lib/constant.js';
 
+dotenv.config();
 
 const UserController = {
     async createUser(req, res) {
@@ -36,16 +38,16 @@ const UserController = {
             res.status(500).json({ err: err.message })
         }
     },
-    async getUser(req, res){
-        try{
+    async getUser(req, res) {
+        try {
             const savedUser = await User.find({})
             res.send(savedUser);
             return;
-        } catch (err){
+        } catch (err) {
             console.log(err)
         }
     },
-    async loginUser(req, res) {
+    async loginUser(req, res, next) {
         try {
             const errorsAfterValidation = validationResult(req);
             if (!errorsAfterValidation.isEmpty()) {
@@ -57,31 +59,47 @@ const UserController = {
             const { email, password } = req.body;
             const user = await User.findOne({ email });
             if (user && user.email) {
-                const isPasswordMatched = user.comparePassword(password);
+                const isPasswordMatched = password => {
+                    return generateHashedPassword(password) === user.password
+                }
                 if (isPasswordMatched) {
-                    const token = jwt.sign({ email }, process.env.JWT_SECRET_KEY,
-                        { expiresIn: 1000 * 60 * 60 }); // 1시간 뒤 만료
-                    const userToReturn = { ...user.toJSON(), ...{ token } };
-                    delete userToReturn.hashedPassword;
-                    res.status(200).json(userToReturn);
+                    const accessToken = jwt.sign({
+                        userId: user.userId,
+                        email: user.email,
+                        userName: user.userName,
+                    }, process.env.ACCESS_SECRET_KEY,
+                        {
+                            expiresIn: 1000 * 60 * 60, // 1시간 뒤 만료
+                            issuer: 'BunnyPit'
+                        });
+                    const refreshToken = jwt.sign({
+                        userId: user.userId,
+                        email: user.email,
+                        userName: user.userName,
+                    }, process.env.REFRESH_SECRET_KEY,
+                        {
+                            expiresIn: 1000 * 60 * 60 * 2, // 2시간 뒤 만료
+                            issuer: 'BunnyPit'
+                        });
+
+                    res.cookie('access token', accessToken, {
+                        secure: false,
+                        httpOnly: true,
+                    })
+                    res.cookie('refresh token', refreshToken, {
+                        secure: false,
+                        httpOnly: true,
+                    })
+                    res.status(200).json("로그인 성공");
                 } else {
-                    generateServerErrorCode(res, 403, '로그인 패스워드 오류', WRONG_PASSWORD, 'password')
+                    generateServerErrorCode(res, 403, '비밀번호가 일치하지 않습니다.', WRONG_PASSWORD, 'password')
                 }
             } else {
-                generateServerErrorCode(res, 404, '로그인 이메일 오류', USER_DOES_NOT_EXIST, 'email');
+                generateServerErrorCode(res, 404, '회원가입이 필요합니다.', USER_DOES_NOT_EXIST, 'email');
             }
-
-            const userData = {
-                email,
-                password
-            }
-            const userInfo = await UserService.loginUser(userData);
-            if (!userInfo) {
-
-            }
-            res.status(201).json(userInfo)
+            
         } catch (err) {
-            throw err;
+            res.status(500).json(err)
         }
     },
     async updateUser(req, res) {
@@ -112,4 +130,3 @@ export default UserController;
     // jwt로 password 업데이트. jwt를 db에 저장해서 보안성 강화하는 방법도 있음.(근데 jwt는 db안쓰려고 사용.)
     // 구글 원격 강제 로그아웃기능 이 방식으로 구현.
     //jwt는 로그아웃이 안되니 만료를 짧게.
-    //유저컨트롤러 수정 필요.
