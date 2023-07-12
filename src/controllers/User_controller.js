@@ -62,7 +62,7 @@ const UserController = {
                 const isPasswordMatched = password => {
                     return generateHashedPassword(password) === user.password
                 }
-                if (isPasswordMatched) {
+                if (isPasswordMatched(password)) {
                     const accessToken = jwt.sign({
                         userId: user.userId,
                         email: user.email,
@@ -97,7 +97,7 @@ const UserController = {
             } else {
                 generateServerErrorCode(res, 404, '회원가입이 필요합니다.', USER_DOES_NOT_EXIST, 'email');
             }
-            
+
         } catch (err) {
             res.status(500).json(err)
         }
