@@ -6,12 +6,16 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
-import logger from "winston";
-import cors from "cors";
-import passport from "passport";
+import logger from 'winston';
+import cors from 'cors';
+import passport from 'passport';
 
 //passport에 strategy 적용
 import { applyPassportStrategy } from "./src/lib/passport.js";
+
+//라우터 import
+import mainhomeRouter from "./src/routers/Mainhome_router.js";
+import userRouter from "./src/routers/user_router.js"
 
 const app = express();
 
@@ -34,14 +38,16 @@ const files = fs.readdirSync(routesPath);
 app.get("/", (req, res) => {
   res.send("여기는 버니톡의 백엔드 페이지입니다!");
 });
+// API
+app.use("/api/mainhome", mainhomeRouter);
+app.use("/api/user", userRouter);
 
-//모든 라우터 코드를 동적으로 불러오도록 설정
+
 Promise.all(
   files.map(async file => {
-    if (file.endsWith(".js")) {
+    if (file.endsWith(".js") && file !== "Mainhome_router.js") {
       const route = await import(path.join("file://", routesPath, file));
-      const apiEndpoint = "/api/" + file.replace("_router.js", "");
-      app.use(apiEndpoint, route.default);
+      app.use(route.default);
     }
   }),
 ).then(() => {
