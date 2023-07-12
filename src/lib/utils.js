@@ -11,6 +11,10 @@ import {
 //암호화 비밀번호 생성
 export const generateHashedPassword = password => sha256(password);
 
+// export function comparePassword(password) {
+//     return this.hashedPassword === sha256(password)
+// }
+
 export function generateServerErrorCode(
     res,
     code,
