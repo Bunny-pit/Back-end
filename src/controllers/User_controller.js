@@ -117,10 +117,14 @@ const UserController = {
     },
     async deleteUser(req, res) {
         try {
-            const { email, userName, password } = req.body;
-
+            const { email, password } = req.body;
+            const userData = {
+                email,
+                password
+            }
+            await UserService.deleteUser(userData, res)
         } catch (err) {
-            console.log("유저삭제 실패")
+            res.status(500).json(err)
         }
     }
 }

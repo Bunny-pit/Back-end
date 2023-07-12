@@ -61,20 +61,29 @@ const UserService = {
 
     deleteUser: async (userData, res) => {
         try {
-            const { email, userName } = userData;
-            const existingUserCheck = await User.findOne({ email, userName })
-            if (existingUserCheck) {
-                const { userId } = existingUserCheck;
-                const deleteUser = await User.findByIdAndDelete(userId);
-                return deleteUser;
+            const { email, password } = userData;
+            const existingUserCheck = await User.findOne({ email });
+
+            const isPasswordMatched = (password) => {
+                return generateHashedPassword(password) === existingUserCheck.password;
+            };
+
+            if (existingUserCheck && isPasswordMatched(password)) {
+                const deletionResult = await User.deleteOne({ email });
+                //삭제가 성공적인지 확인
+                if (deletionResult.deletedCount === 1) {
+                    res.send(200).json('계정 삭제 성공')
+                    return;
+                } else {
+                    generateServerErrorCode(res, 500, 'Failed to delete user', 'USER_DELETION_FAILED');
+                }
             } else {
-                generateServerErrorCode(res, 403, 'deleting user error', 'USER_ID_NOT_FOUND', 'deleteUser')
+                generateServerErrorCode(res, 403, 'Deleting user error', 'USER_ID_NOT_FOUND');
             }
-
         } catch (err) {
-            generateServerErrorCode(res, 500, err, SOME_THING_WENT_WRONG)
+            generateServerErrorCode(res, 500, err, 'SOME_THING_WENT_WRONG');
         }
-    },
+    }
 };
-
+//오류날경우 삭제 안 되도록 코드 짜야함.
 export default UserService;
