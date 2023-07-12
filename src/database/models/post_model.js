@@ -11,10 +11,12 @@ const PostSchema = new mongoose.Schema({
     maxlength: 500,
     required: true,
   },
-  image: {
-    type: String,
-    required: true
-  },
+  images: [
+    {
+      type: String,
+      required: true,
+    },
+  ],
   createdAt: {
     type: Date,
     default: Date.now,

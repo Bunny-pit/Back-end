@@ -1,21 +1,32 @@
 import {Post} from '../database/models/index.js'
 
 const PostService = {
-    createPost: async (registerData) => {
+    createPost: async (content, file) => {
+      try {
+        const newPost = new Post({
+          content,
+          image: file.path,
+        });
+        await newPost.save();
+        return newPost;
+      } catch (err) {
+        throw new err;
+      }
+    },
+    getAllPosts: async () => {
         try {
-            const newPost = new Post(registerData);
-            await newPost.save();
-            return newPost;
+            const posts = await Post.find();
+            return posts;
         } catch (err) {
             throw err;
         }
     },
-    getAllPosts: async () => {
+    getPostById: async (postId) => {
       try {
-        const posts = await Post.find();
-        return posts;
+        const post = await Post.findById(postId);
+        return post;
       } catch (err) {
-        throw err;
+        throw new err;
       }
     },
     updatePost: async (postId, newPostData) => {
