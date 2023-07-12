@@ -10,7 +10,6 @@ import {
     generateServerErrorCode,
     registerValidation,
     loginValidation,
-    comparePassword
 } from '../lib/utils.js';
 
 import {
