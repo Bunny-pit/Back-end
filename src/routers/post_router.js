@@ -5,16 +5,11 @@ import {upload} from "../config/s3.js"
 
 dotenv.config();
 
-const post_router = express.Router();
-
 //게시글 작성
 post_router.post("/",  upload.array('images'), PostController.createPost);
 
 //게시글 전부 불러오기
 post_router.get("/", PostController.getAllPosts);
-
-// 게시글 가져오기!
-post_router.get('/:postId', PostController.getPostById);
 
 //게시글 수정하기
 post_router.patch("/:postId", PostController.updatePost);
