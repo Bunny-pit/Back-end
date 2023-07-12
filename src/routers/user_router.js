@@ -7,6 +7,7 @@ const userRouter = express.Router();
 userRouter.get("/", (req, res) => {
     res.send('유저 루트 페이지');
 })
+
 userRouter.post("/register", UserController.createUser);
 userRouter.get("/register", UserController.getUser)
 
