@@ -13,7 +13,7 @@ const MainhomeService = {
 
   getAllMainhomePosts: async () => {
     try {
-      const posts = await Mainhome.find();
+      const posts = await Mainhome.find().sort({ createdAt: -1 });
       return posts;
     } catch (err) {
       throw err;
