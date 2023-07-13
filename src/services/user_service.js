@@ -17,12 +17,13 @@ import {
 const UserService = {
     createUser: async (registerData, res) => {
         try {
+            const { userName, email, password } = registerData;
             const userData = {
-                userName: registerData.userName,
-                email: registerData.email,
-                password: generateHashedPassword(registerData.password)
+                userName: userName,
+                email: email,
+                password: generateHashedPassword(password)
             }
-            const existingUserCheck = await User.findOne({ email: userData.email });
+            const existingUserCheck = await User.findOne({ email: email });
             console.log('existingUserCheck', existingUserCheck)
             if (existingUserCheck) {
                 generateServerErrorCode(res, 403, '이미 사용중인 이메일입니다.', USER_EXISTS_ALREADY, 'email')
@@ -48,17 +49,30 @@ const UserService = {
             throw err;
         }
     },
-    updateUser: async (userId, newUserData) => {
+    updateUser: async (updateData, res) => {
         try {
-            const updatedUser = await User.findByIdAndUpdate(userId, newUserData, {
-                new: true,
-            });
-            return updatedUser;
+            const { email, prevPassword, newPassword } = updateData;
+            // 유저 확인
+            const existingUser = await User.find({ email : email });
+            // 기존 비밀번호 확인
+            const isPasswordMatched = (password) => {
+                return generateHashedPassword(password) === existingUser[0].password;
+            };
+            if (!existingUser) {
+                res.status(404).json({ error: 'USER_NOT_FOUND', existingUser: `${existingUser}` });
+            } else {
+                if (isPasswordMatched(prevPassword)) {
+                    await User.findOneAndUpdate({ email }, { password: generateHashedPassword(newPassword) });
+                    res.status(200).json('비밀번호 변경 완료')
+
+                } res.status(400).json({ 'user service오류': '기존 비밀번호와 입력한 비밀번호 불일치.' })
+            }
+
+
         } catch (err) {
-            throw err;
+            res.status(500).json({ 'update service 오류': err.message })
         }
     },
-
     deleteUser: async (userData, res) => {
         try {
             const { email, password } = userData;

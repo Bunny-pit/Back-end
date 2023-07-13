@@ -40,8 +40,7 @@ const UserController = {
     async getUser(req, res) {
         try {
             const savedUser = await User.find({})
-            res.send(savedUser);
-            return;
+            res.status(200).json({ data: savedUser });
         } catch (err) {
             console.log(err)
         }
@@ -103,16 +102,16 @@ const UserController = {
     },
     async updateUser(req, res) {
         try {
-            const { userName, password } = req.body
+            const { email, prevPassword, newPassword } = req.body
             const updateData = {
-                userName,
-                password
+                email,
+                prevPassword,
+                newPassword
             }
-            const updatedUser = await UserService.updateUser(updateData);
-            res.status(201).json(updatedUser);
-
+            const updatedUser = await UserService.updateUser(updateData, res);
+            res.status(201).json({ '유저 정보 업데이트 완료': updatedUser });
         } catch (err) {
-            res.status(500).json({ err: err.message })
+            res.status(500).json({ 'update controller 오류': err.message })
         }
     },
     async deleteUser(req, res) {
