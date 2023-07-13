@@ -23,43 +23,42 @@ const UserService = {
                 email: email,
                 password: generateHashedPassword(password)
             }
-            const existingUserCheck = await User.findOne({ email: email });
-            console.log('existingUserCheck', existingUserCheck)
+            const existingUserCheck = await User.findOne({ email });
             if (existingUserCheck) {
-                generateServerErrorCode(res, 403, '이미 사용중인 이메일입니다.', USER_EXISTS_ALREADY, 'email')
+                res.status(403, err, "이미 사용중인 이메일입니다.")
             } else {
                 const newUser = new User(userData);
                 await newUser.save();
-                console.log('service newUser', newUser);
                 return newUser;
             }
+        } catch (err) {
+            res.status(500, err, "create user service 오류 발생")
 
-        } catch (err) {
-            generateServerErrorCode(res, 500, err, SOME_THING_WENT_WRONG);
         }
     },
-    loginUser: async (userData) => {
-        try {
-            const userInfo = await User.findOne({
-                email: userData.email,
-                password: generateHashedPassword(userData.password)
-            });
-            return userInfo;
-        } catch (err) {
-            throw err;
-        }
-    },
+    // loginUser: async (userData) => {
+    //     try {
+    //         const { email, password } = userData;
+    //         const userInfo = await User.findOne({
+    //             email,
+    //             password: generateHashedPassword(password)
+    //         });
+    //         return userInfo;
+    //     } catch (err) {
+    //         res.status(500).json({ err : err.message})
+    //     }
+    // },
     updateUser: async (updateData, res) => {
         try {
             const { email, prevPassword, newPassword } = updateData;
             // 유저 확인
-            const existingUser = await User.find({ email : email });
+            const existingUser = await User.find({ email });
             // 기존 비밀번호 확인
             const isPasswordMatched = (password) => {
                 return generateHashedPassword(password) === existingUser[0].password;
             };
             if (!existingUser) {
-                res.status(404).json({ error: 'USER_NOT_FOUND', existingUser: `${existingUser}` });
+                res.status(404).json({ error: 'USER_NOT_FOUND'});
             } else {
                 if (isPasswordMatched(prevPassword)) {
                     await User.findOneAndUpdate({ email }, { password: generateHashedPassword(newPassword) });

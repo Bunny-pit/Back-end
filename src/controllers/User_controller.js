@@ -30,9 +30,8 @@ const UserController = {
                 email,
                 password
             }
-            const newUser = await UserService.createUser(registerData);
-            console.log('newUser', newUser);
-            res.status(201).json({ newUser: newUser });
+            await UserService.createUser(registerData);
+            res.status(201).json('계정 생성 성공 ');
         } catch (err) {
             res.status(500).json({ err: err.message })
         }
@@ -97,7 +96,7 @@ const UserController = {
             }
 
         } catch (err) {
-            res.status(500).json(err)
+            res.status(500).json({err:err.message})
         }
     },
     async updateUser(req, res) {
@@ -109,7 +108,7 @@ const UserController = {
                 newPassword
             }
             const updatedUser = await UserService.updateUser(updateData, res);
-            res.status(201).json({ '유저 정보 업데이트 완료': updatedUser });
+            res.status(201).json('유저 정보 업데이트 완료');
         } catch (err) {
             res.status(500).json({ 'update controller 오류': err.message })
         }
@@ -122,8 +121,9 @@ const UserController = {
                 password
             }
             await UserService.deleteUser(userData, res)
+            res.status(200).json('유저 정보 삭제 완료')
         } catch (err) {
-            res.status(500).json(err)
+            res.status(500).json({ 'user delete controller 오류': err.message })
         }
     }
 }
