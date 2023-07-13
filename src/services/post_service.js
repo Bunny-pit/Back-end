@@ -1,5 +1,5 @@
 import {Post} from '../database/models/index.js'
-import { upload,uploadToS3 } from "../config/s3.js";
+import { upload,uploadToS3 } from '../config/s3.js';
 import mongoose from 'mongoose';
 
 const PostService = {
