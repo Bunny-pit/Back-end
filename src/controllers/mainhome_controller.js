@@ -1,4 +1,4 @@
-import MainhomeService from "../services/mainhome_service.js";
+import MainhomeService from '../services/mainhome_service.js';
 
 const MainhomeController = {
   async createMainhomePost(req, res) {
@@ -30,7 +30,7 @@ const MainhomeController = {
       );
 
       if (!updatedPost) {
-        return res.status(404).json({ error: "게시글을 찾지 못했습니다." });
+        return res.status(404).json({ error: '게시글을 찾지 못했습니다.' });
       }
 
       res.json(updatedPost);
@@ -45,10 +45,10 @@ const MainhomeController = {
       const deletedPost = await MainhomeService.deleteMainhomePost(id);
 
       if (!deletedPost) {
-        return res.status(404).json({ error: "게시글을 찾지 못했습니다." });
+        return res.status(404).json({ error: '게시글을 찾지 못했습니다.' });
       }
 
-      res.json({ message: "게시글을 성공적으로 삭제했습니다.", deletedPost });
+      res.json({ message: '게시글을 성공적으로 삭제했습니다.', deletedPost });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
