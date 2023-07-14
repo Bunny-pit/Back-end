@@ -22,7 +22,6 @@ const CommentService = {
     getCommentsByPostId: async (postId) => {
       try {
         const comments = await Comment.find({postId: postId});
-        console.log("포스트아이디 체크포인트 2", comments, postId)
         return comments;
       } catch (err) {
         throw new err;

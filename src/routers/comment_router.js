@@ -12,17 +12,10 @@ comment_router.get('/', CommentController.getComments);
 //댓글 가져오기
 comment_router.get('/:postId', CommentController.getCommentsByPostId);
 
-// comment_router.get('/' , async () => {
-//   console.log('댓글 테스트!')
-// })
-
-// // 댓글 가져오기!
-// post_router.get('/:postId', PostController.getPostById);
-
 // //댓글 수정하기
-// post_router.patch('/:postId', PostController.updatePost);
+comment_router.patch('/:postId/:commentId', CommentController.updateComment);
 
 // //댓글 삭제하기
-// post_router.delete('/:postId', PostController.deletePost);
+comment_router.delete('/:postId/:commentId', CommentController.deleteComment);
 
 export default comment_router;
