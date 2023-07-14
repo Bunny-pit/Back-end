@@ -75,7 +75,7 @@ const UserController = {
                         userName: user.userName,
                     }, process.env.REFRESH_SECRET_KEY,
                         {
-                            expiresIn: 1000 * 60 * 60 * 2, // 2시간 뒤 만료
+                            expiresIn: 1000 * 60 * 60, // 1시간 뒤 만료
                             issuer: 'BunnyPit'
                         });
 
@@ -89,14 +89,14 @@ const UserController = {
                     })
                     res.status(200).json("로그인 성공");
                 } else {
-                    generateServerErrorCode(res, 403, '비밀번호가 일치하지 않습니다.', WRONG_PASSWORD, 'password')
+                    return generateServerErrorCode(res, 403, '비밀번호가 일치하지 않습니다.', WRONG_PASSWORD, 'password')
                 }
             } else {
-                generateServerErrorCode(res, 404, '회원가입이 필요합니다.', USER_DOES_NOT_EXIST, 'email');
+                return generateServerErrorCode(res, 404, '회원가입이 필요합니다.', USER_DOES_NOT_EXIST, 'email');
             }
 
         } catch (err) {
-            res.status(500).json({err:err.message})
+            res.status(500).json({ err: err.message })
         }
     },
     async updateUser(req, res) {
@@ -107,10 +107,10 @@ const UserController = {
                 prevPassword,
                 newPassword
             }
-            const updatedUser = await UserService.updateUser(updateData, res);
-            res.status(201).json('유저 정보 업데이트 완료');
+            const result = await UserService.updateUser(updateData, res);
+            res.status(201).json(result);
         } catch (err) {
-            res.status(500).json({ 'update controller 오류': err.message })
+            throw err
         }
     },
     async deleteUser(req, res) {
@@ -119,11 +119,41 @@ const UserController = {
             const userData = {
                 email,
                 password
+            };
+
+            const deletionResult = await UserService.deleteUser(userData);
+            if (deletionResult.success) {
+                res.status(200).json('계정 삭제 성공');
+            } else {
+                res.status(500).json({
+                    error: '유저 삭제 실패',
+                    code: 'USER_DELETION_FAILED'
+                });
             }
-            await UserService.deleteUser(userData, res)
-            res.status(200).json('유저 정보 삭제 완료')
         } catch (err) {
-            res.status(500).json({ 'user delete controller 오류': err.message })
+            res.status(500).json({
+                error: '서버 오류 발생',
+                code: 'SOME_THING_WENT_WRONG'
+            });
+        }
+    },
+    async loginSuccess(req, res) {
+        try {
+            const token = req.cookies.accessToken;
+            const data = jwt.verify(token, process.env.ACCESS_SECRET_KEY);
+
+            const userData = User.find({ email })
+
+        } catch (err) {
+            res.status(500).json(err)
+        }
+    },
+    async logout(req, res) {
+        try {
+            res.cookie('accessToken', '');
+            res.status(200).json("로그아웃 완료");
+        } catch (err) {
+            res.status(500).json(err);
         }
     }
 }
