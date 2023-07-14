@@ -25,14 +25,40 @@ const CommentController = {
 },
   async getCommentsByPostId (req, res) {
       const { postId } = req.params;
-      console.log('postId' , postId)
       try {
           const comments = await CommentService.getCommentsByPostId(postId);
-          console.log('포스트아이디 체크포인트 1', postId)
           res.json(comments);
       } catch (error) {
         res.status(500).json({ error: error.message });
       }
   },
+  async updateComment (req, res) {
+    try {
+      const { postId, commentId } = req.params;
+      const newComment = req.body;
+      const updateComment = await CommentService.updateComment(commentId, newComment);
+      if (!updateComment) {
+        return res.status(404).json({ error: '댓글을 찾지 못했습니다.' });
+      }
+        res.json(updateComment);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+  async deleteComment(req, res) {
+    try {
+      const { postId, commentId } = req.params;
+      const deletedComment = await CommentService.deleteComment(commentId);
+
+      if (!deletedComment) {
+        return res.status(404).json({ error: '댓글을 찾지 못했습니다.' });
+      }
+
+      res.json({ message: '게시글을 성공적으로 삭제했습니다.', deletedComment });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
 }
 export default CommentController;
