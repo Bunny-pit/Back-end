@@ -141,9 +141,12 @@ const UserController = {
         try {
             const token = req.cookies.accessToken;
             const data = jwt.verify(token, process.env.ACCESS_SECRET_KEY);
+            const userEmail = data.email;
 
-            const userData = User.find({ email })
+            const userData = User.find({ userEmail })
+            const { password, ...others } = userData;
 
+            res.status(200).json(others);
         } catch (err) {
             res.status(500).json(err)
         }
