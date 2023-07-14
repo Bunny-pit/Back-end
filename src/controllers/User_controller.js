@@ -30,9 +30,8 @@ const UserController = {
                 email,
                 password
             }
-            const newUser = await UserService.createUser(registerData);
-            console.log('newUser', newUser);
-            res.status(201).json({ newUser: newUser });
+            await UserService.createUser(registerData);
+            res.status(201).json('계정 생성 성공 ');
         } catch (err) {
             res.status(500).json({ err: err.message })
         }
@@ -40,8 +39,7 @@ const UserController = {
     async getUser(req, res) {
         try {
             const savedUser = await User.find({})
-            res.send(savedUser);
-            return;
+            res.status(200).json({ data: savedUser });
         } catch (err) {
             console.log(err)
         }
@@ -77,7 +75,7 @@ const UserController = {
                         userName: user.userName,
                     }, process.env.REFRESH_SECRET_KEY,
                         {
-                            expiresIn: 1000 * 60 * 60 * 2, // 2시간 뒤 만료
+                            expiresIn: 1000 * 60 * 60, // 1시간 뒤 만료
                             issuer: 'BunnyPit'
                         });
 
@@ -91,36 +89,74 @@ const UserController = {
                     })
                     res.status(200).json("로그인 성공");
                 } else {
-                    generateServerErrorCode(res, 403, '비밀번호가 일치하지 않습니다.', WRONG_PASSWORD, 'password')
+                    return generateServerErrorCode(res, 403, '비밀번호가 일치하지 않습니다.', WRONG_PASSWORD, 'password')
                 }
             } else {
-                generateServerErrorCode(res, 404, '회원가입이 필요합니다.', USER_DOES_NOT_EXIST, 'email');
+                return generateServerErrorCode(res, 404, '회원가입이 필요합니다.', USER_DOES_NOT_EXIST, 'email');
             }
-
-        } catch (err) {
-            res.status(500).json(err)
-        }
-    },
-    async updateUser(req, res) {
-        try {
-            const { userName, password } = req.body
-            const updateData = {
-                userName,
-                password
-            }
-            const updatedUser = await UserService.updateUser(updateData);
-            res.status(201).json(updatedUser);
 
         } catch (err) {
             res.status(500).json({ err: err.message })
         }
     },
+    async updateUser(req, res) {
+        try {
+            const { email, prevPassword, newPassword } = req.body
+            const updateData = {
+                email,
+                prevPassword,
+                newPassword
+            }
+            const result = await UserService.updateUser(updateData, res);
+            res.status(201).json(result);
+        } catch (err) {
+            throw err
+        }
+    },
     async deleteUser(req, res) {
         try {
-            const { email, userName, password } = req.body;
+            const { email, password } = req.body;
+            const userData = {
+                email,
+                password
+            };
 
+            const deletionResult = await UserService.deleteUser(userData);
+            if (deletionResult.success) {
+                res.status(200).json('계정 삭제 성공');
+            } else {
+                res.status(500).json({
+                    error: '유저 삭제 실패',
+                    code: 'USER_DELETION_FAILED'
+                });
+            }
         } catch (err) {
-            console.log("유저삭제 실패")
+            res.status(500).json({
+                error: '서버 오류 발생',
+                code: 'SOME_THING_WENT_WRONG'
+            });
+        }
+    },
+    async loginSuccess(req, res) {
+        try {
+            const token = req.cookies.accessToken;
+            const data = jwt.verify(token, process.env.ACCESS_SECRET_KEY);
+            const userEmail = data.email;
+
+            const userData = User.find({ userEmail })
+            const { password, ...others } = userData;
+
+            res.status(200).json(others);
+        } catch (err) {
+            res.status(500).json(err)
+        }
+    },
+    async logout(req, res) {
+        try {
+            res.cookie('accessToken', '');
+            res.status(200).json("로그아웃 완료");
+        } catch (err) {
+            res.status(500).json(err);
         }
     }
 }

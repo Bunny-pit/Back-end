@@ -17,64 +17,84 @@ import {
 const UserService = {
     createUser: async (registerData, res) => {
         try {
+            const { userName, email, password } = registerData;
             const userData = {
-                userName: registerData.userName,
-                email: registerData.email,
-                password: generateHashedPassword(registerData.password)
+                userName: userName,
+                email: email,
+                password: generateHashedPassword(password)
             }
-            const existingUserCheck = await User.findOne({ email: userData.email });
-            console.log('existingUserCheck', existingUserCheck)
+            const existingUserCheck = await User.findOne({ email });
             if (existingUserCheck) {
-                generateServerErrorCode(res, 403, '이미 사용중인 이메일입니다.', USER_EXISTS_ALREADY, 'email')
+                res.status(403, err, "이미 사용중인 이메일입니다.")
             } else {
                 const newUser = new User(userData);
                 await newUser.save();
-                console.log('service newUser', newUser);
                 return newUser;
             }
+        } catch (err) {
+            res.status(500, err, "create user service 오류 발생")
 
-        } catch (err) {
-            generateServerErrorCode(res, 500, err, SOME_THING_WENT_WRONG);
         }
     },
-    loginUser: async (userData) => {
+    // loginUser: async (userData) => {
+    //     try {
+    //         const { email, password } = userData;
+    //         const userInfo = await User.findOne({
+    //             email,
+    //             password: generateHashedPassword(password)
+    //         });
+    //         return userInfo;
+    //     } catch (err) {
+    //         res.status(500).json({ err : err.message})
+    //     }
+    // },
+    updateUser: async (updateData, res) => {
         try {
-            const userInfo = await User.findOne({
-                email: userData.email,
-                password: generateHashedPassword(userData.password)
-            });
-            return userInfo;
-        } catch (err) {
-            throw err;
-        }
-    },
-    updateUser: async (userId, newUserData) => {
-        try {
-            const updatedUser = await User.findByIdAndUpdate(userId, newUserData, {
-                new: true,
-            });
-            return updatedUser;
-        } catch (err) {
-            throw err;
-        }
-    },
-
-    deleteUser: async (userData, res) => {
-        try {
-            const { email, userName } = userData;
-            const existingUserCheck = await User.findOne({ email, userName })
-            if (existingUserCheck) {
-                const { userId } = existingUserCheck;
-                const deleteUser = await User.findByIdAndDelete(userId);
-                return deleteUser;
+            const { email, prevPassword, newPassword } = updateData;
+            // 유저 확인
+            const existingUser = await User.find({ email });
+            // 기존 비밀번호 확인
+            const isPasswordMatched = (password) => {
+                return generateHashedPassword(password) === existingUser[0].password;
+            };
+            if (!existingUser) {
+                res.status(404).json({ error: 'USER_NOT_FOUND' });
             } else {
-                generateServerErrorCode(res, 403, 'deleting user error', 'USER_ID_NOT_FOUND', 'deleteUser')
+                if (isPasswordMatched(prevPassword)) {
+                    await User.findOneAndUpdate({ email }, { password: generateHashedPassword(newPassword) });
+                    res.status(200).json('비밀번호 변경 완료');
+                } else {
+                    res.status(400).json({ 'user service오류': '기존 비밀번호와 입력한 비밀번호 불일치.' });
+                }
             }
-
         } catch (err) {
-            generateServerErrorCode(res, 500, err, SOME_THING_WENT_WRONG)
+            res.status(500).json({ 'update service 오류': err.message })
         }
     },
-};
+    deleteUser: async (userData) => {
+        try {
+            const { email, password } = userData;
+            const existingUserCheck = await User.findOne({ email });
+            const isPasswordMatched = (password) => {
+                return generateHashedPassword(password) === existingUserCheck.password;
+            };
 
+            if (existingUserCheck && isPasswordMatched(password)) {
+                const deletionResult = await User.deleteOne({ email });
+                // 삭제가 성공적인지 확인
+                if (deletionResult.deletedCount === 1) {
+                    return { success: true };
+                } else {
+                    return { success: false };
+                }
+            } else {
+                return { success: false };
+            }
+        } catch (err) {
+            throw new Error('Failed to delete user');
+        }
+    }
+
+};
+//오류날경우 삭제 안 되도록 코드 짜야함.
 export default UserService;
