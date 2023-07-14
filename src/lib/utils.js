@@ -6,10 +6,14 @@ import {
     PASSWORD_LENGTH_MUST_BE_MORE_THAN_8,
     EMAIL_IS_EMPTY,
     EMAIL_IS_IN_WRONG_FORMAT,
-} from './constant';
+} from './constant.js';
 
 //암호화 비밀번호 생성
 export const generateHashedPassword = password => sha256(password);
+
+// export function comparePassword(password) {
+//     return this.hashedPassword === sha256(password)
+// }
 
 export function generateServerErrorCode(
     res,
@@ -25,11 +29,12 @@ export function generateServerErrorCode(
     }
     return res.status(code).json({
         code,
-        fullErrors,
+        fullError,
         errors
     })
 }
 
+//계정 등록 검증
 export const registerValidation = [
     check('email')
         .exists()
@@ -42,7 +47,7 @@ export const registerValidation = [
         .isLength({ min: 8 })
         .withMessage(PASSWORD_LENGTH_MUST_BE_MORE_THAN_8),
 ];
-
+//로그인 검증
 export const loginValidation = [
     check('email')
         .exists()

@@ -1,13 +1,17 @@
 import express from "express";
-import UserService from '../services/user_service.js'
+import UserController from '../controllers/User_controller.js'
+import passport from 'passport';
 
-const app = express();
-const user_router = express.Router();
+const userRouter = express.Router();
 
-app.post("/register", UserService.createUser);
+userRouter.get("/", (req, res) => {
+    res.send('유저 루트 페이지');
+})
+userRouter.post("/register", UserController.createUser);
+userRouter.get("/register", UserController.getUser)
 
-app.patch("/edit", UserService.updateUser);
+userRouter.post("/login", UserController.loginUser);
+userRouter.patch("/edit", UserController.updateUser);
+userRouter.delete("/delete", UserController.deleteUser);
 
-app.delete("/delete", UserService.deleteUser);
-
-export default user_router;
+export default userRouter;

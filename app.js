@@ -1,21 +1,17 @@
-import dotenv from "dotenv";
-import express from "express";
-import mongoose from "mongoose";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
+import dotenv from 'dotenv';
+import express from 'express';
+import mongoose from 'mongoose';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-import logger from "winston";
-import cors from "cors";
-import passport from "passport";
+import logger from 'winston';
+import cors from 'cors';
+import passport from 'passport';
 
 //passport에 strategy 적용
-import { applyPassportStrategy } from "./src/lib/passport.js";
-
-//라우터 import
-import mainhomeRouter from "./src/routers/mainhome_router.js";
-import userRouter from "./src/routers/user_router.js";
+import { applyPassportStrategy } from './src/lib/passport.js';
 
 const app = express();
 
@@ -31,22 +27,21 @@ const port = process.env.PORT || 8000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const routesPath = path.join(__dirname, "src", "routers");
+const routesPath = path.join(__dirname, 'src', 'routers');
 const files = fs.readdirSync(routesPath);
 
 // route
-app.get("/", (req, res) => {
-  res.send("여기는 버니톡의 백엔드 페이지입니다!");
+app.get('/', (req, res) => {
+  res.send('여기는 버니톡의 백엔드 페이지입니다!');
 });
-// API
-app.use("/api/mainhome", mainhomeRouter);
-app.use("/api/user", userRouter);
 
+//모든 라우터 코드를 동적으로 불러오도록 설정
 Promise.all(
   files.map(async file => {
-    if (file.endsWith(".js") && file !== "Mainhome_router.js") {
-      const route = await import(path.join("file://", routesPath, file));
-      app.use(route.default);
+    if (file.endsWith('.js')) {
+      const route = await import(path.join('file://', routesPath, file));
+      const apiEndpoint = '/api/' + file.replace('_router.js', '');
+      app.use(apiEndpoint, route.default);
     }
   }),
 ).then(() => {
@@ -57,7 +52,7 @@ Promise.all(
         useNewUrlParser: true,
         useUnifiedTopology: true,
       })
-      .then(() => logger.info("몽고디비 연결에 성공했습니다."))
+      .then(() => logger.info('몽고디비 연결에 성공했습니다.'))
       .catch(e => console.error(e));
   });
 });
