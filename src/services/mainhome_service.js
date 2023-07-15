@@ -2,10 +2,11 @@ import Mainhome from '../database/models/mainhome_model.js';
 import md5 from 'md5';
 
 const MainhomeService = {
-  createMainhomePost: async data => {
+  createMainhomePost: async (user, data) => {
     const newPost = new Mainhome({
       ...data,
-      email: md5(data.email.trim().toLowerCase()),
+      email: user.email,
+      name: user.userName,
     });
     try {
       await newPost.save();
@@ -27,26 +28,34 @@ const MainhomeService = {
     }
   },
 
-  updateMainhomePost: async (postId, data) => {
+  updateMainhomePost: async (user, postId, data) => {
     try {
+      const post = await Mainhome.findById(postId);
+
+      if (post.email !== user.email) {
+        throw new Error('권한이 없습니다.');
+      }
+
       const updatedPost = await Mainhome.findByIdAndUpdate(
         postId,
-        {
-          ...data,
-          email: data.email ? md5(data.email.trim().toLowerCase()) : undefined,
-        },
-        {
-          new: true,
-        },
+        { ...data },
+        { new: true },
       );
+
       return updatedPost;
     } catch (err) {
       throw err;
     }
   },
 
-  deleteMainhomePost: async postId => {
+  deleteMainhomePost: async (user, postId) => {
     try {
+      const post = await Mainhome.findById(postId);
+
+      if (post.email !== user.email) {
+        throw new Error('권한이 없습니다.');
+      }
+
       const deletedPost = await Mainhome.findByIdAndDelete(postId);
       return deletedPost;
     } catch (err) {
