@@ -1,11 +1,13 @@
 import express from 'express';
 import ChatController from '../controllers/chat_controller.js';
+import loginRequired from '../middlewares/login_required.js';
 
 const router = express.Router();
 
 // 채팅 관련 API 라우팅
-router.get('/chats/:userEmail', ChatController.getUserChats);
-router.get('/chats/:chatId/messages', ChatController.getChatMessages);
-router.delete('/chats/:chatId', ChatController.deleteChat);
+router.post('/start', loginRequired, ChatController.startChat);
+router.get('/:userId', loginRequired, ChatController.getUserChats);
+router.get('/:chatId/messages', ChatController.getChatMessages);
+router.delete('/:chatId', ChatController.deleteChat);
 
 export default router;

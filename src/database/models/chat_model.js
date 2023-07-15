@@ -1,21 +1,23 @@
 import mongoose from 'mongoose';
+const { Schema, SchemaTypes } = mongoose;
 
-const ChatSchema = new mongoose.Schema({
+const ChatSchema = new Schema({
   users: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: SchemaTypes.ObjectId,
       ref: 'User',
     },
   ],
   messages: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: SchemaTypes.ObjectId,
       ref: 'Message',
     },
   ],
   lastMessage: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: SchemaTypes.ObjectId,
     ref: 'Message',
+    default: null,
   },
 });
 
