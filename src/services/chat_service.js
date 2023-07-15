@@ -1,7 +1,27 @@
 import Chat from '../database/models/chat_model.js';
 import Message from '../database/models/message_model.js';
+import mongoose from 'mongoose';
 
 const ChatService = {
+  startChat: async (userId, anonymousUserId) => {
+    try {
+      const newChat = new Chat({
+        users: [
+          new mongoose.Types.ObjectId(userId),
+          new mongoose.Types.ObjectId(anonymousUserId),
+        ],
+      });
+
+      await newChat.validate();
+
+      await newChat.populate('users');
+
+      return newChat;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   getUserChats: async (userEmail) => {
     try {
       const chats = await Chat.find({ 'users.email': userEmail }).populate(
@@ -41,7 +61,6 @@ const ChatService = {
         content: content,
       });
       await newMessage.save();
-      // Update chat's lastMessage
       const chat = await Chat.findByIdAndUpdate(
         chatId,
         { lastMessage: newMessage._id },
