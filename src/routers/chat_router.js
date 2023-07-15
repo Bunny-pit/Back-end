@@ -6,7 +6,7 @@ const router = express.Router();
 
 // 채팅 관련 API 라우팅
 router.post('/start', loginRequired, ChatController.startChat);
-router.get('/:userEmail', ChatController.getUserChats);
+router.get('/:userId', loginRequired, ChatController.getUserChats);
 router.get('/:chatId/messages', ChatController.getChatMessages);
 router.delete('/:chatId', ChatController.deleteChat);
 

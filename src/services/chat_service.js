@@ -15,17 +15,19 @@ const ChatService = {
       await newChat.validate();
 
       await newChat.populate('users');
-
+      await newChat.save();
       return newChat;
     } catch (error) {
       throw error;
     }
   },
 
-  getUserChats: async (userEmail) => {
+  getUserChats: async (userId) => {
     try {
-      const chats = await Chat.find({ 'users.email': userEmail }).populate(
+      const objectId = new mongoose.Types.ObjectId(userId);
+      const chats = await Chat.find({ 'users.0': objectId }).populate(
         'users',
+        'userName email',
       );
       return chats;
     } catch (error) {
