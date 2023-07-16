@@ -3,13 +3,11 @@ import mongoose from 'mongoose';
 const mainhomeSchema = new mongoose.Schema(
   {
     email: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      type: String,
       required: true,
     },
     name: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      type: String,
       required: true,
     },
     profileImage: {

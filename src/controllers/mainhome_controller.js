@@ -4,7 +4,7 @@ const MainhomeController = {
   async createMainhomePost(req, res) {
     try {
       const newPost = await MainhomeService.createMainhomePost(
-        req.user,
+        req.email,
         req.body,
       );
 
@@ -28,7 +28,7 @@ const MainhomeController = {
     try {
       const { id } = req.params;
       const updatedPost = await MainhomeService.updateMainhomePost(
-        req.user,
+        req.email,
         id,
         req.body,
       );
@@ -47,7 +47,7 @@ const MainhomeController = {
     try {
       const { id } = req.params;
       const deletedPost = await MainhomeService.deleteMainhomePost(
-        req.user,
+        req.email,
         id,
       );
 

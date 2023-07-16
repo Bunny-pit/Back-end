@@ -1,20 +1,26 @@
 import Mainhome from '../database/models/mainhome_model.js';
+import User from '../database/models/user_model.js';
 import md5 from 'md5';
 
 const MainhomeService = {
-  createMainhomePost: async data => {
-    const newPost = new Mainhome({
-      ...data,
-      email: data.email ? md5(data.email.trim().toLowerCase()) : undefined,
-    });
+  createMainhomePost: async (email, data) => {
     try {
+      // User model에서 email을 통해 사용자 이름을 가져옵니다.
+      const user = await User.findOne({ email: email });
+      if (!user) {
+        throw new Error('User not found');
+      }
+      const newPost = new Mainhome({
+        ...data,
+        email: email,
+        name: user.userName, // User model에서 가져온 사용자 이름을 사용합니다.
+      });
       await newPost.save();
       return newPost;
     } catch (err) {
       throw err;
     }
   },
-
   getAllMainhomePosts: async () => {
     try {
       const posts = await Mainhome.find().sort({ createdAt: -1 });
@@ -27,13 +33,13 @@ const MainhomeService = {
     }
   },
 
-  updateMainhomePost: async (postId, data) => {
+  updateMainhomePost: async (email, postId, data) => {
     try {
       const updatedPost = await Mainhome.findByIdAndUpdate(
         postId,
         {
           ...data,
-          email: data.email ? md5(data.email.trim().toLowerCase()) : undefined,
+          email: email ? md5(email.trim().toLowerCase()) : undefined,
         },
         {
           new: true,
@@ -45,9 +51,17 @@ const MainhomeService = {
     }
   },
 
-  deleteMainhomePost: async postId => {
+  deleteMainhomePost: async (email, postId) => {
     try {
-      const deletedPost = await Mainhome.findByIdAndDelete(postId);
+      const deletedPost = await Mainhome.findByIdAndDelete({
+        _id: postId,
+        email: email,
+      });
+
+      if (!deletedPost) {
+        throw new Error('게시물을 찾을 수 없습니다.');
+      }
+
       return deletedPost;
     } catch (err) {
       throw err;
