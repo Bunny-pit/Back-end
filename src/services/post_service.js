@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 const PostService = {
   createPost: async (req) => {
     try {
-      const { userId, content } = req.body;
+      const { userId,userName, content } = req.body;
       let uploadedImages = await Promise.all(req.files.map(async (file) => {
         let uploadResult = await uploadToS3(file);
         if(uploadResult.success) {
@@ -16,6 +16,7 @@ const PostService = {
       }));
       const newPost = new Post({
         userId:  new mongoose.Types.ObjectId(userId),
+        userName: userName, // userName 추가
         content: content,
         images: uploadedImages,
         createdAt: Date.now(),
@@ -36,7 +37,7 @@ const PostService = {
 
     getAllPosts: async () => {
         try {
-            const posts = await Post.find();
+          const posts = await Post.find().populate('userName'); 
             return posts;
         } catch (err) {
             throw err;
@@ -44,9 +45,8 @@ const PostService = {
     },
     getPostById: async (postId) => {
       try {
-        const post = await Post.findById(postId);
+        const post = await Post.findById(postId).populate('userName');
         const like = await LikeService.getLike(postId);
-        
         console.log(like)
         // const countLength = like.userId.length;
         return {post : post, like : like};
@@ -55,14 +55,14 @@ const PostService = {
       }
     },
     updatePost: async (postId, newPostData) => {
-        try {
-            const updatedPost = await Post.findByIdAndUpdate(postId, newPostData, {
-                new: true,
-            });
-            return updatedPost;
-        } catch (err) {
-            throw err;
-        }
+      try {
+        const updatedPost = await Post.findByIdAndUpdate(postId, newPostData, {
+          new: true,
+        });
+        return updatedPost;
+      } catch (err) {
+        throw err;
+      }
     },
 
     deletePost: async (postId) => {
@@ -84,7 +84,9 @@ const PostService = {
             else     console.log(data);           // successful response
           });
         }
-  
+         // 연관된 'like' 데이터 삭제
+        await Like.deleteOne({postId: postId});
+        
         const deletedPost = await Post.findByIdAndDelete(postId);
         return deletedPost;
       } catch (err) {
