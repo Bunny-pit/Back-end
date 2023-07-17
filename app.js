@@ -21,7 +21,10 @@ const io = initializeSocketIo(server);
 //express 탑재 body-parser 사용, cors 설정
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({
+  origin,
+  credentials : true,
+}));
 
 //환경 설정
 dotenv.config();
