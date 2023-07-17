@@ -3,8 +3,8 @@ import LikeController from '../controllers/like_controller.js';
 
 const router = express.Router();
 
-router.post('/:postId', LikeController.addLikeCtrl);
-router.delete('/:postId', LikeController.removeLikeCtrl);
-router.get('/:postId', LikeController.getLikeCtrl);
+router.post('/:postId', LikeController.createLike);
+router.get('/:postId', LikeController.getLike);
+router.delete('/:postId', LikeController.deleteLike);
 
 export default router;

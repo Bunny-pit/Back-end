@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const LikeSchema = new mongoose.Schema({
-  like: {
+  liked: {
     type: Boolean,
     default: false
   },

@@ -2,64 +2,56 @@ import Like from '../database/models/like_model.js';
 
 
 const LikeService = {
-  addLike : async (postId, userId) => {
-  const like = await Like.findOne({ postId });
+  createLike : async (postId, userId) => {
+    const like = await Like.findOne({ postId });
+    let liked = false;  
 
-    if (!like) {
-      const newLike = new Like({ 
-        postId,
-        userId: [userId],
-        like: true 
-      });
-      
-      await newLike.save();
+  if (like) {
+    const userIndex = like.userId.indexOf(userId);
 
-      return newLike;
-    } else {
-      like.userId.push(userId);
-      like.like = true;
+    if (userIndex > -1) {
+      // User already liked the post, unlike it
+      like.userId.splice(userIndex, 1);
 
-      await like.save();
-
-      return like;
-    }
-  },
-
-  removeLike : async(postId, userId) =>{
-    try {
-      const like = await Like.findOne({ postId });
-      if (!like) throw new Error('Post not found');
-
-      // Check if the like object is not null
-      if (like && like.userId) {
-          const index = like.userId.indexOf(userId);
-
-          if (index > -1) {
-              like.userId.splice(index, 1);
-              await like.save();
-          } else {
-              throw new Error('User has not liked the post');
-          }
-      } else {
-          throw new Error('User has not liked the post');
+      // If no users like the post, set 'liked' to false
+      if (like.userId.length === 0) {
+        like.liked = false;
       }
 
-      return like;
-  } catch (error) {
-      throw error;
-  }
-  },
-  
-  getLike : async (postId) => {
-    const like = await Like.findOne({ postId });
-    const count = like.userId.length;
-    const likedUser = like.userId;
-    if (like) {
-      return  {count, likedUser}; 
     } else {
-      return 0;
+      // User has not liked the post, like it
+      like.userId.push(userId);
+      liked = true;
+      like.liked = true;
+    }
+
+    await like.save();
+  } else {
+    like = new Like({ postId, userId: [userId], liked: true });
+    liked = true;
+    await like.save();
+  }
+
+  return { liked, count: like.userId.length };
+  },
+  getLike : async (postId, userId) => {
+    const like = await Like.findOne({ postId});
+    console.log(like)
+    return like
+  
+  },
+  deleteLike : async(postId, userId) =>{
+    const existingLike = await Like.findOne({ postId, userId });
+
+    if (existingLike) {
+        await existingLike.remove();
+        return { message: 'Like removed' };
+    } else {
+        throw new Error('Like not found');
     }
   },
+  
+  
 }
   
 export default LikeService;
