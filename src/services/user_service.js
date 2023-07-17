@@ -1,10 +1,9 @@
 import User from '../database/models/user_model.js';
 
 import {
-  generateHashedPassword,
-  generateServerErrorCode,
-  registerValidation,
-  loginValidation,
+    generateHashedPassword,
+    registerValidation,
+    loginValidation,
 } from '../lib/utils.js';
 
 import {

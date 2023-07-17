@@ -1,6 +1,7 @@
 import Chat from '../database/models/chat_model.js';
 import Message from '../database/models/message_model.js';
 import mongoose from 'mongoose';
+import { getSocketIo } from '../lib/socket.js';
 
 const ChatService = {
   startChat: async (userId, anonymousUserId) => {
@@ -55,23 +56,15 @@ const ChatService = {
       throw error;
     }
   },
-  createMessage: async (senderId, chatId, content) => {
-    try {
-      const newMessage = new Message({
-        sender: senderId,
-        chat: chatId,
-        content: content,
-      });
-      await newMessage.save();
-      const chat = await Chat.findByIdAndUpdate(
-        chatId,
-        { lastMessage: newMessage._id },
-        { new: true },
-      );
-      return chat;
-    } catch (error) {
-      throw error;
-    }
+  createMessageAndEmit: async (senderId, chatId, content) => {
+    const newMessage = await ChatService.createMessage(
+      senderId,
+      chatId,
+      content,
+    );
+    const io = getSocketIo();
+    io.to(chatId).emit('newMessage', newMessage);
+    return newMessage;
   },
 };
 
