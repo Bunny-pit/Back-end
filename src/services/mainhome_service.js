@@ -13,7 +13,7 @@ const MainhomeService = {
       const newPost = new Mainhome({
         ...data,
         email: email,
-        name: user.userName, // User model에서 가져온 사용자 이름을 사용합니다.
+        name: user.sercretName,
       });
       await newPost.save();
       return newPost;
