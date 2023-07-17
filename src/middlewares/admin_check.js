@@ -1,4 +1,4 @@
-import User from "../database/models/";
+import {User} from "../database/models/index.js";
 
 export default async function adminCheck(req, res, next) {
     const email = req.body.email;

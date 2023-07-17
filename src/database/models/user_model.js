@@ -1,6 +1,31 @@
 import mongoose from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
+const randomNames = [
+  '지루한',
+  '따분한',
+  '목마른',
+  '배고픈',
+  '화가난',
+  '소심한',
+  '당당한',
+  '외로운',
+  '고민중인',
+  '코딩하는',
+  '배아픈',
+  '똥마려운',
+  '요리하는',
+  '공부중인',
+  '화장하는',
+  '유쾌한',
+  '밥먹는',
+];
+const getRandomName = () => {
+  const randomIndex = Math.floor(Math.random() * randomNames.length);
+  return randomNames[randomIndex];
+};
+const secretName = `${getRandomName()} 버니`;
+
 const userSchema = new mongoose.Schema(
   {
     userId: {
@@ -14,6 +39,12 @@ const userSchema = new mongoose.Schema(
       maxLength: 8,
       unique: true,
       required: true,
+    },
+    sercretName: {
+      type: String,
+      unique: true,
+      required: true,
+      default: `${getRandomName()} 버니`,
     },
     email: {
       type: String,

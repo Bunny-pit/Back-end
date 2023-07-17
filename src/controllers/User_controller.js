@@ -7,7 +7,6 @@ import { validationResult } from 'express-validator';
 
 import {
     generateHashedPassword,
-    generateServerErrorCode,
     registerValidation,
     loginValidation,
 } from '../lib/utils.js';

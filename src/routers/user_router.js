@@ -1,7 +1,6 @@
 import express from "express";
 import UserController from '../controllers/User_controller.js'
-import { adminCheck, loginRequired } from "../middlewares/";
-
+import { adminCheck, loginRequired } from "../middlewares/index.js";
 
 const userRouter = express.Router();
 
@@ -16,7 +15,7 @@ userRouter.post("/login", loginRequired, UserController.loginUser);
 userRouter.post("/logout", loginRequired, UserController.logout);
 
 userRouter.patch("/edit", loginRequired, UserController.updateUser);
-userRouter.delete("/delete", loginRequired, UserController.deleteUser);
+userRouter.delete("/delete", UserController.deleteUser);
 
 userRouter.get("/accessToken", UserController.loginSuccess);
 userRouter.get("/refreshToken", UserController.refreshToken);
