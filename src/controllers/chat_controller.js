@@ -35,7 +35,7 @@ const ChatController = {
     try {
       const { chatId } = req.params;
       const deletedChat = await ChatService.deleteChat(chatId);
-      res.json({ message: '채팅을 삭제했습니다.', deletedChat });
+      res.json({ message: '채팅을 삭제했습니다!', deletedChat });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
