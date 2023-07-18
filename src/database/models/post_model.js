@@ -30,6 +30,10 @@ const PostSchema = new mongoose.Schema({
     type: String,  // Assuming profileImage is of string type
     required: false,
   },
+  userName: { // userName field 추가
+    type: String,
+    required: true,
+  },
 },
   { timestamps: false },
 )
