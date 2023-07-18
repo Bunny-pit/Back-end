@@ -8,12 +8,12 @@ const MainhomeService = {
       // User model에서 email을 통해 사용자 이름을 가져옵니다.
       const user = await User.findOne({ email: email });
       if (!user) {
-        throw new Error('User not found');
+        throw new Error('유저를 찾을 수 없습니다.');
       }
       const newPost = new Mainhome({
         ...data,
         email: email,
-        name: user.sercretName,
+        name: user.secretName,
       });
       await newPost.save();
       return newPost;
