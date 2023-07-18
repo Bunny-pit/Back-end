@@ -11,28 +11,30 @@ import {
 //암호화 비밀번호 생성
 export const generateHashedPassword = password => sha256(password);
 
+
+//이 밑으로는 리팩토링
 // export function comparePassword(password) {
 //     return this.hashedPassword === sha256(password)
 // }
 
-export function generateServerErrorCode(
-    res,
-    code,
-    fullError,
-    msg,
-    location = 'server'
-) {
-    const errors = {};
-    errors[location] = {
-        fullError,
-        msg,
-    }
-    return res.status(code).json({
-        code,
-        fullError,
-        errors
-    })
-}
+// export function generateServerErrorCode(
+//     res,
+//     code,
+//     fullError,
+//     msg,
+//     location = 'server'
+// ) {
+//     const errors = {};
+//     errors[location] = {
+//         fullError,
+//         msg,
+//     }
+//     return res.status(code).json({
+//         code,
+//         fullError,
+//         errors
+//     })
+// }
 
 //계정 등록 검증
 export const registerValidation = [
