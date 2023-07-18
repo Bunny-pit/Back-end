@@ -56,6 +56,21 @@ const ChatService = {
       throw error;
     }
   },
+  createMessage: async (senderId, chatId, content) => {
+    try {
+      const newMessage = new Message({
+        chat: chatId,
+        sender: senderId,
+        content,
+      });
+
+      await newMessage.save();
+
+      return newMessage;
+    } catch (error) {
+      throw error;
+    }
+  },
   createMessageAndEmit: async (senderId, chatId, content) => {
     const newMessage = await ChatService.createMessage(
       senderId,
