@@ -24,7 +24,6 @@ const getRandomName = () => {
   const randomIndex = Math.floor(Math.random() * randomNames.length);
   return randomNames[randomIndex];
 };
-const secretName = `${getRandomName()} 버니`;
 
 const userSchema = new mongoose.Schema(
   {
@@ -36,11 +35,11 @@ const userSchema = new mongoose.Schema(
     },
     userName: {
       type: String,
-      maxLength: 8,
+      maxlength: 8,
       unique: true,
       required: true,
     },
-    sercretName: {
+    secretName: {
       type: String,
       unique: true,
       required: true,
@@ -54,7 +53,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       trim: true,
-      minLength: 8,
+      minlength: 8,
       required: true,
     },
     role: {

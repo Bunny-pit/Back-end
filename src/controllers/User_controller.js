@@ -7,6 +7,7 @@ import { validationResult } from 'express-validator';
 
 import {
     generateHashedPassword,
+    generateServerErrorCode,
     registerValidation,
     loginValidation,
 } from '../lib/utils.js';
@@ -38,7 +39,7 @@ const UserController = {
     async getUser(req, res) {
         try {
             const savedUser = await User.find({})
-            res.status(200).json({ '유저목록': savedUser });
+            res.status(200).json({ data: savedUser });
         } catch (err) {
             console.log(err)
         }
@@ -143,9 +144,9 @@ const UserController = {
             const userEmail = data.email;
 
             const userData = User.find({ userEmail })
+            const { password, ...others } = userData;
 
-
-            res.status(200).json({ 'loginSuccess': userData });
+            res.status(200).json(others);
         } catch (err) {
             res.status(500).json(err)
         }
@@ -157,50 +158,7 @@ const UserController = {
         } catch (err) {
             res.status(500).json(err);
         }
-    },
-    async accessToken(req, res) {
-        try {
-            const token = req.cookies.accessToken;
-            const data = jwt.verify(token, process.env.ACCESS_SECRET_KEY);
-            const userEmail = data.email;
-
-            const userData = User.find({ userEmail })
-            const { password, ...others } = userData;
-
-            res.status(200).json({ 'accessToken 발급': others });
-        } catch (err) {
-            res.status(500).json(err)
-        }
-    },
-    async refreshToken(req, res) {
-        try {
-            const token = req.cookies.refreshToken;
-            const data = jwt.verify(token, process.env.REFRESH_SECRET_KEY);
-            const userEmail = data.email;
-
-            const userData = User.find({ userEmail });
-
-            // access Token 새로 발급
-            const accessToken = jwt.sign({
-                userName: userData.userName,
-                email: userData.email,
-            }, process.env.ACCESS_SECRET_KEY, {
-                expiresIn: '1m',
-                issuer: 'Bunny pit',
-            });
-
-            res.cookie("accessToken", accessToken, {
-                secure: false,
-                httpOnly: true,
-            })
-
-            res.status(200).json("accessToken 재발급");
-        } catch (err) {
-            res.status(500).json(err)
-        }
-    },
-
-
+    }
 }
 export default UserController;
 
