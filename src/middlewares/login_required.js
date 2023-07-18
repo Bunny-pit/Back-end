@@ -8,12 +8,10 @@ export default function loginRequired(req, res, next) {
     if (!userToken || userToken === "null") {
         console.log("Authorization을 위한 토큰 없음");
 
-        res.status(401).json({
+        return res.status(401).json({
             result: "forbidden-approach",
             message: "로그인한 유저만 사용할 수 있는 서비스입니다.",
         });
-
-        return;
     }
 
     // 해당 token 이 정상적인 token인지 확인
@@ -21,16 +19,14 @@ export default function loginRequired(req, res, next) {
         const accessKey = process.env.ACCESS_SECRET_KEY || "엑세스키할당필요함";
         const jwtDecoded = jwt.verify(userToken, accessKey);
         const userEmail = jwtDecoded.email;
-
         next();
     } catch (error) {
-        res.status(401).json({
+        return res.status(401).json({
             result: "forbidden-approach",
             message: "정상적인 토큰이 아닙니다.",
         });
-
-        return;
     }
+
 }
 
 

@@ -21,7 +21,7 @@ userRouter.get("/accessToken", UserController.loginSuccess);
 userRouter.get("/refreshToken", UserController.refreshToken);
 
 //관리자 기능
-userRouter.get("/register", adminCheck, UserController.getUser)
+userRouter.get("/register", UserController.getUser)
 
 
 
