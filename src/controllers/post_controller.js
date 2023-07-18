@@ -32,6 +32,7 @@ const PostController = {
   },
   async getPostById(req, res){
     const { postId } = req.params;
+    console.log("!!!",req.params)
     try {
       const post = await PostService.getPostById(postId);
       if (post) {
