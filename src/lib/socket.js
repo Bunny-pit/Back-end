@@ -3,7 +3,14 @@ import { Server } from 'socket.io';
 let io;
 
 export const initializeSocketIo = (server) => {
-  io = new Server(server);
+  io = new Server(server, {
+    cors: {
+      origin: 'http://localhost:3001',
+      methods: ['GET', 'POST'],
+      allowedHeaders: ['my-custom-header'],
+      credentials: true,
+    },
+  });
   return io;
 };
 
