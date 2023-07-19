@@ -1,11 +1,34 @@
 import Chat from '../database/models/chat_model.js';
 import Message from '../database/models/message_model.js';
+import mongoose from 'mongoose';
+import { getSocketIo } from '../lib/socket.js';
 
 const ChatService = {
-  getUserChats: async (userEmail) => {
+  startChat: async (userId, anonymousUserId) => {
     try {
-      const chats = await Chat.find({ 'users.email': userEmail }).populate(
+      const newChat = new Chat({
+        users: [
+          new mongoose.Types.ObjectId(userId),
+          new mongoose.Types.ObjectId(anonymousUserId),
+        ],
+      });
+
+      await newChat.validate();
+
+      await newChat.populate('users');
+      await newChat.save();
+      return newChat;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getUserChats: async (userId) => {
+    try {
+      const objectId = new mongoose.Types.ObjectId(userId);
+      const chats = await Chat.find({ 'users.0': objectId }).populate(
         'users',
+        'userName email',
       );
       return chats;
     } catch (error) {
@@ -36,21 +59,29 @@ const ChatService = {
   createMessage: async (senderId, chatId, content) => {
     try {
       const newMessage = new Message({
-        sender: senderId,
         chat: chatId,
-        content: content,
+        sender: senderId,
+        content,
       });
+
       await newMessage.save();
-      // Update chat's lastMessage
-      const chat = await Chat.findByIdAndUpdate(
-        chatId,
-        { lastMessage: newMessage._id },
-        { new: true },
-      );
-      return chat;
+
+      return newMessage;
     } catch (error) {
       throw error;
     }
+  },
+  createMessageAndEmit: async (senderId, chatId, content) => {
+    const newMessage = await ChatService.createMessage(
+      senderId,
+      chatId,
+      content,
+      console.log(content),
+    );
+
+    const io = getSocketIo();
+    io.to(chatId).emit('newMessage', newMessage);
+    return newMessage;
   },
 };
 

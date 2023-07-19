@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
 
 export default function loginRequired(req, res, next) {
-    // request 헤더로부터 authorization bearer 토큰을 받음.
-    const userToken = req.headers["authorization"]?.split(" ")[1];
+  try {
+    const { token } = req.headers;
 
     // 토큰이 없을 경우 login_required 가 필요한 서비스 사용을 제한.
     if (!userToken || userToken === "null") {
@@ -29,4 +29,11 @@ export default function loginRequired(req, res, next) {
 
 }
 
+    req.email = email;
+    req.isAdmin = isAdmin;
 
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
