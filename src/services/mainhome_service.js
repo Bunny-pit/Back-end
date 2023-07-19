@@ -1,11 +1,9 @@
 import Mainhome from '../database/models/mainhome_model.js';
 import User from '../database/models/user_model.js';
-import md5 from 'md5';
 
 const MainhomeService = {
   createMainhomePost: async (email, data) => {
     try {
-      // User model에서 email을 통해 사용자 이름을 가져옵니다.
       const user = await User.findOne({ email: email });
       if (!user) {
         throw new Error('유저를 찾을 수 없습니다.');
@@ -26,7 +24,7 @@ const MainhomeService = {
       const posts = await Mainhome.find().sort({ createdAt: -1 });
       return posts.map(post => ({
         ...post._doc,
-        email: post.email ? md5(post.email.trim().toLowerCase()) : undefined,
+        email: post.email,
       }));
     } catch (err) {
       throw err;
@@ -35,16 +33,24 @@ const MainhomeService = {
 
   updateMainhomePost: async (email, postId, data) => {
     try {
+      const post = await Mainhome.findById(postId);
+      if (!post) {
+        throw new Error('게시글을 찾지 못했습니다.');
+      } else if (post.email !== email) {
+        throw new Error('게시글 수정 권한이 없습니다.');
+      }
+
       const updatedPost = await Mainhome.findByIdAndUpdate(
         postId,
         {
           ...data,
-          email: email ? md5(email.trim().toLowerCase()) : undefined,
+          email: email,
         },
         {
           new: true,
         },
       );
+
       return updatedPost;
     } catch (err) {
       throw err;
@@ -53,14 +59,14 @@ const MainhomeService = {
 
   deleteMainhomePost: async (email, postId) => {
     try {
-      const deletedPost = await Mainhome.findByIdAndDelete({
-        _id: postId,
-        email: email,
-      });
-
-      if (!deletedPost) {
-        throw new Error('게시물을 찾을 수 없습니다.');
+      const post = await Mainhome.findById(postId);
+      if (!post) {
+        throw new Error('게시글을 찾지 못했습니다.');
+      } else if (post.email !== email) {
+        throw new Error('게시글 삭제 권한이 없습니다.');
       }
+
+      const deletedPost = await Mainhome.findByIdAndDelete(postId);
 
       return deletedPost;
     } catch (err) {
