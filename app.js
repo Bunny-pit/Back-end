@@ -21,11 +21,11 @@ const io = initializeSocketIo(server);
 //express 탑재 body-parser 사용, cors 설정
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  cors({
-    credentials: true,
-  }),
-);
+
+app.use(cors({
+  origin: 'https://web-front-end-kvmh2mljxnw03c.sel4.cloudtype.app',
+  credentials : true,
+}));
 
 //환경 설정
 dotenv.config();
