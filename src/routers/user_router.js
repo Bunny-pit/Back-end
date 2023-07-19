@@ -11,10 +11,10 @@ userRouter.get("/", (req, res) => {
 //유저 기능
 userRouter.post("/register", UserController.createUser);
 
-userRouter.post("/login", loginRequired, UserController.loginUser);
-userRouter.post("/logout", loginRequired, UserController.logout);
+userRouter.post("/login", UserController.loginUser);
+userRouter.post("/logout", UserController.logout);
 
-userRouter.patch("/edit", loginRequired, UserController.updateUser);
+userRouter.patch("/edit", UserController.updateUser);
 userRouter.delete("/delete", UserController.deleteUser);
 
 userRouter.get("/accessToken", UserController.loginSuccess);
