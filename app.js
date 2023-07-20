@@ -9,10 +9,10 @@ import ChatService from './src/services/chat_service.js';
 import http from 'http';
 import logger from 'winston';
 import cors from 'cors';
-import passport from 'passport';
+
 import { initializeSocketIo } from './src/lib/socket.js';
 //passport에 strategy 적용
-import { applyPassportStrategy } from './src/lib/passport.js';
+// import { applyPassportStrategy } from './src/lib/passport.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -23,8 +23,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cors({
-  origin: 'https://web-front-end-kvmh2mljxnw03c.sel4.cloudtype.app',
-  credentials : true,
+  origin: 'http://localhost:3000',
+  credentials: true,
 }));
 
 //환경 설정

@@ -24,8 +24,13 @@ dotenv.config();
 const UserController = {
     async createUser(req, res) {
         try {
-            const { userName, email, password } = req.body
+            const {
+                // name,
+                userName,
+                email,
+                password } = req.body
             const registerData = {
+                // name,
                 userName,
                 email,
                 password
