@@ -17,8 +17,13 @@ import {
 const UserService = {
   createUser: async (registerData, res) => {
     try {
-      const { userName, email, password } = registerData;
+      const {
+        // name,
+        userName,
+        email,
+        password } = registerData;
       const userData = {
+        // name : name,
         userName: userName,
         email: email,
         password: generateHashedPassword(password),
