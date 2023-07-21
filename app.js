@@ -24,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
-    origin: 'https://web-front-end-kvmh2mljxnw03c.sel4.cloudtype.app/',
+    origin: 'https://web-front-end-kvmh2mljxnw03c.sel4.cloudtype.app',
     credentials: true,
   }),
 );
