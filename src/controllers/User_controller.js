@@ -84,11 +84,11 @@ const UserController = {
                             issuer: 'BunnyPit'
                         });
 
-                    res.cookie('access token', accessToken, {
+                    res.cookie('accessToken', accessToken, {
                         secure: false,
                         httpOnly: true,
                     })
-                    res.cookie('refresh token', refreshToken, {
+                    res.cookie('refreshToken', refreshToken, {
                         secure: false,
                         httpOnly: true,
                     })
@@ -142,16 +142,33 @@ const UserController = {
             });
         }
     },
+    async accessToken(req, res) {
+        try {
+            const token = req.headers.cookie.split("=")[1];
+
+            const decodedData = jwt.verify(token, process.env.ACCESS_SECRET_KEY);
+
+            const userEmail = decodedData.email
+
+
+            const userData = await User.findOne({ email: userEmail });
+        
+            // const { password, ...others } = userData;
+
+            res.status(200).json(userData);
+        } catch (err) {
+            res.status(500).json({ '/accessToken 에러': err })
+        }
+    },
     async loginSuccess(req, res) {
+
         try {
             const token = req.cookies.accessToken;
-            const data = jwt.verify(token, process.env.ACCESS_SECRET_KEY);
-            const userEmail = data.email;
+            const decodedData = jwt.verify(token, process.env.ACCESS_SECRET_KEY);
+            const userData = await User.find(decodedData.email)
 
-            const userData = User.find({ userEmail })
-            const { password, ...others } = userData;
 
-            res.status(200).json(others);
+            res.status(200).json(userData);
         } catch (err) {
             res.status(500).json(err)
         }
