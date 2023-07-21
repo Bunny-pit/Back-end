@@ -142,16 +142,30 @@ const UserController = {
             });
         }
     },
-    async loginSuccess(req, res) {
+    async accessToken(req, res) {
         try {
+            console.log('엑세스토큰요청')
             const token = req.cookies.accessToken;
-            const data = jwt.verify(token, process.env.ACCESS_SECRET_KEY);
-            const userEmail = data.email;
+            const decodedData = jwt.verify(token, process.env.ACCESS_SECRET_KEY);
 
-            const userData = User.find({ userEmail })
+            const userData = User.find(decodedData.email);
+
             const { password, ...others } = userData;
 
             res.status(200).json(others);
+        } catch (err) {
+            res.status(500).json(err)
+        }
+    },
+    async loginSuccess(req, res) {
+
+        try {
+            const token = req.cookies.accessToken;
+            const decodedData = jwt.verify(token, process.env.ACCESS_SECRET_KEY);
+            const userData = User.find(decodedData.email)
+
+
+            res.status(200).json(userData);
         } catch (err) {
             res.status(500).json(err)
         }

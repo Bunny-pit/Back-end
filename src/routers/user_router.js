@@ -17,9 +17,9 @@ userRouter.post("/logout", UserController.logout);
 userRouter.patch("/edit", UserController.updateUser);
 userRouter.delete("/delete", UserController.deleteUser);
 
-// userRouter.get("/accessToken", UserController.loginSuccess);
+userRouter.get("/accessToken", UserController.accessToken);
 // userRouter.get("/refreshToken", UserController.refreshToken);
-
+userRouter.get("/loginsuccess", UserController.loginSuccess);
 //관리자 기능
 userRouter.get("/register", UserController.getUser)
 
