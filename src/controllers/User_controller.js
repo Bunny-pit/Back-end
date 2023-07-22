@@ -146,10 +146,11 @@ const UserController = {
         try {
             const token = req.headers.cookie.split("=")[1];
             // console.log(token)
-            const decodedData = jwt.verify(token, process.env.ACCESS_SECRET_KEY);
-            console.log('decodedData')
-            const userEmail = decodedData.email
             
+            const decodedData = jwt.verify(token, process.env.ACCESS_SECRET_KEY);
+            // console.log(decodedData)
+            const userEmail = decodedData.email
+            console.log(userEmail)
 
             const userData = await User.findOne({ email: userEmail });
             

@@ -18,26 +18,26 @@ const app = express();
 const server = http.createServer(app);
 const io = initializeSocketIo(server);
 
-//express 탑재 body-parser 사용, cors 설정
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.use(
-  cors({
-    origin: 'https://web-front-end-kvmh2mljxnw03c.sel4.cloudtype.app',
-    credentials: true,
-  }),
-);
-
 //환경 설정
 dotenv.config();
 const port = process.env.PORT || 3000;
+const origin = process.env.ORIGIN || 'http://localhost:3000'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const routesPath = path.join(__dirname, 'src', 'routers');
 const files = fs.readdirSync(routesPath);
+
+//express 탑재 body-parser 사용, cors 설정
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(
+  cors({
+    origin: origin,
+    credentials: true,
+  }),
+);
 
 // route
 app.get('/', (req, res) => {
