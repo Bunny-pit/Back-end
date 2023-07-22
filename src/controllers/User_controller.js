@@ -145,14 +145,14 @@ const UserController = {
     async accessToken(req, res) {
         try {
             const token = req.headers.cookie.split("=")[1];
-
+            // console.log(token)
             const decodedData = jwt.verify(token, process.env.ACCESS_SECRET_KEY);
-
+            console.log('decodedData')
             const userEmail = decodedData.email
-
+            
 
             const userData = await User.findOne({ email: userEmail });
-        
+            
             // const { password, ...others } = userData;
 
             res.status(200).json(userData);
