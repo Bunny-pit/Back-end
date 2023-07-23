@@ -5,7 +5,7 @@ let io;
 export const initializeSocketIo = (server) => {
   io = new Server(server, {
     cors: {
-      origin: 'http://localhost:3001',
+      origin: 'https://web-front-end-kvmh2mljxnw03c.sel4.cloudtype.app',
       methods: ['GET', 'POST'],
       allowedHeaders: ['my-custom-header'],
       credentials: true,
