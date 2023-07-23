@@ -120,18 +120,14 @@ const UserController = {
     },
     async deleteUser(req, res) {
         try {
-            const { email, password } = req.body;
-            const userData = {
-                email,
-                password
-            };
-
-            const deletionResult = await UserService.deleteUser(userData);
+            const userData = req.userData
+            const { email } = userData;
+            const deletionResult = await UserService.deleteUser(email);
             if (deletionResult.success) {
                 res.status(200).json('계정 삭제 성공');
             } else {
-                res.status(500).json({
-                    error: '유저 삭제 실패',
+                res.status(400).json({
+                    error: '유저 삭제 실패, 유저 데이터 존재하지 않음.',
                     code: 'USER_DELETION_FAILED'
                 });
             }
@@ -146,14 +142,14 @@ const UserController = {
         try {
             const token = req.headers.cookie.split("=")[1];
             // console.log(token)
-            
-            const decodedData = jwt.verify(token, process.env.ACCESS_SECRET_KEY);
+            const accessKey = process.env.ACCESS_SECRET_KEY
+            const decodedData = jwt.verify(token, accessKey);
             // console.log(decodedData)
             const userEmail = decodedData.email
             console.log(userEmail)
 
             const userData = await User.findOne({ email: userEmail });
-            
+
             // const { password, ...others } = userData;
 
             res.status(200).json(userData);
