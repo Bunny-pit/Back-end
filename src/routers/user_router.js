@@ -1,5 +1,5 @@
 import express from 'express';
-import UserController from '../controllers/orararara_controller.js';
+import UserController from '../controllers/user_controller.js';
 import loginRequired from '../middlewares/login_required.js';
 
 const userRouter = express.Router();
