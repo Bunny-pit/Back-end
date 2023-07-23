@@ -89,7 +89,7 @@ const UserService = {
       };
 
       if (existingUserCheck && isPasswordMatched(password)) {
-        const deletionResult = await User.deleteOne({ email });
+        const deletionResult = await User.findOneAndDelete({ email });
         // 삭제가 성공적인지 확인
         if (deletionResult.deletedCount === 1) {
           return { success: true };
