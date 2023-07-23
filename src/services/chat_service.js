@@ -76,11 +76,9 @@ const ChatService = {
       senderId,
       chatId,
       content,
-      console.log(content),
     );
+    console.log(content);
 
-    const io = getSocketIo();
-    io.to(chatId).emit('newMessage', newMessage);
     return newMessage;
   },
 };
