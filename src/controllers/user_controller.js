@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import User from '../database/models/user_model.js'
 
-import { validationResult } from 'express-validator';
+// import { validationResult } from 'express-validator';
 
 import {
     generateHashedPassword,
@@ -43,56 +43,61 @@ const UserController = {
     },
     async getUser(req, res) {
         try {
-            const savedUser = await User.find({})
-            res.status(200).json({ data: savedUser });
+            const userToken = req.headers['authorization'].split(" ")[1];
+            if (!userToken || userToken === "null") {
+                console.log("Authorization을 위한 토큰 없음");
+                res.status(403).json({
+                    result: "forbidden-approach",
+                    message: "로그인한 유저만 사용할 수 있는 서비스입니다.",
+                });
+                return;
+            }
+            const accessKey = process.env.ACCESS_SECRET_KEY || "엑세스키할당필요함";
+            const decodedData = jwt.verify(userToken, accessKey);
+            const userOid = decodedData.userOid;
+            const userData = await UserService.getUserById(userOid)
+
+            res.status(200).json({ 'userData': userData });
         } catch (err) {
-            console.log(err)
+            res.status(500).json({ err: err.message })
         }
     },
-    async loginUser(req, res, next) {
+    async loginUser(req, res) {
         try {
-            const errorsAfterValidation = validationResult(req);
-            if (!errorsAfterValidation.isEmpty()) {
-                return res.status(400).json({
-                    code: 400,
-                    errors: errorsAfterValidation.mapped()
-                });
-            }
             const { email, password } = req.body;
             const user = await User.findOne({ email });
             if (user && user.email) {
                 const isPasswordMatched = password => {
                     return generateHashedPassword(password) === user.password
                 }
+                const payload = {
+                    userOid: user._id,
+                    userId: user.userId,
+                    email: user.email,
+                    userName: user.userName,
+                    role: user.role
+                }
                 if (isPasswordMatched(password)) {
-                    const accessToken = jwt.sign({
-                        userId: user.userId,
-                        email: user.email,
-                        userName: user.userName,
-                    }, process.env.ACCESS_SECRET_KEY,
+                    const accessToken = jwt.sign(payload, process.env.ACCESS_SECRET_KEY,
                         {
                             expiresIn: 1000 * 60 * 60, // 1시간 뒤 만료
                             issuer: 'BunnyPit'
                         });
-                    const refreshToken = jwt.sign({
-                        userId: user.userId,
-                        email: user.email,
-                        userName: user.userName,
-                    }, process.env.REFRESH_SECRET_KEY,
-                        {
-                            expiresIn: 1000 * 60 * 60, // 1시간 뒤 만료
-                            issuer: 'BunnyPit'
-                        });
+                    // const refreshToken = jwt.sign(payload, process.env.REFRESH_SECRET_KEY,
+                    //     {
+                    //         expiresIn: 1000 * 60 * 60, // 1시간 뒤 만료
+                    //         issuer: 'BunnyPit'
+                    //     });
 
                     res.cookie('accessToken', accessToken, {
                         secure: false,
                         httpOnly: true,
                     })
-                    res.cookie('refreshToken', refreshToken, {
-                        secure: false,
-                        httpOnly: true,
-                    })
-                    res.status(200).json("로그인 성공");
+                    // res.cookie('refreshToken', refreshToken, {
+                    //     secure: false,
+                    //     httpOnly: true,
+                    // })
+                    res.status(200).json({ "로그인 성공": user });
                 } else {
                     return generateServerErrorCode(res, 403, '비밀번호가 일치하지 않습니다.', WRONG_PASSWORD, 'password')
                 }
@@ -104,8 +109,18 @@ const UserController = {
             res.status(500).json({ err: err.message })
         }
     },
+    async logout(req, res) {
+        try {
+            res.clearCookie('accessToken');
+            res.clearCookie('refreshToken');
+            res.status(200).json("로그아웃 완료");
+        } catch (err) {
+            res.status(500).json(err);
+        }
+    },
     async updateUser(req, res) {
         try {
+
             const { email, prevPassword, newPassword } = req.body
             const updateData = {
                 email,
@@ -115,7 +130,10 @@ const UserController = {
             const result = await UserService.updateUser(updateData, res);
             res.status(201).json(result);
         } catch (err) {
-            throw err
+            res.status(500).json({
+                error: '서버 오류 발생',
+                code: 'SOME_THING_WENT_WRONG'
+            });
         }
     },
     async deleteUser(req, res) {
@@ -140,19 +158,18 @@ const UserController = {
     },
     async accessToken(req, res) {
         try {
-            const token = req.headers.cookie.split("=")[1];
-            // console.log(token)
-            const accessKey = process.env.ACCESS_SECRET_KEY
-            const decodedData = jwt.verify(token, accessKey);
+            const userToken = req.headers['authorization'].split(" ")[1];
+            console.log(req.headers['authorization'])
+            const decodedData = jwt.verify(userToken, process.env.ACCESS_SECRET_KEY);
             // console.log(decodedData)
             const userEmail = decodedData.email
-            console.log(userEmail)
+            // console.log(userEmail)
 
             const userData = await User.findOne({ email: userEmail });
 
             // const { password, ...others } = userData;
 
-            res.status(200).json(userData);
+            res.status(200).json({ 'userData': userData });
         } catch (err) {
             res.status(500).json({ '/accessToken 에러': err })
         }
@@ -170,14 +187,8 @@ const UserController = {
             res.status(500).json(err)
         }
     },
-    async logout(req, res) {
-        try {
-            res.cookie('accessToken', '');
-            res.status(200).json("로그아웃 완료");
-        } catch (err) {
-            res.status(500).json(err);
-        }
-    }
+
+
 }
 export default UserController;
 
