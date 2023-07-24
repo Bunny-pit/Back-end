@@ -5,7 +5,7 @@ import loginRequired from '../middlewares/login_required.js';
 const userRouter = express.Router();
 
 userRouter.get('/', (req, res) => {
-  res.send('유저 루트 페이지');
+  res.send('유저 루트 페이지 입니다.');
 });
 
 userRouter.post('/register', UserController.createUser);
