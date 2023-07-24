@@ -9,6 +9,7 @@ import ChatService from './src/services/chat_service.js';
 import http from 'http';
 import logger from 'winston';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 import { initializeSocketIo } from './src/lib/socket.js';
 //passport에 strategy 적용
@@ -30,6 +31,7 @@ const routesPath = path.join(__dirname, 'src', 'routers');
 const files = fs.readdirSync(routesPath);
 
 //express 탑재 body-parser 사용, cors 설정
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(

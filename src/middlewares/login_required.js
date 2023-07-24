@@ -5,7 +5,8 @@ dotenv.config();
 export default function loginRequired(req, res, next) {
   // 해당 token 이 정상적인 token인지 확인
   try {
-    const userToken = req.headers['authorization']?.split(' ')[1];
+    const userToken =
+      req.headers['authorization']?.split(' ')[1] || req.cookies['accessToken'];
     // 토큰이 없을 경우 login_required 가 필요한 서비스 사용을 제한.
     if (!userToken || userToken === 'null') {
       console.log('Authorization을 위한 토큰 없음');
