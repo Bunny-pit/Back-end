@@ -52,6 +52,14 @@ const UserService = {
   //       res.status(500).json({ err: err.message });
   //     }
   //   },
+  getUserById: async (oid) => {
+    try {
+      const user = await User.findById({ _id: oid })
+      return user;
+    } catch (error) {
+      res.status(500).json('유저 데이터 없음.')
+    }
+  },
   updateUser: async (updateData, res) => {
     try {
       const { email, prevPassword, newPassword } = updateData;
