@@ -9,8 +9,6 @@ userRouter.get('/', (req, res) => {
 });
 
 userRouter.post('/register', UserController.createUser);
-userRouter.get('/register', UserController.getUser);
-
 
 userRouter.post("/login", UserController.loginUser);
 userRouter.post("/logout", UserController.logout);
@@ -23,6 +21,6 @@ userRouter.get("/accessToken", UserController.accessToken);
 // userRouter.get("/loginsuccess", UserController.loginSuccess);
 
 //관리자 기능
-userRouter.get("/register", UserController.getUser)
+userRouter.get('/register', loginRequired, UserController.getUser);
 
 export default userRouter;

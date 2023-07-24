@@ -43,18 +43,7 @@ const UserController = {
     },
     async getUser(req, res) {
         try {
-            const userToken = req.headers['authorization'].split(" ")[1];
-            if (!userToken || userToken === "null") {
-                console.log("Authorization을 위한 토큰 없음");
-                res.status(403).json({
-                    result: "forbidden-approach",
-                    message: "로그인한 유저만 사용할 수 있는 서비스입니다.",
-                });
-                return;
-            }
-            const accessKey = process.env.ACCESS_SECRET_KEY || "엑세스키할당필요함";
-            const decodedData = jwt.verify(userToken, accessKey);
-            const userOid = decodedData.userOid;
+            const userOid = req.oid;
             const userData = await UserService.getUserById(userOid)
 
             res.status(200).json({ 'userData': userData });
