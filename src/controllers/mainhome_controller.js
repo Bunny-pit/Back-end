@@ -3,8 +3,9 @@ import MainhomeService from '../services/mainhome_service.js';
 const MainhomeController = {
   async createMainhomePost(req, res) {
     try {
+      console.log(req.oid);
       const newPost = await MainhomeService.createMainhomePost(
-        req.userData.email,
+        req.oid,
         req.body,
       );
 

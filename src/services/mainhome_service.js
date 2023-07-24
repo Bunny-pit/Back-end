@@ -2,17 +2,20 @@ import Mainhome from '../database/models/mainhome_model.js';
 import User from '../database/models/user_model.js';
 
 const MainhomeService = {
-  createMainhomePost: async (email, data) => {
+  createMainhomePost: async (oid, data) => {
     try {
-      const user = await User.findOne({ email: email });
+      const user = await User.findById(oid);
+
       if (!user) {
         throw new Error('유저를 찾을 수 없습니다.');
       }
+
       const newPost = new Mainhome({
         ...data,
-        email: email,
+        email: user.email,
         name: user.secretName,
       });
+
       await newPost.save();
       return newPost;
     } catch (err) {
