@@ -9,8 +9,8 @@ userRouter.get('/', (req, res) => {
 });
 
 userRouter.post('/register', UserController.createUser);
-userRouter.post("/login", UserController.loginUser);
-userRouter.post("/logout", UserController.logout);
+userRouter.post('/login', UserController.loginUser);
+userRouter.post('/logout', UserController.logout);
 
 userRouter.patch('/edit', loginRequired, UserController.updateUser);
 userRouter.delete('/delete', loginRequired, UserController.deleteUser);
