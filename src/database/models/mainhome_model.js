@@ -2,6 +2,10 @@ import mongoose from 'mongoose';
 
 const mainhomeSchema = new mongoose.Schema(
   {
+    userId: {
+      type: String,
+      required: true,
+    },
     email: {
       type: String,
       required: true,

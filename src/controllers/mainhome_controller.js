@@ -3,7 +3,6 @@ import MainhomeService from '../services/mainhome_service.js';
 const MainhomeController = {
   async createMainhomePost(req, res) {
     try {
-      console.log(req.oid);
       const newPost = await MainhomeService.createMainhomePost(
         req.oid,
         req.body,
@@ -29,7 +28,7 @@ const MainhomeController = {
     try {
       const { id } = req.params;
       const updatedPost = await MainhomeService.updateMainhomePost(
-        req.userData.email,
+        req.oid,
         id,
         req.body,
       );
@@ -47,10 +46,7 @@ const MainhomeController = {
   async deleteMainhomePost(req, res) {
     try {
       const { id } = req.params;
-      const deletedPost = await MainhomeService.deleteMainhomePost(
-        req.userData.email,
-        id,
-      );
+      const deletedPost = await MainhomeService.deleteMainhomePost(req.oid, id);
 
       if (!deletedPost) {
         return res.status(404).json({ error: '게시글을 찾지 못했습니다.' });
