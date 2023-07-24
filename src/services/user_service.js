@@ -52,6 +52,14 @@ const UserService = {
   //       res.status(500).json({ err: err.message });
   //     }
   //   },
+  getUserById: async (oid) => {
+    try {
+      const user = await User.findById({ _id: oid })
+      return user;
+    } catch (error) {
+      res.status(500).json('유저 데이터 없음.')
+    }
+  },
   updateUser: async (updateData, res) => {
     try {
       const { email, prevPassword, newPassword } = updateData;
@@ -89,7 +97,7 @@ const UserService = {
       };
 
       if (existingUserCheck && isPasswordMatched(password)) {
-        const deletionResult = await User.deleteOne({ email });
+        const deletionResult = await User.findOneAndDelete({ email });
         // 삭제가 성공적인지 확인
         if (deletionResult.deletedCount === 1) {
           return { success: true };
