@@ -1,4 +1,4 @@
-import {Post} from '../database/models/index.js'
+import {Post, User} from '../database/models/index.js'
 import Like from '../database/models/like_model.js'
 import LikeService from '../services/like_service.js'
 import { upload,uploadToS3, s3 } from '../config/s3.js';
@@ -7,7 +7,10 @@ import mongoose from 'mongoose';
 const PostService = {
   createPost: async (req) => {
     try {
-      const { userId,userName, content } = req.body;
+      const { content } = req.body;
+      const user = await User.findById({ _id: req.oid })
+      const userId = user._id;
+      const userName = user.userName;
       let uploadedImages = await Promise.all(req.files.map(async (file) => {
         let uploadResult = await uploadToS3(file);
         if(uploadResult.success) {
@@ -35,10 +38,11 @@ const PostService = {
     }
   },
 
-    getAllPosts: async () => {
+    getAllPosts: async (oid) => {
         try {
-          const posts = await Post.find().populate('userName'); 
-            return posts;
+          // const user = await User.findById({ _id: oid })
+          const posts = await Post.find({userId:oid}); 
+          return posts;
         } catch (err) {
             throw err;
         }
@@ -54,22 +58,28 @@ const PostService = {
         throw  err;
       }
     },
-    updatePost: async (postId, newPostData) => {
+    updatePost: async (postId, newPostData, userId) => {
       try {
-        const updatedPost = await Post.findByIdAndUpdate(postId, newPostData, {
-          new: true,
-        });
-        return updatedPost;
+        const post = await Post.findById(postId)
+        // console.log(post)
+        if(post.userId == userId){
+          const updatedPost = await Post.findByIdAndUpdate(postId, newPostData, {
+            new: true,
+          });
+          return updatedPost;
+        }else{
+          console.log("userId가 일치하지 않습니다!")
+        }
       } catch (err) {
         throw err;
       }
     },
 
-    deletePost: async (postId) => {
+    deletePost: async (postId, userId) => {
       try {
         const post = await Post.findById(postId);
-  
-        // S3에서 각 이미지 삭제
+        if(post.userId == userId){
+          // S3에서 각 이미지 삭제
         for(let i = 0; i < post.images.length; i++) {
           const url = post.images[i];
           const Key = url.split('amazonaws.com/')[1];
@@ -89,6 +99,10 @@ const PostService = {
         
         const deletedPost = await Post.findByIdAndDelete(postId);
         return deletedPost;
+        }
+        else{
+          console.log("userId가 일치하지 않습니다!")
+        }        
       } catch (err) {
         throw err;
       }

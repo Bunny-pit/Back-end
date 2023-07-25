@@ -23,7 +23,7 @@ const PostController = {
 
   async getAllPosts(req, res) {
     try {
-      const posts = await PostService.getAllPosts();
+      const posts = await PostService.getAllPosts(req.oid);
 
       res.json(posts);
     } catch (error) {
@@ -48,7 +48,7 @@ const PostController = {
   async updatePost(req, res) {
     try {
       const { postId } = req.params;
-      const updatedPost = await PostService.updatePost(postId, req.body);
+      const updatedPost = await PostService.updatePost(postId, req.body, req.oid);
 
       if (!updatedPost) {
         return res.status(404).json({ error: '게시글을 찾지 못했습니다.' });
@@ -63,7 +63,7 @@ const PostController = {
   async deletePost(req, res) {
     try {
       const { postId } = req.params;
-      const deletedPost = await PostService.deletePost(postId);
+      const deletedPost = await PostService.deletePost(postId, req.oid);
 
       if (!deletedPost) {
         return res.status(404).json({ error: '게시글을 찾지 못했습니다.' });
