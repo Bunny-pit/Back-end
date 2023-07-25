@@ -12,6 +12,7 @@ const MainhomeService = {
 
       const newPost = new Mainhome({
         ...data,
+        userId: oid,
         email: user.email,
         name: user.secretName,
       });
@@ -34,12 +35,12 @@ const MainhomeService = {
     }
   },
 
-  updateMainhomePost: async (email, postId, data) => {
+  updateMainhomePost: async (oid, postId, data) => {
     try {
       const post = await Mainhome.findById(postId);
       if (!post) {
         throw new Error('게시글을 찾지 못했습니다.');
-      } else if (post.email !== email) {
+      } else if (post.userId !== oid) {
         throw new Error('게시글 수정 권한이 없습니다.');
       }
 
@@ -60,12 +61,12 @@ const MainhomeService = {
     }
   },
 
-  deleteMainhomePost: async (email, postId) => {
+  deleteMainhomePost: async (oid, postId) => {
     try {
       const post = await Mainhome.findById(postId);
       if (!post) {
         throw new Error('게시글을 찾지 못했습니다.');
-      } else if (post.email !== email) {
+      } else if (post.userId !== oid) {
         throw new Error('게시글 삭제 권한이 없습니다.');
       }
 
