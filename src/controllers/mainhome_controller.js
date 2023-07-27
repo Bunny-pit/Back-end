@@ -16,14 +16,15 @@ const MainhomeController = {
 
   async getAllMainhomePosts(req, res) {
     try {
-      const posts = await MainhomeService.getAllMainhomePosts();
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 10;
+      const posts = await MainhomeService.getAllMainhomePosts(page, limit);
 
       res.json(posts);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   },
-
   async updateMainhomePost(req, res) {
     try {
       const { id } = req.params;
