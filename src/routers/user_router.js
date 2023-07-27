@@ -16,6 +16,7 @@ userRouter.patch('/edit', loginRequired, UserController.updateUser);
 userRouter.delete('/delete', loginRequired, UserController.deleteUser);
 
 userRouter.get('/accessToken', UserController.accessToken);
+
 // userRouter.get("/refreshToken", UserController.refreshToken);
 // userRouter.get("/loginsuccess", UserController.loginSuccess);
 

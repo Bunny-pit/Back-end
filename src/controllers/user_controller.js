@@ -25,13 +25,13 @@ const UserController = {
   async createUser(req, res) {
     try {
       const {
-        // name,
+
         userName,
         email,
         password,
       } = req.body;
       const registerData = {
-        // name,
+
         userName,
         email,
         password,
@@ -74,7 +74,7 @@ const UserController = {
           });
           // const refreshToken = jwt.sign(payload, process.env.REFRESH_SECRET_KEY,
           //     {
-          //         expiresIn: 1000 * 60 * 60, // 1시간 뒤 만료
+          //         expiresIn: 1000 * 60 * 60 * 2, // 2시간 뒤 만료
           //         issuer: 'BunnyPit'
           //     });
 
@@ -86,7 +86,12 @@ const UserController = {
           //     secure: false,
           //     httpOnly: true,
           // })
-          res.status(200).json({ '로그인 성공': user });
+          res.status(200).json({
+            'data': {
+              user: user,
+              'accessToken': accessToken
+            }
+          });
         } else {
           return generateServerErrorCode(
             res,
@@ -158,7 +163,7 @@ const UserController = {
   async accessToken(req, res) {
     try {
       const userToken = req.headers['authorization'].split(' ')[1];
-      console.log(req.headers['authorization']);
+      // console.log(req.headers['authorization']);
       const decodedData = jwt.verify(userToken, process.env.ACCESS_SECRET_KEY);
       // console.log(decodedData)
       const userEmail = decodedData.email;
