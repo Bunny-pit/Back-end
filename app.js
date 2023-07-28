@@ -27,7 +27,8 @@ const io = initializeSocketIo(server);
 dotenv.config();
 
 const port = process.env.PORT || 3000;
-const origin = process.env.ORIGIN || 'http://localhost:3000';
+
+const origin = process.env.ORIGIN || 'http://localhost:3001';
 
 
 const __filename = fileURLToPath(import.meta.url);
