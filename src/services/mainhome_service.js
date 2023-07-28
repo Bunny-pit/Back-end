@@ -1,8 +1,10 @@
 import Mainhome from '../database/models/mainhome_model.js';
 import User from '../database/models/user_model.js';
 
+
 const MainhomeService = {
   createMainhomePost: async (oid, data) => {
+
     try {
       const user = await User.findById(oid);
 
@@ -23,9 +25,14 @@ const MainhomeService = {
       throw err;
     }
   },
-  getAllMainhomePosts: async () => {
+
+  getAllMainhomePosts: async (page, limit) => {
     try {
-      const posts = await Mainhome.find().sort({ createdAt: -1 });
+      const posts = await Mainhome.find()
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit);
+
       return posts.map(post => ({
         ...post._doc,
         email: post.email,
@@ -40,7 +47,7 @@ const MainhomeService = {
       const post = await Mainhome.findById(postId);
       if (!post) {
         throw new Error('게시글을 찾지 못했습니다.');
-      } else if (post.userId !== oid) {
+      } else if (post.userId.toString() !== oid.toString()) {
         throw new Error('게시글 수정 권한이 없습니다.');
       }
 
@@ -48,7 +55,7 @@ const MainhomeService = {
         postId,
         {
           ...data,
-          email: email,
+          email: post.email,
         },
         {
           new: true,
@@ -63,14 +70,16 @@ const MainhomeService = {
 
   deleteMainhomePost: async (oid, postId) => {
     try {
+
       const post = await Mainhome.findById(postId);
       if (!post) {
         throw new Error('게시글을 찾지 못했습니다.');
-      } else if (post.userId !== oid) {
+      } else if (post.userId.toString() !== oid.toString()) {
         throw new Error('게시글 삭제 권한이 없습니다.');
       }
 
       const deletedPost = await Mainhome.findByIdAndDelete(postId);
+
 
       return deletedPost;
     } catch (err) {
@@ -79,4 +88,4 @@ const MainhomeService = {
   },
 };
 
-export default MainhomeService;
+export default mainhomeService;
