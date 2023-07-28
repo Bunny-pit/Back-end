@@ -11,7 +11,7 @@ userRouter.get('/', (req, res) => {
 userRouter.post('/register', UserController.createUser);
 userRouter.post('/login', UserController.loginUser);
 userRouter.post('/logout', UserController.logout);
-
+userRouter.get('/register', UserController.getUser)
 userRouter.patch('/edit', loginRequired, UserController.updateUser);
 userRouter.delete('/delete', loginRequired, UserController.deleteUser);
 
@@ -21,6 +21,6 @@ userRouter.get('/accessToken', UserController.accessToken);
 // userRouter.get("/loginsuccess", UserController.loginSuccess);
 
 //관리자 기능
-userRouter.get('/register', loginRequired, UserController.getUser);
+// userRouter.get('/register', loginRequired, UserController.getUser);
 
 export default userRouter;
