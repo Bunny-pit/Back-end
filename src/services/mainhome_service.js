@@ -1,8 +1,10 @@
 import Mainhome from '../database/models/mainhome_model.js';
 import User from '../database/models/user_model.js';
 
+
 const MainhomeService = {
   createMainhomePost: async (oid, data) => {
+
     try {
       const user = await User.findById(oid);
 
@@ -68,6 +70,7 @@ const MainhomeService = {
 
   deleteMainhomePost: async (oid, postId) => {
     try {
+
       const post = await Mainhome.findById(postId);
       if (!post) {
         throw new Error('게시글을 찾지 못했습니다.');
@@ -77,6 +80,7 @@ const MainhomeService = {
 
       const deletedPost = await Mainhome.findByIdAndDelete(postId);
 
+
       return deletedPost;
     } catch (err) {
       throw err;
@@ -84,4 +88,4 @@ const MainhomeService = {
   },
 };
 
-export default MainhomeService;
+export default mainhomeService;
