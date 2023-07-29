@@ -158,15 +158,19 @@ const UserController = {
   },
   async accessToken(req, res) {
     try {
-      const userToken = req.headers['authorization'].split(' ')[1];
+      const userToken = req.headers['authorization']?.split(' ')[1];
+      console.log('userToken', userToken)
       const decodedData = jwt.verify(userToken, process.env.ACCESS_SECRET_KEY);
+      console.log('decodedData', decodedData)
       const userEmail = decodedData.email;
 
       const userData = await User.findOne({ email: userEmail });
-
+      
       res.status(200).json({ userData: userData });
     } catch (err) {
-      res.status(500).json({ '/accessToken 에러': err });
+      console.log(err.message)
+
+      res.status(500).json('유저 토큰이 존재하지 않습니다.');
     }
   },
   async loginSuccess(req, res) {
