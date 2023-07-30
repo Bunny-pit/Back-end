@@ -26,7 +26,7 @@ const ChatService = {
   getUserChats: async (userId) => {
     try {
       const objectId = new mongoose.Types.ObjectId(userId);
-      const chats = await Chat.find({ $in: [objectId] }).populate(
+      const chats = await Chat.find({ users: { $in: [objectId] } }).populate(
         'users',
         'userName secretName email',
       );
