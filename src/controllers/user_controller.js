@@ -47,7 +47,7 @@ const UserController = {
       const userOid = req.oid;
       const userData = await UserService.getUserById(userOid);
 
-      res.status(200).json({ userData: userData });
+      res.status(200).json({ data: { userData: userData } });
     } catch (err) {
       res.status(500).json({ err: err.message });
     }
@@ -86,12 +86,8 @@ const UserController = {
           //     secure: false,
           //     httpOnly: true,
           // })
-          res.status(200).json({
-            'data': {
-              user: user,
-              'accessToken': accessToken
-            }
-          });
+          res.status(200).json({ user: user, 'accessToken': accessToken }
+          );
         } else {
           return generateServerErrorCode(
             res,
@@ -163,15 +159,10 @@ const UserController = {
   async accessToken(req, res) {
     try {
       const userToken = req.headers['authorization'].split(' ')[1];
-      // console.log(req.headers['authorization']);
       const decodedData = jwt.verify(userToken, process.env.ACCESS_SECRET_KEY);
-      // console.log(decodedData)
       const userEmail = decodedData.email;
-      // console.log(userEmail)
 
       const userData = await User.findOne({ email: userEmail });
-
-      // const { password, ...others } = userData;
 
       res.status(200).json({ userData: userData });
     } catch (err) {

@@ -31,7 +31,7 @@ const MainhomeService = {
         .skip((page - 1) * limit)
         .limit(limit);
 
-      return posts.map(post => ({
+      return posts.map((post) => ({
         ...post._doc,
         email: post.email,
       }));

@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+
 import ChatService from './src/services/chat_service.js';
 import http from 'http';
 import logger from 'winston';
@@ -13,6 +14,7 @@ import cookieParser from 'cookie-parser';
 
 import { initializeSocketIo } from './src/lib/socket.js';
 //passport에 strategy 적용
+
 // import { applyPassportStrategy } from './src/lib/passport.js';
 
 const app = express();
@@ -21,7 +23,9 @@ const io = initializeSocketIo(server);
 
 //환경 설정
 dotenv.config();
+
 const port = process.env.PORT || 3000;
+
 const origin = process.env.ORIGIN || 'http://localhost:3000';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -49,7 +53,7 @@ app.get('/', (req, res) => {
 const startServer = async () => {
   // 모든 라우터 코드를 동적으로 불러오도록 설정
   await Promise.all(
-    files.map(async file => {
+    files.map(async (file) => {
       if (file.endsWith('.js')) {
         const route = await import(path.join('file://', routesPath, file));
         const apiEndpoint = '/api/' + file.replace('_router.js', '');
@@ -66,10 +70,10 @@ const startServer = async () => {
         useUnifiedTopology: true,
       })
       .then(() => logger.info('몽고디비 연결에 성공했습니다.'))
-      .catch(e => console.error(e));
+      .catch((e) => console.error(e));
   });
 
-  io.on('connection', socket => {
+  io.on('connection', (socket) => {
     console.log('User connected: ' + socket.id);
 
     socket.on('joinRoom', ({ chatId, userId }) => {
