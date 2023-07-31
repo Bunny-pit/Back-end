@@ -5,15 +5,19 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+
 import ChatService from './src/services/chat_service.js';
 import http from 'http';
 import logger from 'winston';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
+
 import { initializeSocketIo } from './src/lib/socket.js';
 //passport에 strategy 적용
+
 // import { applyPassportStrategy } from './src/lib/passport.js';
+
 
 const app = express();
 const server = http.createServer(app);
@@ -59,6 +63,7 @@ const startServer = async () => {
   );
 
   server.listen(port, () => {
+
     logger.info(`서버가 http://localhost:${port}에 성공적으로 연결되었습니다.`);
     mongoose
       .connect(process.env.MONGODB_URI, {

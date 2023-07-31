@@ -25,21 +25,29 @@ const UserController = {
   async createUser(req, res) {
     try {
       const {
-
         userName,
         email,
         password,
       } = req.body;
       const registerData = {
-
         userName,
         email,
         password,
       };
-      await UserService.createUser(registerData);
-      res.status(201).json('계정 생성 성공 ');
-    } catch (err) {
-      res.status(500).json({ err: err.message });
+      const createdUser = await UserService.createUser(registerData);
+      if (createdUser.success) {
+        res.status(201).json('계정 생성 성공 ');
+      } else {
+        res.status(403).json({
+          error : '이미 존재하는 유저 데이터 입니다.',
+          code: 'USER_CREATION_FAILED'
+        })
+      }
+    } catch (error) {
+      res.status(500).json({
+        error : '서버 오류 발생',
+        code : 'SERVER_ISSUE'
+      });
     }
   },
   async getUser(req, res) {
@@ -49,7 +57,15 @@ const UserController = {
 
       res.status(200).json({ data: { userData: userData } });
     } catch (err) {
-      res.status(500).json({ err: err.message });
+      res.status(500).json({ error: error.message });
+    }
+  },
+  async getAllUser(req, res) {
+    try {
+      const userData = await User.find({});
+      res.status(200).json({ data: userData })
+    } catch (error) {
+      res.status(500).json({ error: error.message })
     }
   },
   async loginUser(req, res) {
@@ -106,8 +122,8 @@ const UserController = {
           'email',
         );
       }
-    } catch (err) {
-      res.status(500).json({ err: err.message });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
   },
   async logout(req, res) {
@@ -115,8 +131,8 @@ const UserController = {
       res.clearCookie('accessToken');
       res.clearCookie('refreshToken');
       res.status(200).json('로그아웃 완료');
-    } catch (err) {
-      res.status(500).json(err);
+    } catch (error) {
+      res.status(500).json(error);
     }
   },
   async updateUser(req, res) {
@@ -145,11 +161,11 @@ const UserController = {
         res.status(200).json('계정 삭제 성공');
       } else {
         res.status(400).json({
-          error: '유저 삭제 실패, 유저 데이터 존재하지 않음.',
+          error: '계정 삭제 실패, 유저 데이터 존재하지 않음.',
           code: 'USER_DELETION_FAILED',
         });
       }
-    } catch (err) {
+    } catch (error) {
       res.status(500).json({
         error: '서버 오류 발생',
         code: 'SOME_THING_WENT_WRONG',
@@ -165,10 +181,10 @@ const UserController = {
       const userEmail = decodedData.email;
 
       const userData = await User.findOne({ email: userEmail });
-      
+
       res.status(200).json({ userData: userData });
-    } catch (err) {
-      console.log(err.message)
+    } catch (error) {
+      console.log(error.message)
 
       res.status(500).json('유저 토큰이 존재하지 않습니다.');
     }
@@ -180,8 +196,8 @@ const UserController = {
       const userData = await User.find(decodedData.email);
 
       res.status(200).json(userData);
-    } catch (err) {
-      res.status(500).json(err);
+    } catch (error) {
+      res.status(500).json(error);
     }
   },
 };

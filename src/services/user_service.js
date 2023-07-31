@@ -18,26 +18,25 @@ const UserService = {
   createUser: async (registerData, res) => {
     try {
       const {
-        // name,
         userName,
         email,
-        password } = registerData;
+        password
+      } = registerData;
       const userData = {
-        // name : name,
         userName: userName,
         email: email,
         password: generateHashedPassword(password),
       };
       const existingUserCheck = await User.findOne({ email });
       if (existingUserCheck) {
-        res.status(403, err, '이미 사용중인 이메일입니다.');
+        return { success: false }
       } else {
         const newUser = new User(userData);
         await newUser.save();
-        return newUser;
+        return { success: true }
       }
-    } catch (err) {
-      res.status(500, err, 'create user service 오류 발생');
+    } catch (error) {
+      throw new Error('Failed to create new user');
     }
   },
   //   loginUser: async (userData) => {
@@ -48,8 +47,8 @@ const UserService = {
   //         password: generateHashedPassword(password),
   //       });
   //       return userInfo;
-  //     } catch (err) {
-  //       res.status(500).json({ err: err.message });
+  //     } catch (error) {
+  //       res.status(500).json({ error: error.message });
   //     }
   //   },
   getUserById: async (oid) => {
@@ -84,8 +83,8 @@ const UserService = {
           });
         }
       }
-    } catch (err) {
-      res.status(500).json({ 'update service 오류': err.message });
+    } catch (error) {
+      res.status(500).json({ 'update service 오류': error.message });
     }
   },
   deleteUser: async (userData) => {
@@ -101,13 +100,11 @@ const UserService = {
         // 삭제가 성공적인지 확인
         if (deletionResult.deletedCount === 1) {
           return { success: true };
-        } else {
-          return { success: false };
         }
       } else {
         return { success: false };
       }
-    } catch (err) {
+    } catch (error) {
       throw new Error('Failed to delete user');
     }
   },
