@@ -15,13 +15,10 @@ userRouter.post('/logout', UserController.logout);
 userRouter.get('/register', UserController.getUser)
 userRouter.patch('/edit', loginRequired, UserController.updateUser);
 userRouter.delete('/delete', loginRequired, UserController.deleteUser);
-
+//토큰 값 가져옴.
 userRouter.get('/accessToken', UserController.accessToken);
 
-// userRouter.get("/refreshToken", UserController.refreshToken);
-// userRouter.get("/loginsuccess", UserController.loginSuccess);
-
-//관리자 기능
+//관리자 기능 추후 활성화
 // userRouter.get('/register', loginRequired, UserController.getUser);
 
 export default userRouter;

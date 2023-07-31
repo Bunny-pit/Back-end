@@ -93,7 +93,6 @@ const UserController = {
           //         expiresIn: 1000 * 60 * 60 * 2, // 2시간 뒤 만료
           //         issuer: 'BunnyPit'
           //     });
-
           res.cookie('accessToken', accessToken, {
             secure: false,
             httpOnly: true,
