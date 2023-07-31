@@ -2,7 +2,7 @@ import express from 'express';
 import MainhomeController from '../controllers/mainhome_controller.js';
 import loginRequired from '../middlewares/login_required.js';
 
-const mainhomeRouter = express.Router();
+const mainhome_router = express.Router();
 
 //게시글 작성
 mainhomeRouter.post('/', loginRequired, MainhomeController.createMainhomePost);
@@ -24,4 +24,4 @@ mainhomeRouter.delete(
   MainhomeController.deleteMainhomePost,
 );
 
-export default mainhomeRouter;
+export default mainhome_router;
