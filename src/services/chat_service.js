@@ -2,15 +2,22 @@ import Chat from '../database/models/chat_model.js';
 import Message from '../database/models/message_model.js';
 import mongoose from 'mongoose';
 import { getSocketIo } from '../lib/socket.js';
+import User from '../database/models/user_model.js';
 
 const ChatService = {
   startChat: async (userId, anonymousUserId) => {
     try {
+      const user = await User.findById(userId);
+      const anonymousUser = await User.findById(anonymousUserId);
+
       const newChat = new Chat({
         users: [
           new mongoose.Types.ObjectId(userId),
           new mongoose.Types.ObjectId(anonymousUserId),
         ],
+
+        name: user.secretName,
+        anonymousName: anonymousUser.secretName,
       });
 
       await newChat.validate();
