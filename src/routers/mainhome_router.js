@@ -5,20 +5,20 @@ import loginRequired from '../middlewares/login_required.js';
 const mainhome_router = express.Router();
 
 //게시글 작성
-mainhome_router.post('/', loginRequired, MainhomeController.createMainhomePost);
+mainhomeRouter.post('/', loginRequired, MainhomeController.createMainhomePost);
 
 //게시글 전부 불러오기
-mainhome_router.get('/', MainhomeController.getAllMainhomePosts);
+mainhomeRouter.get('/', MainhomeController.getAllMainhomePosts);
 
 //게시글 수정하기
-mainhome_router.patch(
+mainhomeRouter.patch(
   '/:id',
   loginRequired,
   MainhomeController.updateMainhomePost,
 );
 
 //게시글 삭제하기
-mainhome_router.delete(
+mainhomeRouter.delete(
   '/:id',
   loginRequired,
   MainhomeController.deleteMainhomePost,
