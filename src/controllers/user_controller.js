@@ -39,14 +39,14 @@ const UserController = {
         res.status(201).json('계정 생성 성공 ');
       } else {
         res.status(403).json({
-          error : '이미 존재하는 유저 데이터 입니다.',
+          error: '이미 존재하는 유저 데이터 입니다.',
           code: 'USER_CREATION_FAILED'
         })
       }
     } catch (error) {
       res.status(500).json({
-        error : '서버 오류 발생',
-        code : 'SERVER_ISSUE'
+        error: '서버 오류 발생',
+        code: 'SERVER_ISSUE'
       });
     }
   },
@@ -153,19 +153,24 @@ const UserController = {
     }
   },
   async deleteUser(req, res) {
+
     try {
-      const userData = req.userData;
-      const { email } = userData;
-      const deletionResult = await UserService.deleteUser(email);
+      const { email, password } = req.body;
+      const userData = {
+        email,
+        password
+      }
+      const deletionResult = await UserService.deleteUser(userData);
       if (deletionResult.success) {
         res.status(200).json('계정 삭제 성공');
-      } else {
+      } else if (!deletionResult.success){
         res.status(400).json({
           error: '계정 삭제 실패, 유저 데이터 존재하지 않음.',
           code: 'USER_DELETION_FAILED',
         });
       }
     } catch (error) {
+
       res.status(500).json({
         error: '서버 오류 발생',
         code: 'SOME_THING_WENT_WRONG',
