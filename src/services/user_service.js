@@ -94,15 +94,16 @@ const UserService = {
       const isPasswordMatched = (password) => {
         return generateHashedPassword(password) === existingUserCheck.password;
       };
-
+      
       if (existingUserCheck && isPasswordMatched(password)) {
         const deletionResult = await User.findOneAndDelete({ email });
-        // 삭제가 성공적인지 확인
-        if (deletionResult.deletedCount === 1) {
+        if (deletionResult) {
           return { success: true };
+        } else {
+          return { success: false, reason: '삭제 실패' };
         }
       } else {
-        return { success: false };
+        return { success: false, reason: '잘못된 이메일 또는 비밀번호' };
       }
     } catch (error) {
       throw new Error('Failed to delete user');
