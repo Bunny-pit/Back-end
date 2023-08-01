@@ -56,7 +56,7 @@ const UserController = {
       const userData = await UserService.getUserById(userOid);
 
       res.status(200).json({ data: { userData: userData } });
-    } catch (err) {
+    } catch (error) {
       res.status(500).json({ error: error.message });
     }
   },
