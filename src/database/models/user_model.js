@@ -39,6 +39,10 @@ const userSchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
+    profileImg : {
+      type : String,
+      required : true,
+    },
     secretName: {
       type: String,
       unique: true,
