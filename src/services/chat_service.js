@@ -57,6 +57,7 @@ const ChatService = {
 
   deleteChat: async (chatId) => {
     try {
+      await Message.deleteMany({ chat: chatId });
       const deletedChat = await Chat.findByIdAndDelete(chatId);
       return deletedChat;
     } catch (error) {
