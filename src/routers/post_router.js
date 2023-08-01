@@ -8,12 +8,14 @@ const post_router = express.Router();
 dotenv.config();
 
 //게시글 작성
-post_router.post('/', loginRequired, upload.array('images'), PostController.createPost);
+post_router.post('/', loginRequired, upload.array('files'), PostController.createPost);
 
-//게시글 전부 불러오기
+//내가 쓴 게시글 불러오기
 post_router.get('/', loginRequired ,PostController.getAllPosts);
 
-// 게시글 가져오기!
+// 다른 유저의 게시글을 불러와야되는데...
+
+// 게시글 상세 가져오기!
 post_router.get('/:postId', loginRequired, PostController.getPostById);
 
 //게시글 수정하기

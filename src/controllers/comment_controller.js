@@ -4,10 +4,10 @@ import CommentService from '../services/comment_service.js';
 const CommentController = {
   async createComment  (req, res){
       try {
-          const { comment, userName, userId } = req.body;
-          const { postId } = req.params;
+          const { comment} = req.body;
+   
           // const { userId,userName } = req;
-          const newComment = await CommentService.createComment(comment, postId, userId,userName);
+          const newComment = await CommentService.createComment(comment, req);
           console.log('comment : ',newComment)
           res.status(200).json(newComment);
           console.log('res 전송 성공!')
