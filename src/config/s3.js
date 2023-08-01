@@ -16,8 +16,12 @@ const s3 = new AWS.S3({
 //   // limits: { fileSize: 5 * 1024 * 1024 }, // 용량 제한
 //   { dest: 'uploads/' }
 // );
-
-const upload = multer({ storage: storage })
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // limit file size to 5MB
+  },
+});  // <- Notice this field name
 
 const uploadToS3 = (file) => {
   return new Promise((resolve, reject) => {
