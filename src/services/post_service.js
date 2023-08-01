@@ -40,20 +40,33 @@ const PostService = {
 
     getAllPosts: async (oid) => {
         try {
-          // const user = await User.findById({ _id: oid })
-          const posts = await Post.find({userId:oid}); 
-          return posts;
+          const user = await User.findById({ _id: oid });
+          const userName = user.userName;
+          const posts = await Post.find({userId:oid}).sort({createdAt: -1}); 
+          return {posts:posts, userName:userName};
         } catch (err) {
             throw err;
         }
     },
-    getPostById: async (postId) => {
+    getPostById: async (postId, email) => {
       try {
         const post = await Post.findById(postId).populate('userName');
+        // const user = await User.findOne({email:email});
+        // const userName = user.userName;
         const like = await LikeService.getLike(postId);
-        console.log(like)
         // const countLength = like.userId.length;
         return {post : post, like : like};
+      } catch (err) {
+        throw  err;
+      }
+    },
+    getUserPosts: async (email) => {
+      try {
+        const user = await User.findOne({email:email});
+        const userId = user._id;
+        const userName = user.userName;
+        const posts = await Post.find({userId}).sort({createdAt: -1}); 
+        return {posts: posts, userName:userName};
       } catch (err) {
         throw  err;
       }
