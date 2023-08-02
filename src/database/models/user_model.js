@@ -11,7 +11,7 @@ async function getRandomName() {
   } catch (error) {
     // API 호출 실패 시 기본값 설정
     console.error('API 호출에 실패했습니다. 기본값으로 대체합니다.');
-    return '익명의 버니';
+    return '익명의';
   }
 }
 const secretName = await getRandomName()
