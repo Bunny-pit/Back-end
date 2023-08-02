@@ -184,7 +184,7 @@ const UserController = {
 
       const userData = await User.findOne({ email: userEmail });
 
-      res.status(200).json({ userData: userData });
+      res.status(200).json({ data: userData });
     } catch (error) {
       console.log(error.message)
 
