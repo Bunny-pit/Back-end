@@ -7,6 +7,7 @@ const post_router = express.Router();
 
 dotenv.config();
 
+
 //게시글 작성
 post_router.post('/', loginRequired, upload.array('files'), PostController.createPost);
 
