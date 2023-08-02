@@ -177,14 +177,14 @@ const UserController = {
   async accessToken(req, res) {
     try {
       const userToken = req.headers['authorization']?.split(' ')[1];
-      console.log('userToken', userToken)
+      // console.log('userToken', userToken)
       const decodedData = jwt.verify(userToken, process.env.ACCESS_SECRET_KEY);
-      console.log('decodedData', decodedData)
+      // console.log('decodedData', decodedData)
       const userEmail = decodedData.email;
 
       const userData = await User.findOne({ email: userEmail });
-
-      res.status(200).json({ data: userData });
+      console.log('userData', userData)
+      res.status(200).json({ userData: userData });
     } catch (error) {
       console.log(error.message)
 
