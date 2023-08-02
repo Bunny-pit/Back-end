@@ -1,18 +1,20 @@
 import mongoose from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-// import axios from 'axios'
+import axios from 'axios';
 
-// async function getRandomName() {
-//   try {
-//     const response = await axios.get('https://nickname.hwanmoo.kr/?format=json&count=1');
-//     const nickname = response.data[0].nickname;
-//     return nickname;
-//   } catch (error) {
-//     // API 호출 실패 시 기본값 설정
-//     console.error('API 호출에 실패했습니다. 기본값으로 대체합니다.');
-//     return '익명의 버니';
-//   }
-// }
+async function getRandomName() {
+  try {
+    const response = await axios.get('https://nickname.hwanmoo.kr/?format=json&count=2');
+    const nickname = response.data.words[0];
+    console.log('response', response)
+    return nickname;
+  } catch (error) {
+    // API 호출 실패 시 기본값 설정
+    console.error('API 호출에 실패했습니다. 기본값으로 대체합니다.');
+    return '익명의 버니';
+  }
+}
+const secretName = await getRandomName()
 
 const userSchema = new mongoose.Schema(
   {
@@ -30,13 +32,13 @@ const userSchema = new mongoose.Schema(
     },
     profileImg: {
       type: String,
-      default : null
+      default: null
     },
     secretName: {
       type: String,
       unique: true,
       required: true,
-      default: `버니`,
+      default: `${secretName} 버니`,
     },
     email: {
       type: String,

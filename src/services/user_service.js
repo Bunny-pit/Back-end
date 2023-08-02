@@ -29,13 +29,12 @@ const UserService = {
       };
         
       const existingUserCheck = await User.findOne({ email });
-      console.log('existingUserCheck', existingUserCheck)
       if (existingUserCheck) {
         return { success: false }
       } else {
         const newUser = new User(userData);
         await newUser.save();
-        return { success: true }
+        return { newUser, success: true }
       }
     } catch (error) {
       console.error(error)
