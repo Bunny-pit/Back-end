@@ -15,7 +15,7 @@ import {
 } from '../lib/constant.js';
 
 const UserService = {
-  createUser: async (registerData, res) => {
+  createUser: async (registerData) => {
     try {
       const {
         userName,
@@ -27,7 +27,9 @@ const UserService = {
         email: email,
         password: generateHashedPassword(password),
       };
+        
       const existingUserCheck = await User.findOne({ email });
+      console.log('existingUserCheck', existingUserCheck)
       if (existingUserCheck) {
         return { success: false }
       } else {
@@ -36,7 +38,7 @@ const UserService = {
         return { success: true }
       }
     } catch (error) {
-      throw new Error('Failed to create new user');
+      console.error(error)
     }
   },
   //   loginUser: async (userData) => {
@@ -94,7 +96,7 @@ const UserService = {
       const isPasswordMatched = (password) => {
         return generateHashedPassword(password) === existingUserCheck.password;
       };
-      
+
       if (existingUserCheck && isPasswordMatched(password)) {
         const deletionResult = await User.findOneAndDelete({ email });
         if (deletionResult) {
