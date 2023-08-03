@@ -35,8 +35,9 @@ const UserController = {
         password,
       };
       const createdUser = await UserService.createUser(registerData);
+      console.log('createdUser', createdUser)
       if (createdUser.success) {
-        res.status(201).json('계정 생성 성공 ');
+        res.status(201).json({ '계정 생성 성공 ': createdUser.newUser });
       } else {
         res.status(403).json({
           error: '이미 존재하는 유저 데이터 입니다.',
@@ -44,9 +45,10 @@ const UserController = {
         })
       }
     } catch (error) {
+      console.error(error)
       res.status(500).json({
-        error: '서버 오류 발생',
-        code: 'SERVER_ISSUE'
+        error: `서버 오류 발생 - ${error.message}`,
+        code: `SERVER_ISSUE`
       });
     }
   },
