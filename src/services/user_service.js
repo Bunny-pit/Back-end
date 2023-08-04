@@ -27,7 +27,7 @@ const UserService = {
         email: email,
         password: generateHashedPassword(password),
       };
-        
+
       const existingUserCheck = await User.findOne({ email });
       if (existingUserCheck) {
         return { success: false }
@@ -62,7 +62,7 @@ const UserService = {
   },
   updateUser: async (updateData, res) => {
     try {
-      const { email, prevPassword, newPassword } = updateData;
+      const { email, prevPassword, newPassword, newPasswordCheck } = updateData;
       // 유저 확인
       const existingUser = await User.find({ email });
       // 기존 비밀번호 확인
@@ -70,9 +70,9 @@ const UserService = {
         return generateHashedPassword(password) === existingUser[0].password;
       };
       if (!existingUser) {
-        res.status(404).json({ error: 'USER_NOT_FOUND' });
+        res.status(404).json({ error: '잘못된 유저 정보 입력.' });
       } else {
-        if (isPasswordMatched(prevPassword)) {
+        if ((newPassword === newPasswordCheck) && isPasswordMatched(prevPassword)) {
           await User.findOneAndUpdate(
             { email },
             { password: generateHashedPassword(newPassword) },
@@ -90,13 +90,13 @@ const UserService = {
   },
   deleteUser: async (userData) => {
     try {
-      const { email, password } = userData;
+      const { email, password, passwordCheck } = userData;
       const existingUserCheck = await User.findOne({ email });
       const isPasswordMatched = (password) => {
         return generateHashedPassword(password) === existingUserCheck.password;
       };
 
-      if (existingUserCheck && isPasswordMatched(password)) {
+      if (existingUserCheck && isPasswordMatched(password) && (password === passwordCheck)) {
         const deletionResult = await User.findOneAndDelete({ email });
         if (deletionResult) {
           return { success: true };
@@ -107,6 +107,7 @@ const UserService = {
         return { success: false, reason: '잘못된 이메일 또는 비밀번호' };
       }
     } catch (error) {
+      console.log(error)
       throw new Error('Failed to delete user');
     }
   },

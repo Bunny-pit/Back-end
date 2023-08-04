@@ -6,7 +6,7 @@ async function getRandomName() {
   try {
     const response = await axios.get('https://nickname.hwanmoo.kr/?format=json&count=2');
     const nickname = response.data.words[0];
-    console.log('response', response)
+    // console.log('response', response)
     return nickname;
   } catch (error) {
     // API 호출 실패 시 기본값 설정
@@ -27,7 +27,6 @@ const userSchema = new mongoose.Schema(
     userName: {
       type: String,
       maxlength: 8,
-      unique: true,
       required: true,
     },
     profileImg: {
