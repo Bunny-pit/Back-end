@@ -138,15 +138,17 @@ const UserController = {
   },
   async updateUser(req, res) {
     try {
-      const { email, prevPassword, newPassword } = req.body;
+      const { email, prevPassword, newPassword, newPasswordCheck } = req.body;
       const updateData = {
         email,
         prevPassword,
         newPassword,
+        newPasswordCheck
       };
       const result = await UserService.updateUser(updateData, res);
       res.status(201).json(result);
-    } catch (err) {
+    } catch (error) {
+      console.error(error)
       res.status(500).json({
         error: '서버 오류 발생',
         code: 'SOME_THING_WENT_WRONG',
@@ -155,10 +157,11 @@ const UserController = {
   },
   async deleteUser(req, res) {
     try {
-      const { email, password } = req.body;
+      const { email, password, passwordCheck } = req.body;
       const userData = {
         email,
-        password
+        password,
+        passwordCheck
       }
       const deletionResult = await UserService.deleteUser(userData);
       if (deletionResult.success) {
