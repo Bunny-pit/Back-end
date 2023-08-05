@@ -157,7 +157,8 @@ const UserController = {
   },
   async deleteUser(req, res) {
     try {
-      const { email, password, passwordCheck } = req.body;
+      const { email, password, passwordCheck } = req.body.userData;
+      console.log(req.body)
       const userData = {
         email,
         password,
