@@ -131,7 +131,7 @@ const UserController = {
     try {
       res.clearCookie('accessToken');
       res.clearCookie('refreshToken');
-      res.status(200).json('로그아웃 완료');
+      res.status(200).json({ message: '로그아웃 완료' });
     } catch (error) {
       res.status(500).json(error);
     }
@@ -169,11 +169,12 @@ const UserController = {
         res.status(200).json('계정 삭제 성공');
       } else if (!deletionResult.success) {
         res.status(400).json({
-          error: '계정 삭제 실패, 유저 데이터 존재하지 않음.',
+          error: '계정 삭제 실패, 유저 데이터 존재하지 않거나 비밀번호가 불일치합니다.',
           code: 'USER_DELETION_FAILED',
         });
       }
     } catch (error) {
+      console.error(error)
       res.status(500).json({
         error: '서버 오류 발생',
         code: 'SOME_THING_WENT_WRONG',
