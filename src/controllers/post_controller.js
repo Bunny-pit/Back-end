@@ -30,9 +30,18 @@ const PostController = {
       res.status(500).json({ error: error.message });
     }
   },
+  async getUserPosts(req, res) {
+    try {
+      const {email} = req.params;
+      const posts = await PostService.getUserPosts(email);
+      res.json(posts);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
   async getPostById(req, res){
     const { postId } = req.params;
-    console.log("!!!",req.params)
+
     try {
       const post = await PostService.getPostById(postId);
       if (post) {

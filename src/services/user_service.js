@@ -15,29 +15,29 @@ import {
 } from '../lib/constant.js';
 
 const UserService = {
-  createUser: async (registerData, res) => {
+  createUser: async (registerData) => {
     try {
       const {
-        // name,
         userName,
         email,
-        password } = registerData;
+        password
+      } = registerData;
       const userData = {
-        // name : name,
         userName: userName,
         email: email,
         password: generateHashedPassword(password),
       };
+
       const existingUserCheck = await User.findOne({ email });
       if (existingUserCheck) {
-        res.status(403, err, '이미 사용중인 이메일입니다.');
+        return { success: false }
       } else {
         const newUser = new User(userData);
         await newUser.save();
-        return newUser;
+        return { newUser, success: true }
       }
-    } catch (err) {
-      res.status(500, err, 'create user service 오류 발생');
+    } catch (error) {
+      console.error(error)
     }
   },
   //   loginUser: async (userData) => {
@@ -48,8 +48,8 @@ const UserService = {
   //         password: generateHashedPassword(password),
   //       });
   //       return userInfo;
-  //     } catch (err) {
-  //       res.status(500).json({ err: err.message });
+  //     } catch (error) {
+  //       res.status(500).json({ error: error.message });
   //     }
   //   },
   getUserById: async (oid) => {
@@ -62,7 +62,7 @@ const UserService = {
   },
   updateUser: async (updateData, res) => {
     try {
-      const { email, prevPassword, newPassword } = updateData;
+      const { email, prevPassword, newPassword, newPasswordCheck } = updateData;
       // 유저 확인
       const existingUser = await User.find({ email });
       // 기존 비밀번호 확인
@@ -70,9 +70,9 @@ const UserService = {
         return generateHashedPassword(password) === existingUser[0].password;
       };
       if (!existingUser) {
-        res.status(404).json({ error: 'USER_NOT_FOUND' });
+        res.status(404).json({ error: '잘못된 유저 정보 입력.' });
       } else {
-        if (isPasswordMatched(prevPassword)) {
+        if ((newPassword === newPasswordCheck) && isPasswordMatched(prevPassword)) {
           await User.findOneAndUpdate(
             { email },
             { password: generateHashedPassword(newPassword) },
@@ -84,33 +84,33 @@ const UserService = {
           });
         }
       }
-    } catch (err) {
-      res.status(500).json({ 'update service 오류': err.message });
+    } catch (error) {
+      res.status(500).json({ 'update service 오류': error.message });
     }
   },
   deleteUser: async (userData) => {
     try {
-      const { email, password } = userData;
+      const { email, password, passwordCheck } = userData;
       const existingUserCheck = await User.findOne({ email });
       const isPasswordMatched = (password) => {
         return generateHashedPassword(password) === existingUserCheck.password;
       };
 
-      if (existingUserCheck && isPasswordMatched(password)) {
+      if (existingUserCheck && isPasswordMatched(password) && (password === passwordCheck)) {
         const deletionResult = await User.findOneAndDelete({ email });
-        // 삭제가 성공적인지 확인
-        if (deletionResult.deletedCount === 1) {
+        if (deletionResult) {
           return { success: true };
         } else {
-          return { success: false };
+          return { success: false, reason: '삭제 실패' };
         }
       } else {
-        return { success: false };
+        return { success: false, reason: '잘못된 이메일 또는 비밀번호' };
       }
-    } catch (err) {
+    } catch (error) {
+      console.log(error)
       throw new Error('Failed to delete user');
     }
   },
 };
-//오류날경우 삭제 안 되도록 코드 짜야함.
+
 export default UserService;

@@ -25,21 +25,31 @@ const UserController = {
   async createUser(req, res) {
     try {
       const {
-
         userName,
         email,
         password,
       } = req.body;
       const registerData = {
-
         userName,
         email,
         password,
       };
-      await UserService.createUser(registerData);
-      res.status(201).json('계정 생성 성공 ');
-    } catch (err) {
-      res.status(500).json({ err: err.message });
+      const createdUser = await UserService.createUser(registerData);
+      console.log('createdUser', createdUser)
+      if (createdUser.success) {
+        res.status(201).json({ '계정 생성 성공 ': createdUser.newUser });
+      } else {
+        res.status(403).json({
+          error: '이미 존재하는 유저 데이터 입니다.',
+          code: 'USER_CREATION_FAILED'
+        })
+      }
+    } catch (error) {
+      console.error(error)
+      res.status(500).json({
+        error: `서버 오류 발생 - ${error.message}`,
+        code: `SERVER_ISSUE`
+      });
     }
   },
   async getUser(req, res) {
@@ -48,8 +58,16 @@ const UserController = {
       const userData = await UserService.getUserById(userOid);
 
       res.status(200).json({ data: { userData: userData } });
-    } catch (err) {
-      res.status(500).json({ err: err.message });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+  async getAllUser(req, res) {
+    try {
+      const userData = await User.find({});
+      res.status(200).json({ data: userData })
+    } catch (error) {
+      res.status(500).json({ error: error.message })
     }
   },
   async loginUser(req, res) {
@@ -77,7 +95,6 @@ const UserController = {
           //         expiresIn: 1000 * 60 * 60 * 2, // 2시간 뒤 만료
           //         issuer: 'BunnyPit'
           //     });
-
           res.cookie('accessToken', accessToken, {
             secure: false,
             httpOnly: true,
@@ -106,30 +123,32 @@ const UserController = {
           'email',
         );
       }
-    } catch (err) {
-      res.status(500).json({ err: err.message });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
   },
   async logout(req, res) {
     try {
       res.clearCookie('accessToken');
       res.clearCookie('refreshToken');
-      res.status(200).json('로그아웃 완료');
-    } catch (err) {
-      res.status(500).json(err);
+      res.status(200).json({ message: '로그아웃 완료' });
+    } catch (error) {
+      res.status(500).json(error);
     }
   },
   async updateUser(req, res) {
     try {
-      const { email, prevPassword, newPassword } = req.body;
+      const { email, prevPassword, newPassword, newPasswordCheck } = req.body;
       const updateData = {
         email,
         prevPassword,
         newPassword,
+        newPasswordCheck
       };
       const result = await UserService.updateUser(updateData, res);
       res.status(201).json(result);
-    } catch (err) {
+    } catch (error) {
+      console.error(error)
       res.status(500).json({
         error: '서버 오류 발생',
         code: 'SOME_THING_WENT_WRONG',
@@ -138,18 +157,24 @@ const UserController = {
   },
   async deleteUser(req, res) {
     try {
-      const userData = req.userData;
-      const { email } = userData;
-      const deletionResult = await UserService.deleteUser(email);
+      const { email, password, passwordCheck } = req.body.userData;
+      console.log(req.body)
+      const userData = {
+        email,
+        password,
+        passwordCheck
+      }
+      const deletionResult = await UserService.deleteUser(userData);
       if (deletionResult.success) {
         res.status(200).json('계정 삭제 성공');
-      } else {
+      } else if (!deletionResult.success) {
         res.status(400).json({
-          error: '유저 삭제 실패, 유저 데이터 존재하지 않음.',
+          error: '계정 삭제 실패, 유저 데이터 존재하지 않거나 비밀번호가 불일치합니다.',
           code: 'USER_DELETION_FAILED',
         });
       }
-    } catch (err) {
+    } catch (error) {
+      console.error(error)
       res.status(500).json({
         error: '서버 오류 발생',
         code: 'SOME_THING_WENT_WRONG',
@@ -158,15 +183,19 @@ const UserController = {
   },
   async accessToken(req, res) {
     try {
-      const userToken = req.headers['authorization'].split(' ')[1];
+      const userToken = req.headers['authorization']?.split(' ')[1];
+      // console.log('userToken', userToken)
       const decodedData = jwt.verify(userToken, process.env.ACCESS_SECRET_KEY);
+      // console.log('decodedData', decodedData)
       const userEmail = decodedData.email;
 
       const userData = await User.findOne({ email: userEmail });
-
+      console.log('userData', userData)
       res.status(200).json({ userData: userData });
-    } catch (err) {
-      res.status(500).json({ '/accessToken 에러': err });
+    } catch (error) {
+      console.log(error.message)
+
+      res.status(500).json('유저 토큰이 존재하지 않습니다.');
     }
   },
   async loginSuccess(req, res) {
@@ -176,8 +205,8 @@ const UserController = {
       const userData = await User.find(decodedData.email);
 
       res.status(200).json(userData);
-    } catch (err) {
-      res.status(500).json(err);
+    } catch (error) {
+      res.status(500).json(error);
     }
   },
 };

@@ -1,10 +1,16 @@
 import Comment from '../database/models/comment_model.js'
+import User from '../database/models/user_model.js'
 import mongoose from 'mongoose';
 
 const CommentService = {
-  createComment: async (comment, postId, userId,userName) => {
+  createComment: async (comment,req) => {
     try {
-      const newComment = new Comment({ comment, postId, userId,userName});
+      const { postId } = req.params;
+      const user = await User.findById({ _id: req.oid })
+      const userId = user._id;
+      const userName = user.userName;
+      console.log(userId, userName)
+      const newComment = new Comment({ comment, postId, userId, userName});
       return newComment.save();
     } catch (err) {
       throw err;
