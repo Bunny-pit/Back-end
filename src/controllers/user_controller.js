@@ -194,16 +194,22 @@ const UserController = {
       res.status(200).json({ userData: userData });
 
     } catch (error) {
-      res.status(500).json({ error: error});
+      res.status(500).json({ error: error });
     }
   },
   async refreshToken(req, res) {
+    const { refreshToken } = req.body
     try {
-      const check = req.headers['authorization'].split(' ')
+      const decodedData = jwt.verify(refreshToken, process.env.ACCESS_SECRET_KEY)
 
-      res.status(200).json(check);
+      const refreshedToken = jwt.sign(decodedData, process.env.ACCESS_SECRET_KEY, {
+        expiresIn: '2h',
+        issuer: 'bunny pit'
+      })
+
+      res.status(200).json({ accessToken: refreshedToken });
     } catch (error) {
-      res.status(500).json(error);
+      res.status(401).json({ error: 'refresh 토큰 생성 실패, 유효하지 않음.' });
     }
   },
 };
