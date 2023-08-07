@@ -87,23 +87,23 @@ const UserController = {
         };
         if (isPasswordMatched(password)) {
           const accessToken = jwt.sign(payload, process.env.ACCESS_SECRET_KEY, {
-            expiresIn: 1000 * 60 * 60, // 1시간 뒤 만료
+            expiresIn: '2h', // 1시간 뒤 만료
             issuer: 'BunnyPit',
           });
-          // const refreshToken = jwt.sign(payload, process.env.REFRESH_SECRET_KEY,
-          //     {
-          //         expiresIn: 1000 * 60 * 60 * 2, // 2시간 뒤 만료
-          //         issuer: 'BunnyPit'
-          //     });
+          const refreshToken = jwt.sign({}, process.env.REFRESH_SECRET_KEY,
+            {
+              expiresIn: '3d', // 2시간 뒤 만료
+              issuer: 'BunnyPit'
+            });
           res.cookie('accessToken', accessToken, {
             secure: false,
             httpOnly: true,
           });
-          // res.cookie('refreshToken', refreshToken, {
-          //     secure: false,
-          //     httpOnly: true,
-          // })
-          res.status(200).json({ user: user, 'accessToken': accessToken }
+          res.cookie('refreshToken', refreshToken, {
+            secure: false,
+            httpOnly: true,
+          })
+          res.status(200).json({ user: user, 'accessToken': accessToken, 'refreshToken': refreshToken }
           );
         } else {
           return generateServerErrorCode(
@@ -131,7 +131,7 @@ const UserController = {
     try {
       res.clearCookie('accessToken');
       res.clearCookie('refreshToken');
-      res.status(200).json('로그아웃 완료');
+      res.status(200).json({ message: '로그아웃 완료' });
     } catch (error) {
       res.status(500).json(error);
     }
@@ -169,11 +169,12 @@ const UserController = {
         res.status(200).json('계정 삭제 성공');
       } else if (!deletionResult.success) {
         res.status(400).json({
-          error: '계정 삭제 실패, 유저 데이터 존재하지 않음.',
+          error: '계정 삭제 실패, 유저 데이터 존재하지 않거나 비밀번호가 불일치합니다.',
           code: 'USER_DELETION_FAILED',
         });
       }
     } catch (error) {
+      console.error(error)
       res.status(500).json({
         error: '서버 오류 발생',
         code: 'SOME_THING_WENT_WRONG',
@@ -185,25 +186,22 @@ const UserController = {
       const userToken = req.headers['authorization']?.split(' ')[1];
       // console.log('userToken', userToken)
       const decodedData = jwt.verify(userToken, process.env.ACCESS_SECRET_KEY);
-      // console.log('decodedData', decodedData)
+
       const userEmail = decodedData.email;
 
       const userData = await User.findOne({ email: userEmail });
-      console.log('userData', userData)
-      res.status(200).json({ userData: userData });
-    } catch (error) {
-      console.log(error.message)
 
-      res.status(500).json('유저 토큰이 존재하지 않습니다.');
+      res.status(200).json({ userData: userData });
+
+    } catch (error) {
+      res.status(500).json({ error: error});
     }
   },
-  async loginSuccess(req, res) {
+  async refreshToken(req, res) {
     try {
-      const token = req.cookies.accessToken;
-      const decodedData = jwt.verify(token, process.env.ACCESS_SECRET_KEY);
-      const userData = await User.find(decodedData.email);
+      const check = req.headers['authorization'].split(' ')
 
-      res.status(200).json(userData);
+      res.status(200).json(check);
     } catch (error) {
       res.status(500).json(error);
     }

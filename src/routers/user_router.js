@@ -17,7 +17,7 @@ userRouter.patch('/edit', loginRequired, UserController.updateUser);
 userRouter.delete('/delete', loginRequired, UserController.deleteUser);
 //토큰 값 가져옴.
 userRouter.get('/accessToken', UserController.accessToken);
-
+userRouter.post('/refereshToken', UserController.refreshToken);
 //관리자 기능 추후 활성화
 // userRouter.get('/register', loginRequired, UserController.getUser);
 
