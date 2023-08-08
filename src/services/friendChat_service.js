@@ -56,7 +56,7 @@ const FriendChatService = {
 
   deleteChat: async (chatId) => {
     try {
-      await Message.deleteMany({ chat: chatId });
+      await FriendMessage.deleteMany({ chat: chatId });
       const deletedChat = await FriendChat.findByIdAndDelete(chatId);
       return deletedChat;
     } catch (error) {
