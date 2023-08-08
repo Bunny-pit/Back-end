@@ -1,6 +1,6 @@
-import MainhomeService from '../services/mainhome_service.js';
+import MainhomeService from '../services/mainhomeUnknown_service.js';
 
-const mainhomeController = {
+const mainhomeUnknownController = {
   async createMainhomePost(req, res) {
     try {
       const newPost = await MainhomeService.createMainhomePost(
@@ -63,4 +63,4 @@ const mainhomeController = {
   },
 };
 
-export default mainhomeController;
+export default mainhomeUnknownController;
