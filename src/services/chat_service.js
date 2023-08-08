@@ -85,9 +85,13 @@ const ChatService = {
       chatId,
       content,
     );
+    const populatedMessage = await Message.findById(newMessage._id).populate(
+      'sender',
+      'email secretName',
+    );
     console.log(content);
 
-    return newMessage;
+    return populatedMessage;
   },
 };
 

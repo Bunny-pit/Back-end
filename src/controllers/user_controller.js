@@ -87,23 +87,23 @@ const UserController = {
         };
         if (isPasswordMatched(password)) {
           const accessToken = jwt.sign(payload, process.env.ACCESS_SECRET_KEY, {
-            expiresIn: 1000 * 60 * 60, // 1시간 뒤 만료
+            expiresIn: '2h', // 1시간 뒤 만료
             issuer: 'BunnyPit',
           });
-          // const refreshToken = jwt.sign(payload, process.env.REFRESH_SECRET_KEY,
-          //     {
-          //         expiresIn: 1000 * 60 * 60 * 2, // 2시간 뒤 만료
-          //         issuer: 'BunnyPit'
-          //     });
+          const refreshToken = jwt.sign({}, process.env.REFRESH_SECRET_KEY,
+            {
+              expiresIn: '3d', // 2시간 뒤 만료
+              issuer: 'BunnyPit'
+            });
           res.cookie('accessToken', accessToken, {
             secure: false,
             httpOnly: true,
           });
-          // res.cookie('refreshToken', refreshToken, {
-          //     secure: false,
-          //     httpOnly: true,
-          // })
-          res.status(200).json({ user: user, 'accessToken': accessToken }
+          res.cookie('refreshToken', refreshToken, {
+            secure: false,
+            httpOnly: true,
+          })
+          res.status(200).json({ user: user, 'accessToken': accessToken, 'refreshToken': refreshToken }
           );
         } else {
           return generateServerErrorCode(
@@ -186,27 +186,30 @@ const UserController = {
       const userToken = req.headers['authorization']?.split(' ')[1];
       // console.log('userToken', userToken)
       const decodedData = jwt.verify(userToken, process.env.ACCESS_SECRET_KEY);
-      // console.log('decodedData', decodedData)
+
       const userEmail = decodedData.email;
 
       const userData = await User.findOne({ email: userEmail });
-      console.log('userData', userData)
-      res.status(200).json({ userData: userData });
-    } catch (error) {
-      console.log(error.message)
 
-      res.status(500).json('유저 토큰이 존재하지 않습니다.');
+      res.status(200).json({ userData: userData });
+
+    } catch (error) {
+      res.status(500).json({ error: error });
     }
   },
-  async loginSuccess(req, res) {
+  async refreshToken(req, res) {
+    const { refreshToken } = req.body
     try {
-      const token = req.cookies.accessToken;
-      const decodedData = jwt.verify(token, process.env.ACCESS_SECRET_KEY);
-      const userData = await User.find(decodedData.email);
+      const decodedData = jwt.verify(refreshToken, process.env.ACCESS_SECRET_KEY)
 
-      res.status(200).json(userData);
+      const refreshedToken = jwt.sign(decodedData, process.env.ACCESS_SECRET_KEY, {
+        expiresIn: '2h',
+        issuer: 'bunny pit'
+      })
+
+      res.status(200).json({ accessToken: refreshedToken });
     } catch (error) {
-      res.status(500).json(error);
+      res.status(401).json({ error: 'refresh 토큰 생성 실패, 유효하지 않음.' });
     }
   },
 };
