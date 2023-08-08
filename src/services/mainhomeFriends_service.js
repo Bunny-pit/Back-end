@@ -14,7 +14,7 @@ const MainhomeFriendsService = {
         ...data,
         userId: oid,
         email: user.email,
-        name: user.name,
+        name: user.userName,
       });
 
       await newPost.save();
