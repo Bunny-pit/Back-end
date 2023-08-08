@@ -10,6 +10,16 @@ router.post('/friend/start', loginRequired, FriendChatController.startChat);
 router.get('/:userId', loginRequired, ChatController.getUserChats);
 router.get('/friend/:userId', loginRequired, FriendChatController.getUserChats);
 router.get('/:chatId/messages', loginRequired, ChatController.getChatMessages);
+router.get(
+  '/:chatId/friend/messages',
+  loginRequired,
+  FriendChatController.getChatMessages,
+);
 router.delete('/:chatId', loginRequired, ChatController.deleteChat);
+router.delete(
+  '/friend/:chatId',
+  loginRequired,
+  FriendChatController.deleteChat,
+);
 
 export default router;
