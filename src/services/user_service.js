@@ -88,9 +88,9 @@ const UserService = {
       res.status(500).json({ 'update service 오류': error.message });
     }
   },
-  deleteUser: async (userData) => {
+  deleteUser: async (withdrawalData) => {
     try {
-      const { email, password, passwordCheck } = userData;
+      const { email, password, passwordCheck } = withdrawalData;
       const existingUserCheck = await User.findOne({ email });
       const isPasswordMatched = (password) => {
         return generateHashedPassword(password) === existingUserCheck.password;

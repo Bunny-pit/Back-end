@@ -157,14 +157,14 @@ const UserController = {
   },
   async deleteUser(req, res) {
     try {
-      const { email, password, passwordCheck } = req.body.userData;
+      const { email, password, passwordCheck } = req.body.withdrawalData;
       console.log(req.body)
-      const userData = {
+      const withdrawalData = {
         email,
         password,
         passwordCheck
       }
-      const deletionResult = await UserService.deleteUser(userData);
+      const deletionResult = await UserService.deleteUser(withdrawalData);
       if (deletionResult.success) {
         res.status(200).json('계정 삭제 성공');
       } else if (!deletionResult.success) {
