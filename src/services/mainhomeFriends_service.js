@@ -1,7 +1,7 @@
 import Mainhome from '../database/models/mainhome_model.js';
 import User from '../database/models/user_model.js';
 
-const MainhomeService = {
+const MainhomeFriendsService = {
   createMainhomePost: async (oid, data) => {
     try {
       const user = await User.findById(oid);
@@ -14,7 +14,7 @@ const MainhomeService = {
         ...data,
         userId: oid,
         email: user.email,
-        name: user.secretName,
+        name: user.name,
       });
 
       await newPost.save();
@@ -84,4 +84,4 @@ const MainhomeService = {
   },
 };
 
-export default MainhomeService;
+export default MainhomeFriendsService;
