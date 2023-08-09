@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const mainhomeSchema = new mongoose.Schema(
+const mainhomeUnknownSchema = new mongoose.Schema(
   {
     userId: {
       type: String,
@@ -26,5 +26,8 @@ const mainhomeSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-const Mainhome = mongoose.model('Mainhome', mainhomeSchema);
-export default Mainhome;
+const MainhomeUnknown = mongoose.model(
+  'MainhomeUnknown',
+  mainhomeUnknownSchema,
+);
+export default MainhomeUnknown;
