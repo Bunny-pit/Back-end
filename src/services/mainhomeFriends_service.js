@@ -24,9 +24,19 @@ const MainhomeFriendsService = {
     }
   },
 
-  getAllMainhomePosts: async (page, limit) => {
+  getAllMainhomePosts: async (oid, page, limit) => {
     try {
-      const posts = await MainhomeFriends.find()
+      // 로그인한 사용자의 팔로우 목록 가져오기
+      const user = await User.findById(oid);
+      const followedUsers = user.followings;
+
+      // 로그인한 사용자의 oid도 팔로우 목록에 추가
+      followedUsers.push(oid);
+
+      // 팔로우한 사용자들의 게시글만 조회
+      const posts = await MainhomeFriends.find({
+        userId: { $in: followedUsers },
+      })
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit);

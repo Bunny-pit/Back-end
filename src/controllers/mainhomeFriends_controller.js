@@ -16,9 +16,12 @@ const mainhomeFriendsController = {
 
   async getAllMainhomePosts(req, res) {
     try {
+      const oid = req.oid;
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
+
       const posts = await MainhomeFriendsService.getAllMainhomePosts(
+        oid,
         page,
         limit,
       );
@@ -28,6 +31,7 @@ const mainhomeFriendsController = {
       res.status(500).json({ error: error.message });
     }
   },
+
   async updateMainhomePost(req, res) {
     try {
       const { id } = req.params;
