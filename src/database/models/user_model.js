@@ -1,10 +1,12 @@
-import mongoose from "mongoose";
-import { v4 as uuidv4 } from "uuid";
+import mongoose from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 
 async function getRandomName() {
   try {
-    const response = await axios.get('https://nickname.hwanmoo.kr/?format=json&count=2');
+    const response = await axios.get(
+      'https://nickname.hwanmoo.kr/?format=json&count=2',
+    );
     const nickname = response.data.words[0];
     // console.log('response', response)
     return nickname;
@@ -14,7 +16,7 @@ async function getRandomName() {
     return '익명의';
   }
 }
-const secretName = await getRandomName()
+const secretName = await getRandomName();
 
 const userSchema = new mongoose.Schema(
   {
@@ -31,7 +33,7 @@ const userSchema = new mongoose.Schema(
     },
     profileImg: {
       type: String,
-      default: null
+      default: null,
     },
     secretName: {
       type: String,
@@ -57,9 +59,21 @@ const userSchema = new mongoose.Schema(
       // 유저가 역할을 입력하더라도 0으로 고정
       // set: () => 0
     },
+    followings: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
+    followers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   { timestamps: true },
 );
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model('User', userSchema);
 export default User;

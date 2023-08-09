@@ -1,16 +1,16 @@
-import Chat from '../database/models/chat_model.js';
-import Message from '../database/models/message_model.js';
+import FriendChat from '../database/models/friendChat_model.js';
+import FriendMessage from '../database/models/friendMessage_model.js';
 import mongoose from 'mongoose';
 import { getSocketIo } from '../lib/socket.js';
 import User from '../database/models/user_model.js';
 
-const ChatService = {
+const FriendChatService = {
   startChat: async (userId, anonymousUserId) => {
     try {
       const user = await User.findById(userId);
       const anonymousUser = await User.findById(anonymousUserId);
 
-      const newChat = new Chat({
+      const newChat = new FriendChat({
         users: [
           new mongoose.Types.ObjectId(userId),
           new mongoose.Types.ObjectId(anonymousUserId),
@@ -33,10 +33,9 @@ const ChatService = {
   getUserChats: async (userId) => {
     try {
       const objectId = new mongoose.Types.ObjectId(userId);
-      const chats = await Chat.find({ users: { $in: [objectId] } }).populate(
-        'users',
-        'userName secretName email',
-      );
+      const chats = await FriendChat.find({
+        users: { $in: [objectId] },
+      }).populate('users', 'userName secretName email');
       return chats;
     } catch (error) {
       throw error;
@@ -45,7 +44,7 @@ const ChatService = {
 
   getChatMessages: async (chatId) => {
     try {
-      const messages = await Message.find({ chat: chatId }).populate(
+      const messages = await FriendMessage.find({ chat: chatId }).populate(
         'sender',
         'email secretName',
       );
@@ -57,8 +56,8 @@ const ChatService = {
 
   deleteChat: async (chatId) => {
     try {
-      await Message.deleteMany({ chat: chatId });
-      const deletedChat = await Chat.findByIdAndDelete(chatId);
+      await FriendMessage.deleteMany({ chat: chatId });
+      const deletedChat = await FriendChat.findByIdAndDelete(chatId);
       return deletedChat;
     } catch (error) {
       throw error;
@@ -66,7 +65,7 @@ const ChatService = {
   },
   createMessage: async (senderId, chatId, content) => {
     try {
-      const newMessage = new Message({
+      const newMessage = new FriendMessage({
         chat: chatId,
         sender: senderId,
         content,
@@ -80,19 +79,18 @@ const ChatService = {
     }
   },
   createMessageAndEmit: async (senderId, chatId, content) => {
-    const newMessage = await ChatService.createMessage(
+    const newMessage = await FriendChatService.createMessage(
       senderId,
       chatId,
       content,
     );
-    const populatedMessage = await Message.findById(newMessage._id).populate(
-      'sender',
-      'email secretName',
-    );
+    const populatedMessage = await FriendMessage.findById(
+      newMessage._id,
+    ).populate('sender', 'email secretName');
     console.log(content);
 
     return populatedMessage;
   },
 };
 
-export default ChatService;
+export default FriendChatService;
