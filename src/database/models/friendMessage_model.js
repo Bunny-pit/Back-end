@@ -19,5 +19,5 @@ const FriendMessageSchema = new mongoose.Schema({
   },
 });
 
-const FriendMessage = mongoose.model('friendMessage', FriendMessageSchema);
+const FriendMessage = mongoose.model('FriendMessage', FriendMessageSchema);
 export default FriendMessage;

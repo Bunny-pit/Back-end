@@ -41,7 +41,11 @@ mainhome_router.post(
 );
 
 //게시글 전부 불러오기
-mainhome_router.get('/friends', MainhomeFriendsController.getAllMainhomePosts);
+mainhome_router.get(
+  '/friends',
+  loginRequired,
+  MainhomeFriendsController.getAllMainhomePosts,
+);
 
 //게시글 수정하기
 mainhome_router.patch(
