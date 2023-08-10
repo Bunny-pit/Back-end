@@ -60,12 +60,11 @@ const PostService = {
         throw  err;
       }
     },
-    getUserPosts: async (userId) => {
+    getUserPosts: async (userName) => {
       try {
-        const user = await User.findOne({_id:userId});
-        const userName = user.userName;
-        const posts = await Post.find({userId}).sort({createdAt: -1}); 
-        return {posts: posts, userName:userName};
+        const user = await User.find({userName:userName});
+        const posts = await Post.find({userName}).sort({createdAt: -1}); 
+        return {posts: posts, userName:userName, user:user};
       } catch (err) {
         throw  err;
       }
