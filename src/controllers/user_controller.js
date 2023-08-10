@@ -257,9 +257,11 @@ const UserController = {
   async searchUser(req, res) {
     try {
       const { userName } = req.query;
-      const userData = await User.findOne({ userName });
+      const userData = await User.find({
+        userName: { $regex: userName, $options: 'i' },
+      });
 
-      if (userData) {
+      if (userData && userData.length > 0) {
         res.status(200).json({ user: userData });
       } else {
         res.status(404).json({ message: '사용자를 찾을 수 없습니다.' });
