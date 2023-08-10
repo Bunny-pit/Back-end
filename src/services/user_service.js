@@ -24,20 +24,19 @@ const UserService = {
         password: generateHashedPassword(password),
       };
       const existingUserCheck = await User.findOne({ email });
-      const existingUserName = await User.findOne({ userName })
+      const existingUserName = await User.findOne({ userName });
 
       if (existingUserCheck) {
-        return { success: false, reason: '이미 존재하는 이메일입니다.' }
+        return { success: false, reason: '이미 존재하는 이메일입니다.' };
       } else if (existingUserName) {
-        return { success: false, reason: '이미 사용중인 닉네임입니다.' }
-
+        return { success: false, reason: '이미 사용중인 닉네임입니다.' };
       } else {
         const newUser = new User(userData);
         await newUser.save();
         return { newUser, success: true };
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   },
   //   loginUser: async (userData) => {
@@ -52,6 +51,7 @@ const UserService = {
   //       res.status(500).json({ error: error.message });
   //     }
   //   },
+
   getUserById: async oid => {
     try {
       const user = await User.findById({ _id: oid });
@@ -60,6 +60,7 @@ const UserService = {
       res.status(500).json('유저 데이터 없음.');
     }
   },
+
   updateUser: async (updateData, res) => {
     try {
       const { email, prevPassword, newPassword, newPasswordCheck } = updateData;
@@ -91,7 +92,7 @@ const UserService = {
       res.status(500).json({ 'update service 오류': error.message });
     }
   },
-  deleteUser: async (withdrawalData) => {
+  deleteUser: async withdrawalData => {
     try {
       const { email, password, passwordCheck } = withdrawalData;
       const existingUserCheck = await User.findOne({ email });
@@ -119,25 +120,29 @@ const UserService = {
     }
   },
 
-  toggleFollow: async (followerId, followeeId) => {
-    const follower = await User.findById(followerId);
-    const followee = await User.findById(followeeId);
+  toggleFollow: async (followerName, followeeName) => {
+    const follower = await User.findOne({ userName: followerName });
+    const followee = await User.findOne({ userName: followeeName });
+
+    if (!follower || !followee) {
+      throw new Error('사용자를 찾을 수 없습니다.');
+    }
 
     // 이미 팔로우 중인지 확인
-    const isFollowing = follower.followings.includes(followeeId);
+    const isFollowing = follower.followings.includes(followeeName);
 
     if (isFollowing) {
       // 언팔로우 로직
       follower.followings = follower.followings.filter(
-        id => id.toString() !== followeeId,
+        name => name !== followeeName,
       );
       followee.followers = followee.followers.filter(
-        id => id.toString() !== followerId,
+        name => name !== followerName,
       );
     } else {
       // 팔로우 로직
-      follower.followings.push(followeeId);
-      followee.followers.push(followerId);
+      follower.followings.push(followeeName);
+      followee.followers.push(followerName);
     }
 
     await follower.save();
@@ -147,14 +152,18 @@ const UserService = {
   },
 
   // 팔로우 목록 조회
-  async getFollowings(userId) {
-    const user = await User.findById(userId).populate('followings');
+  async getFollowings(userName) {
+    const user = await User.findOne({ userName: userName }).populate(
+      'followings',
+    );
     return user.followings;
   },
 
   // 팔로워 목록 조회
-  async getFollowers(userId) {
-    const user = await User.findById(userId).populate('followers');
+  async getFollowers(userName) {
+    const user = await User.findOne({ userName: userName }).populate(
+      'followers',
+    );
     return user.followers;
   },
 };
