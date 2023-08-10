@@ -26,4 +26,6 @@ userRouter.post('/toggleFollow', loginRequired, UserController.toggleFollow);
 userRouter.get('/followings', loginRequired, UserController.getFollowings);
 userRouter.get('/followers', loginRequired, UserController.getFollowers);
 
+//검색기능
+userRouter.get('/search', UserController.searchUser);
 export default userRouter;

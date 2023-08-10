@@ -36,12 +36,12 @@ const UserController = {
       } else if (!createdUser.success) {
         res.status(403).json({
           error: createdUser.reason,
-          code: '회원 가입 실패'
-        })
+          code: '회원 가입 실패',
+        });
       }
     } catch (error) {
       res.status(500).json({
-        error: `회원 가입 오류 발생 - ${error.message}`
+        error: `회원 가입 오류 발생 - ${error.message}`,
       });
     }
   },
@@ -68,7 +68,7 @@ const UserController = {
       const { email, password } = req.body;
       const user = await User.findOne({ email });
       if (user && user.email) {
-        const isPasswordMatched = password => {
+        const isPasswordMatched = (password) => {
           return generateHashedPassword(password) === user.password;
         };
         const payload = {
@@ -153,12 +153,12 @@ const UserController = {
   async deleteUser(req, res) {
     try {
       const { email, password, passwordCheck } = req.body.withdrawalData;
-      console.log(req.body)
+      console.log(req.body);
       const withdrawalData = {
         email,
         password,
-        passwordCheck
-      }
+        passwordCheck,
+      };
       const deletionResult = await UserService.deleteUser(withdrawalData);
 
       if (deletionResult.success) {
@@ -249,6 +249,21 @@ const UserController = {
       const userId = req.oid;
       const followers = await UserService.getFollowers(userId);
       res.status(200).json(followers);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+  //유저검색
+  async searchUser(req, res) {
+    try {
+      const { userName } = req.query;
+      const userData = await User.findOne({ userName });
+
+      if (userData) {
+        res.status(200).json({ user: userData });
+      } else {
+        res.status(404).json({ message: '사용자를 찾을 수 없습니다.' });
+      }
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
