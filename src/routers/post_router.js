@@ -18,7 +18,7 @@ post_router.get('/', loginRequired ,PostController.getAllPosts);
 post_router.get('/:postId', loginRequired, PostController.getPostById);
 
 // 다른 유저의 게시글을 불러와야되는데...
-post_router.get('/user/:userId', loginRequired, PostController.getUserPosts);
+post_router.get('/user/:nickName', loginRequired, PostController.getUserPosts);
 
 //게시글 수정하기
 post_router.patch('/:postId', loginRequired,PostController.updatePost);
