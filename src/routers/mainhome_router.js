@@ -31,6 +31,20 @@ mainhome_router.delete(
   MainhomeUnknownController.deleteMainhomePost,
 );
 
+//게시글 신고하기
+mainhome_router.post(
+  '/unknown/report/:id',
+  loginRequired,
+  MainhomeFriendsController.reportPost,
+);
+
+//3회 이상 신고된 게시글 불러오기
+mainhome_router.get(
+  '/unknown/reported',
+  loginRequired,
+  MainhomeFriendsController.getReportedPosts,
+);
+
 //--friends게시판 라우터--
 
 //게시글 작성
@@ -59,6 +73,20 @@ mainhome_router.delete(
   '/friends/:id',
   loginRequired,
   MainhomeFriendsController.deleteMainhomePost,
+);
+
+//게시글 신고하기
+mainhome_router.post(
+  '/friends/report/:id',
+  loginRequired,
+  MainhomeFriendsController.reportPost,
+);
+
+//3회 이상 신고된 게시글 불러오기
+mainhome_router.get(
+  '/friends/reported',
+  loginRequired,
+  MainhomeFriendsController.getReportedPosts,
 );
 
 export default mainhome_router;
