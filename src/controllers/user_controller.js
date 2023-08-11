@@ -241,7 +241,7 @@ const UserController = {
   // 팔로우 목록 조회
   async getFollowings(req, res) {
     try {
-      const { userName } = req.body;
+      const { userName } = req.query;
       const followings = await UserService.getFollowings(userName);
       res.status(200).json(followings);
     } catch (error) {
@@ -252,7 +252,7 @@ const UserController = {
   // 팔로워 목록 조회
   async getFollowers(req, res) {
     try {
-      const { userName } = req.body;
+      const { userName } = req.query;
       const follower = await UserService.getFollowers(userName);
       res.status(200).json(follower);
     } catch (error) {
