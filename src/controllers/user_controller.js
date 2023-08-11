@@ -68,7 +68,7 @@ const UserController = {
       const { email, password } = req.body;
       const user = await User.findOne({ email });
       if (user && user.email) {
-        const isPasswordMatched = (password) => {
+        const isPasswordMatched = password => {
           return generateHashedPassword(password) === user.password;
         };
         const payload = {
@@ -216,6 +216,7 @@ const UserController = {
     }
   },
 
+  //  토글로 팔로우 , 팔로우 취소
   async toggleFollow(req, res) {
     try {
       const user = await User.findById(req.oid);
@@ -240,11 +241,7 @@ const UserController = {
   // 팔로우 목록 조회
   async getFollowings(req, res) {
     try {
-      const user = await User.findById(req.oid);
-      if (!user) {
-        return res.status(404).json({ error: '사용자를 찾을 수 없습니다.' });
-      }
-      const userName = user.userName;
+      const { userName } = req.body;
       const followings = await UserService.getFollowings(userName);
       res.status(200).json(followings);
     } catch (error) {
@@ -255,17 +252,14 @@ const UserController = {
   // 팔로워 목록 조회
   async getFollowers(req, res) {
     try {
-      const user = await User.findById(req.oid);
-      if (!user) {
-        return res.status(404).json({ error: '사용자를 찾을 수 없습니다.' });
-      }
-      const userName = user.userName;
-      const followers = await UserService.getFollowers(userName);
-      res.status(200).json(followers);
+      const { userName } = req.body;
+      const follower = await UserService.getFollowers(userName);
+      res.status(200).json(follower);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   },
+
   //유저검색
   async searchUser(req, res) {
     try {

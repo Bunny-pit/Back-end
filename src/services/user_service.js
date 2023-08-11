@@ -153,17 +153,19 @@ const UserService = {
 
   // 팔로우 목록 조회
   async getFollowings(userName) {
-    const user = await User.findOne({ userName: userName }).populate(
-      'followings',
-    );
+    const user = await User.findOne({ userName: userName });
+    if (!user) {
+      throw new Error('사용자를 찾을 수 없습니다.');
+    }
     return user.followings;
   },
 
   // 팔로워 목록 조회
   async getFollowers(userName) {
-    const user = await User.findOne({ userName: userName }).populate(
-      'followers',
-    );
+    const user = await User.findOne({ userName: userName });
+    if (!user) {
+      throw new Error('사용자를 찾을 수 없습니다.');
+    }
     return user.followers;
   },
 };
