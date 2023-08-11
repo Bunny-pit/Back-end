@@ -62,13 +62,11 @@ const userSchema = new mongoose.Schema(
     followings: [
       {
         type: String,
-        ref: 'User',
       },
     ],
     followers: [
       {
         type: String,
-        ref: 'User',
       },
     ],
   },
