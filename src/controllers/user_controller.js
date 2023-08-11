@@ -229,9 +229,9 @@ const UserController = {
       const result = await UserService.toggleFollow(followerName, followeeName);
 
       if (result.followed) {
-        res.status(200).json({ message: '팔로우에 성공했습니다.' });
+        res.status(200).json({ message: '팔로우에 성공했습니다.',followed:result.followed });
       } else {
-        res.status(200).json({ message: '언팔로우에 성공했습니다.' });
+        res.status(200).json({ message: '언팔로우에 성공했습니다.',followed:result.followed });
       }
     } catch (error) {
       res.status(500).json({ error: error.message });
