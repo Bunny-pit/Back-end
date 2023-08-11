@@ -129,16 +129,12 @@ const UserService = {
     }
 
     // 이미 팔로우 중인지 확인
-    const isFollowing = follower.followings.includes(followeeName);
+    const isFollowing = follower.followings.indexOf(followeeName) !== -1;
 
     if (isFollowing) {
       // 언팔로우 로직
-      follower.followings = follower.followings.filter(
-        name => name !== followeeName,
-      );
-      followee.followers = followee.followers.filter(
-        name => name !== followerName,
-      );
+      follower.followings.pull(followeeName);
+      followee.followers.pull(followerName);
     } else {
       // 팔로우 로직
       follower.followings.push(followeeName);
