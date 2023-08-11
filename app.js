@@ -5,7 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-
+import FriendChatService from './src/services/friendChat_service.js';
 import ChatService from './src/services/chat_service.js';
 import http from 'http';
 import logger from 'winston';
@@ -83,6 +83,14 @@ const startServer = async () => {
 
     socket.on('chatMessage', async ({ senderId, chatId, content }) => {
       const newMessage = await ChatService.createMessageAndEmit(
+        senderId,
+        chatId,
+        content,
+      );
+      io.to(chatId).emit('newMessage', newMessage);
+    });
+    socket.on('friendchatMessage', async ({ senderId, chatId, content }) => {
+      const newMessage = await FriendChatService.createMessageAndEmit(
         senderId,
         chatId,
         content,
