@@ -80,11 +80,11 @@ const UserController = {
         };
         if (isPasswordMatched(password)) {
           const accessToken = jwt.sign(payload, process.env.ACCESS_SECRET_KEY, {
-            expiresIn: '2h', // 1시간 뒤 만료
+            expiresIn: '2h', 
             issuer: 'BunnyPit',
           });
           const refreshToken = jwt.sign({}, process.env.REFRESH_SECRET_KEY, {
-            expiresIn: '3d', // 2시간 뒤 만료
+            expiresIn: '3d', 
             issuer: 'BunnyPit',
           });
           res.cookie('accessToken', accessToken, {
