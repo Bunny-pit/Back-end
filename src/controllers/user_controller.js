@@ -68,7 +68,7 @@ const UserController = {
       const { email, password } = req.body;
       const user = await User.findOne({ email });
       if (user && user.email) {
-        const isPasswordMatched = password => {
+        const isPasswordMatched = (password) => {
           return generateHashedPassword(password) === user.password;
         };
         const payload = {
@@ -80,11 +80,11 @@ const UserController = {
         };
         if (isPasswordMatched(password)) {
           const accessToken = jwt.sign(payload, process.env.ACCESS_SECRET_KEY, {
-            expiresIn: '2h', 
+            expiresIn: '2h',
             issuer: 'BunnyPit',
           });
           const refreshToken = jwt.sign({}, process.env.REFRESH_SECRET_KEY, {
-            expiresIn: '3d', 
+            expiresIn: '3d',
             issuer: 'BunnyPit',
           });
           res.cookie('accessToken', accessToken, {
@@ -106,7 +106,7 @@ const UserController = {
             403,
             '비밀번호가 일치하지 않습니다.',
             WRONG_PASSWORD,
-            'password',
+            'password'
           );
         }
       } else {
@@ -115,7 +115,7 @@ const UserController = {
           404,
           '회원가입이 필요합니다.',
           USER_DOES_NOT_EXIST,
-          'email',
+          'email'
         );
       }
     } catch (error) {
@@ -198,7 +198,7 @@ const UserController = {
     try {
       const decodedData = jwt.verify(
         refreshToken,
-        process.env.ACCESS_SECRET_KEY,
+        process.env.ACCESS_SECRET_KEY
       );
 
       const refreshedToken = jwt.sign(
@@ -207,7 +207,7 @@ const UserController = {
         {
           expiresIn: '2h',
           issuer: 'bunny pit',
-        },
+        }
       );
 
       res.status(200).json({ accessToken: refreshedToken });
@@ -284,6 +284,32 @@ const UserController = {
       }
     } catch (error) {
       res.status(500).json({ error: error.message });
+    }
+  },
+  async adminDeleteUser(req, res) {
+    try {
+      const { email } = req.body;
+
+      // 추후 관리자 토큰 확인하기u
+
+      const deletionResult = await UserService.adminDeleteUser(email);
+
+      if (deletionResult.success) {
+        return res
+          .status(200)
+          .json({ message: '사용자 정보가 성공적으로 삭제되었습니다.' });
+      } else {
+        return res.status(400).json({
+          error: deletionResult.reason || '사용자 삭제 실패',
+          code: 'USER_DELETION_FAILED',
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        error: 'Server Error Occurred',
+        code: 'SOMETHING_WENT_WRONG',
+      });
     }
   },
 };

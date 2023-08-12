@@ -15,7 +15,7 @@ import {
 } from '../lib/constant.js';
 
 const UserService = {
-  createUser: async registerData => {
+  createUser: async (registerData) => {
     try {
       const { userName, email, password } = registerData;
       const userData = {
@@ -52,7 +52,7 @@ const UserService = {
   //     }
   //   },
 
-  getUserById: async oid => {
+  getUserById: async (oid) => {
     try {
       const user = await User.findById({ _id: oid });
       return user;
@@ -67,7 +67,7 @@ const UserService = {
       // 유저 확인
       const existingUser = await User.find({ email });
       // 기존 비밀번호 확인
-      const isPasswordMatched = password => {
+      const isPasswordMatched = (password) => {
         return generateHashedPassword(password) === existingUser[0].password;
       };
       if (!existingUser) {
@@ -79,7 +79,7 @@ const UserService = {
         ) {
           await User.findOneAndUpdate(
             { email },
-            { password: generateHashedPassword(newPassword) },
+            { password: generateHashedPassword(newPassword) }
           );
           res.status(200).json('비밀번호 변경 완료');
         } else {
@@ -92,11 +92,11 @@ const UserService = {
       res.status(500).json({ 'update service 오류': error.message });
     }
   },
-  deleteUser: async withdrawalData => {
+  deleteUser: async (withdrawalData) => {
     try {
       const { email, password, passwordCheck } = withdrawalData;
       const existingUserCheck = await User.findOne({ email });
-      const isPasswordMatched = password => {
+      const isPasswordMatched = (password) => {
         return generateHashedPassword(password) === existingUserCheck.password;
       };
 
@@ -163,6 +163,28 @@ const UserService = {
       throw new Error('사용자를 찾을 수 없습니다.');
     }
     return user.followers;
+  },
+  // 관리자 유저삭제
+  adminDeleteUser: async (email) => {
+    try {
+      // 사용자가 존재하는지 확인
+      const user = await User.findOne({ email });
+
+      if (!user) {
+        return { success: false, reason: '해당하는 사용자가 없습니다.' };
+      }
+
+      // 사용자 삭제
+      await User.deleteOne({ email });
+
+      return {
+        success: true,
+        message: '사용자 정보가 성공적으로 삭제되었습니다.',
+      };
+    } catch (error) {
+      console.error(error);
+      return { success: false, reason: '서버 오류 발생' };
+    }
   },
 };
 

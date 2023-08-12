@@ -22,6 +22,9 @@ userRouter.post('/refereshToken', UserController.refreshToken);
 
 //관리자 기능 : adminCheck 미들웨어 추후 사용.
 userRouter.get('/login', UserController.getAllUser); //모든 유저 조회. 개발 편의를 위해 임시 활성화 하였음.
+// 관리자 기능 -> 유저 삭제
+userRouter.delete('/admin/deleteUser', UserController.adminDeleteUser);
+
 // userRouter.get('/register', adminCheck, UserController.getUser); // loginRequired 미들웨어에서 넘겨받은 userOid로 특정 유저 호회
 
 //팔로우 기능
