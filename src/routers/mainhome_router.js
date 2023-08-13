@@ -11,7 +11,7 @@ const mainhome_router = express.Router();
 mainhome_router.post(
   '/unknown',
   loginRequired,
-  MainhomeUnknownController.createMainhomePost,
+  MainhomeUnknownController.createMainhomePost
 );
 
 //게시글 전부 불러오기
@@ -21,28 +21,28 @@ mainhome_router.get('/unknown', MainhomeUnknownController.getAllMainhomePosts);
 mainhome_router.patch(
   '/unknown/:id',
   loginRequired,
-  MainhomeUnknownController.updateMainhomePost,
+  MainhomeUnknownController.updateMainhomePost
 );
 
 //게시글 삭제하기
 mainhome_router.delete(
   '/unknown/:id',
   loginRequired,
-  MainhomeUnknownController.deleteMainhomePost,
+  MainhomeUnknownController.deleteMainhomePost
 );
 
 //게시글 신고하기
 mainhome_router.post(
   '/unknown/report/:id',
   loginRequired,
-  MainhomeFriendsController.reportPost,
+  MainhomeFriendsController.reportPost
 );
 
 //3회 이상 신고된 게시글 불러오기
 mainhome_router.get(
   '/unknown/reported',
   loginRequired,
-  MainhomeFriendsController.getReportedPosts,
+  MainhomeFriendsController.getReportedPosts
 );
 
 //--friends게시판 라우터--
@@ -51,42 +51,42 @@ mainhome_router.get(
 mainhome_router.post(
   '/friends',
   loginRequired,
-  MainhomeFriendsController.createMainhomePost,
+  MainhomeFriendsController.createMainhomePost
 );
 
 //게시글 전부 불러오기
 mainhome_router.get(
   '/friends',
   loginRequired,
-  MainhomeFriendsController.getAllMainhomePosts,
+  MainhomeFriendsController.getAllMainhomePosts
 );
 
 //게시글 수정하기
 mainhome_router.patch(
   '/friends/:id',
   loginRequired,
-  MainhomeFriendsController.updateMainhomePost,
+  MainhomeFriendsController.updateMainhomePost
 );
 
 //게시글 삭제하기
 mainhome_router.delete(
   '/friends/:id',
   loginRequired,
-  MainhomeFriendsController.deleteMainhomePost,
+  MainhomeFriendsController.deleteMainhomePost
 );
 
 //게시글 신고하기
 mainhome_router.post(
   '/friends/report/:id',
   loginRequired,
-  MainhomeFriendsController.reportPost,
+  MainhomeFriendsController.reportPost
 );
 
 //3회 이상 신고된 게시글 불러오기
 mainhome_router.get(
   '/friends/reported',
-  loginRequired,
-  MainhomeFriendsController.getReportedPosts,
+  // loginRequired,
+  MainhomeFriendsController.getReportedPosts
 );
 
 export default mainhome_router;
