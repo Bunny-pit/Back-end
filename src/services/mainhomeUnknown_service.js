@@ -118,6 +118,7 @@ const MainhomeUnknownService = {
   getReportedPosts: async () => {
     try {
       const reportedPosts = await MainhomeUnknown.find({
+        reports: { $exists: true, $type: 'array' },
         $expr: { $gte: [{ $size: '$reports' }, 3] },
       });
       return reportedPosts;

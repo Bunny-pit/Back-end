@@ -35,14 +35,14 @@ mainhome_router.delete(
 mainhome_router.post(
   '/unknown/report/:id',
   loginRequired,
-  MainhomeFriendsController.reportPost,
+  MainhomeUnknownController.reportPost,
 );
 
 //3회 이상 신고된 게시글 불러오기
 mainhome_router.get(
   '/unknown/reported',
   loginRequired,
-  MainhomeFriendsController.getReportedPosts,
+  MainhomeUnknownController.getReportPosts,
 );
 
 //--friends게시판 라우터--
