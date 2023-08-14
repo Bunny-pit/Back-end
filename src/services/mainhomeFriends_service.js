@@ -123,6 +123,7 @@ const MainhomeFriendsService = {
       post.reports.push({
         reportedBy: user.userName,
         reason: reason,
+        userId: oid,
       });
 
       await post.save();
