@@ -288,6 +288,14 @@ const UserController = {
       res.status(500).json({ error: error.message });
     }
   },
+  async editImage(req,res) {
+    try{
+      const result = await UserService.editImage(req);
+      res.status(200).send(result);
+    }catch(error){
+      res.status(500).json({ error: error.message });
+    }
+  }
 };
 export default UserController;
 

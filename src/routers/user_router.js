@@ -2,6 +2,7 @@ import express from 'express';
 import UserController from '../controllers/user_controller.js';
 import loginRequired from '../middlewares/login_required.js';
 import adminCheck from '../middlewares/adminCheck.js';
+import {upload, uploadSingle} from '../config/s3.js'
 
 const userRouter = express.Router();
 
@@ -31,4 +32,8 @@ userRouter.get('/followers', UserController.getFollowers);
 
 //검색기능
 userRouter.get('/search', UserController.searchUser);
+
+// 유저 이미지 사진 수정
+userRouter.patch('/profile/img', loginRequired,uploadSingle,UserController.editImage)
+
 export default userRouter;
