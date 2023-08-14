@@ -24,19 +24,18 @@ const UserService = {
         password: generateHashedPassword(password),
       };
       const existingUserCheck = await User.findOne({ email });
-      const existingUserName = await User.findOne({ userName });
+      const existingUserName = await User.findOne({ userName })
 
       if (existingUserCheck) {
-        return { success: false, reason: '이미 존재하는 이메일입니다.' };
+        return { success: false, reason: '이미 존재하는 이메일입니다.' }
       } else if (existingUserName) {
-        return { success: false, reason: '이미 사용중인 닉네임입니다.' };
-      } else {
-        const newUser = new User(userData);
-        await newUser.save();
-        return { newUser, success: true };
+        return { success: false, reason: '이미 사용중인 닉네임입니다.' }
       }
+      const newUser = new User(userData);
+      await newUser.save();
+      return { newUser, success: true };
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
   },
   //   loginUser: async (userData) => {
