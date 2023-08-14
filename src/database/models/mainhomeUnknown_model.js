@@ -29,6 +29,10 @@ const mainhomeUnknownSchema = new mongoose.Schema(
           ref: 'User',
           required: true,
         },
+        userId: {
+          type: String,
+          required: true,
+        },
         reason: {
           type: String,
           required: true,
