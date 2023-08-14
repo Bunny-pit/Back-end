@@ -35,7 +35,7 @@ const FriendChatService = {
       const objectId = new mongoose.Types.ObjectId(userId);
       const chats = await FriendChat.find({
         users: { $in: [objectId] },
-      }).populate('users', 'userName secretName email');
+      }).populate('users', 'userName secretName email profileImg');
       return chats;
     } catch (error) {
       throw error;
