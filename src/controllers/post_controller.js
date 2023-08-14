@@ -32,8 +32,8 @@ const PostController = {
   },
   async getUserPosts(req, res) {
     try {
-      const {email} = req.params;
-      const posts = await PostService.getUserPosts(email);
+      const {nickName} = req.params;
+      const posts = await PostService.getUserPosts(nickName);
       res.json(posts);
     } catch (error) {
       res.status(500).json({ error: error.message });

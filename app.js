@@ -5,7 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-
+import FriendChatService from './src/services/friendChat_service.js';
 import ChatService from './src/services/chat_service.js';
 import http from 'http';
 import logger from 'winston';
@@ -53,7 +53,7 @@ app.get('/', (req, res) => {
 const startServer = async () => {
   // 모든 라우터 코드를 동적으로 불러오도록 설정
   await Promise.all(
-    files.map(async file => {
+    files.map(async (file) => {
       if (file.endsWith('.js')) {
         const route = await import(path.join('file://', routesPath, file));
         const apiEndpoint = '/api/' + file.replace('_router.js', '');
@@ -70,10 +70,10 @@ const startServer = async () => {
         useUnifiedTopology: true,
       })
       .then(() => logger.info('몽고디비 연결에 성공했습니다.'))
-      .catch(e => console.error(e));
+      .catch((e) => console.error(e));
   });
 
-  io.on('connection', socket => {
+  io.on('connection', (socket) => {
     console.log('User connected: ' + socket.id);
 
     socket.on('joinRoom', ({ chatId, userId }) => {
@@ -83,6 +83,14 @@ const startServer = async () => {
 
     socket.on('chatMessage', async ({ senderId, chatId, content }) => {
       const newMessage = await ChatService.createMessageAndEmit(
+        senderId,
+        chatId,
+        content,
+      );
+      io.to(chatId).emit('newMessage', newMessage);
+    });
+    socket.on('friendchatMessage', async ({ senderId, chatId, content }) => {
+      const newMessage = await FriendChatService.createMessageAndEmit(
         senderId,
         chatId,
         content,

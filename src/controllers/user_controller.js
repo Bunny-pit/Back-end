@@ -37,14 +37,14 @@ const UserController = {
       } else if (!createdUser.success) {
         res.status(403).json({
           error: createdUser.reason,
-          code: '회원 가입 실패'
-        })
+          code: '회원 가입 실패',
+        });
       }
 
     } catch (error) {
       console.log(error)
       res.status(500).json({
-        error: `회원 가입 오류 발생 - ${error.message}`
+        error: `회원 가입 오류 발생 - ${error.message}`,
       });
     }
   },
@@ -159,8 +159,8 @@ const UserController = {
       const withdrawalData = {
         email,
         password,
-        passwordCheck
-      }
+        passwordCheck,
+      };
       const deletionResult = await UserService.deleteUser(withdrawalData);
 
       if (deletionResult.success) {
@@ -218,16 +218,31 @@ const UserController = {
     }
   },
 
+  //  토글로 팔로우 , 팔로우 취소
   async toggleFollow(req, res) {
     try {
-      const followerId = req.oid;
-      const { followeeId } = req.body;
-      const result = await UserService.toggleFollow(followerId, followeeId);
+      const user = await User.findById(req.oid);
+      if (!user) {
+        return res.status(404).json({ error: '사용자를 찾을 수 없습니다.' });
+      }
+
+      const followerName = user.userName;
+      const { followeeName } = req.body;
+
+      console.log(typeof followerName, typeof followeeName);
+
+      const result = await UserService.toggleFollow(followerName, followeeName);
 
       if (result.followed) {
-        res.status(200).json({ message: '팔로우에 성공했습니다.' });
+        res.status(200).json({
+          message: '팔로우에 성공했습니다.',
+          followed: result.followed,
+        });
       } else {
-        res.status(200).json({ message: '언팔로우에 성공했습니다.' });
+        res.status(200).json({
+          message: '언팔로우에 성공했습니다.',
+          followed: result.followed,
+        });
       }
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -237,8 +252,8 @@ const UserController = {
   // 팔로우 목록 조회
   async getFollowings(req, res) {
     try {
-      const userId = req.oid;
-      const followings = await UserService.getFollowings(userId);
+      const { userName } = req.query;
+      const followings = await UserService.getFollowings(userName);
       res.status(200).json(followings);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -248,9 +263,27 @@ const UserController = {
   // 팔로워 목록 조회
   async getFollowers(req, res) {
     try {
-      const userId = req.oid;
-      const followers = await UserService.getFollowers(userId);
-      res.status(200).json(followers);
+      const { userName } = req.query;
+      const follower = await UserService.getFollowers(userName);
+      res.status(200).json(follower);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  //유저검색
+  async searchUser(req, res) {
+    try {
+      const { userName } = req.query;
+      const userData = await User.find({
+        userName: { $regex: userName, $options: 'i' },
+      });
+
+      if (userData && userData.length > 0) {
+        res.status(200).json({ user: userData });
+      } else {
+        res.status(404).json({ message: '사용자를 찾을 수 없습니다.' });
+      }
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

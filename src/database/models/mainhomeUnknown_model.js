@@ -22,6 +22,23 @@ const mainhomeUnknownSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    reports: [
+      {
+        reportedBy: {
+          type: String,
+          ref: 'User',
+          required: true,
+        },
+        reason: {
+          type: String,
+          required: true,
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   { timestamps: true },
 );
