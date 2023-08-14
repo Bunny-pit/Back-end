@@ -23,6 +23,7 @@ const UserService = {
         userName: userName,
         email: email,
         password: generateHashedPassword(password),
+        profileImg:"https://bunny-post-bucket.s3.ap-northeast-2.amazonaws.com/profileImage.png"
       };
       const existingUserCheck = await User.findOne({ email });
       const existingUserName = await User.findOne({ userName })
