@@ -3,8 +3,6 @@ import multer from 'multer'
 import dotenv from "dotenv";
 import crypto from 'crypto';
 
-const storage = multer.memoryStorage()
-
 dotenv.config();
 
 const s3 = new AWS.S3({
@@ -12,16 +10,27 @@ const s3 = new AWS.S3({
   secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
   region: process.env.S3_REGION,
 });
-// const upload = multer(
-//   // limits: { fileSize: 5 * 1024 * 1024 }, // 용량 제한
-//   { dest: 'uploads/' }
-// );
-const upload = multer({
+
+const uploadMultiple = multer({
   storage: multer.memoryStorage(),
   limits: {
     fileSize: 5 * 1024 * 1024, // limit file size to 5MB
   },
-});  // <- Notice this field name
+});
+
+const uploadSingle = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // limit file size to 5MB
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === "image/png" || file.mimetype === "image/jpeg") { // You can add or remove more formats
+      cb(null, true);
+    } else {
+      cb(new Error("Invalid file type"), false);
+    }
+  },
+}).single('file');  // 'image' is the field name in the form
 
 const uploadToS3 = (file) => {
   return new Promise((resolve, reject) => {
@@ -48,9 +57,9 @@ const uploadToS3 = (file) => {
   });
 };
 
-export{
+export {
   s3,
-  upload,
+  uploadMultiple as upload,
+  uploadSingle,
   uploadToS3,
 };
-

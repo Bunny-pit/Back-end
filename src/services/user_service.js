@@ -1,4 +1,5 @@
 import User from '../database/models/user_model.js';
+import { uploadToS3 } from '../config/s3.js';
 
 import {
   generateHashedPassword,
@@ -163,6 +164,22 @@ const UserService = {
     }
     return user.followers;
   },
+
+  //프로필 사진 수정
+  async editImage(req){
+    try{
+      const user = await User.findById({_id:req.oid});
+      // const profileImg = user.profileImg;
+      const result = await uploadToS3(req.file);
+      const newImage = await User.findByIdAndUpdate(req.oid, {
+        profileImg: result.url,
+      }, { new: true });
+      return {success:true};
+    }catch(error){
+      throw error;
+    }
+    
+  }
 };
 
 export default UserService;
