@@ -16,7 +16,6 @@ async function getRandomName() {
     return '익명의';
   }
 }
-const secretName = await getRandomName();
 
 const userSchema = new mongoose.Schema(
   {
@@ -39,7 +38,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       unique: true,
       required: true,
-      default: `${secretName} 버니`,
+      default: `${await getRandomName()} 버니`,
     },
     email: {
       type: String,
@@ -53,11 +52,9 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
     role: {
-      type: Number,
       // 0은 일반 유저 1은 관리자.
+      type: Number,
       default: 0,
-      // 유저가 역할을 입력하더라도 0으로 고정
-      // set: () => 0
     },
     followings: [
       {
@@ -74,6 +71,16 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+userSchema.pre('save', async function (next) {
+  try {
+    this.secretName = await getRandomName() + ' 버니';
+  } catch (error) {
+    console.error('Secret name 생성에 실패했습니다. 기본값으로 대체합니다.');
+    this.secretName = '익명의 버니';
+  }
+  return next();
+});
 
 const User = mongoose.model('User', userSchema);
 export default User;

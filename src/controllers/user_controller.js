@@ -31,6 +31,7 @@ const UserController = {
         password,
       };
       const createdUser = await UserService.createUser(registerData);
+      console.log('createdUser중복검사:', createdUser)
       if (createdUser.success) {
         res.status(201).json({ '계정 생성 성공 ': createdUser.newUser });
       } else if (!createdUser.success) {
@@ -39,7 +40,9 @@ const UserController = {
           code: '회원 가입 실패'
         })
       }
+
     } catch (error) {
+      console.log(error)
       res.status(500).json({
         error: `회원 가입 오류 발생 - ${error.message}`
       });
@@ -80,11 +83,11 @@ const UserController = {
         };
         if (isPasswordMatched(password)) {
           const accessToken = jwt.sign(payload, process.env.ACCESS_SECRET_KEY, {
-            expiresIn: '2h', 
+            expiresIn: '2h',
             issuer: 'BunnyPit',
           });
           const refreshToken = jwt.sign({}, process.env.REFRESH_SECRET_KEY, {
-            expiresIn: '3d', 
+            expiresIn: '3d',
             issuer: 'BunnyPit',
           });
           res.cookie('accessToken', accessToken, {
@@ -153,7 +156,6 @@ const UserController = {
   async deleteUser(req, res) {
     try {
       const { email, password, passwordCheck } = req.body.withdrawalData;
-      console.log(req.body)
       const withdrawalData = {
         email,
         password,
