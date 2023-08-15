@@ -7,8 +7,6 @@ const LikeController = {
       const {postId} = req.params;
       const user = await User.findById({ _id: req.oid });
       const userId = user._id;
-      console.log("like기능 req.oid = " ,req.oid)
-      console.log("like userId = " ,userId)
       const like = await LikeService.createLike(postId,userId);
       res.status(201).json({ success: true, like });
     } catch (error) {
