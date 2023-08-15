@@ -71,7 +71,6 @@ const PostService = {
     updatePost: async (postId, newPostData, userId) => {
       try {
         const post = await Post.findById(postId)
-        // console.log(post)
         if(post.userId == userId){
           const updatedPost = await Post.findByIdAndUpdate(postId, newPostData, {
             new: true,
