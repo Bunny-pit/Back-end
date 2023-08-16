@@ -15,6 +15,7 @@ const MainhomeFriendsService = {
         userId: oid,
         email: user.email,
         name: user.userName,
+        profileImage: user.profileImg,
       });
 
       await newPost.save();
