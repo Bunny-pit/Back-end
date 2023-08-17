@@ -96,7 +96,7 @@ const MainhomeUnknownService = {
       }
 
       const alreadyReported = post.reports.some(
-        report => report.reportedBy === user.userName,
+        report => report.userId.toString() === oid,
       );
       if (alreadyReported) {
         throw new Error('이미 신고한 게시글입니다.');
@@ -105,6 +105,7 @@ const MainhomeUnknownService = {
       post.reports.push({
         reportedBy: user.userName,
         reason: reason,
+        userId: oid,
       });
 
       await post.save();
@@ -118,6 +119,7 @@ const MainhomeUnknownService = {
   getReportedPosts: async () => {
     try {
       const reportedPosts = await MainhomeUnknown.find({
+        reports: { $exists: true, $type: 'array' },
         $expr: { $gte: [{ $size: '$reports' }, 3] },
       });
       return reportedPosts;

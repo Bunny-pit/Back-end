@@ -14,10 +14,6 @@ const mainhomeUnknownSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    profileImage: {
-      type: String,
-      // required: true,
-    },
     content: {
       type: String,
       required: true,
@@ -27,6 +23,10 @@ const mainhomeUnknownSchema = new mongoose.Schema(
         reportedBy: {
           type: String,
           ref: 'User',
+          required: true,
+        },
+        userId: {
+          type: String,
           required: true,
         },
         reason: {

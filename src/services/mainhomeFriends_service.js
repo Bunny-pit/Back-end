@@ -15,6 +15,7 @@ const MainhomeFriendsService = {
         userId: oid,
         email: user.email,
         name: user.userName,
+        profileImage: user.profileImg,
       });
 
       await newPost.save();
@@ -123,6 +124,7 @@ const MainhomeFriendsService = {
       post.reports.push({
         reportedBy: user.userName,
         reason: reason,
+        userId: oid,
       });
 
       await post.save();

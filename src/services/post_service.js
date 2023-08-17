@@ -48,14 +48,13 @@ const PostService = {
             throw err;
         }
     },
-    getPostById: async (postId, email) => {
+    getPostById: async (postId) => {
       try {
         const post = await Post.findById(postId).populate('userName');
-        // const user = await User.findOne({email:email});
-        // const userName = user.userName;
+        const user = await User.findOne({userName:post.userName});
         const like = await LikeService.getLike(postId);
         // const countLength = like.userId.length;
-        return {post : post, like : like};
+        return {post : post, like : like, user:user};
       } catch (err) {
         throw  err;
       }
@@ -72,7 +71,6 @@ const PostService = {
     updatePost: async (postId, newPostData, userId) => {
       try {
         const post = await Post.findById(postId)
-        // console.log(post)
         if(post.userId == userId){
           const updatedPost = await Post.findByIdAndUpdate(postId, newPostData, {
             new: true,

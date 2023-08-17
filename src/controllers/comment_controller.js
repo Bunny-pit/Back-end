@@ -8,9 +8,7 @@ const CommentController = {
    
           // const { userId,userName } = req;
           const newComment = await CommentService.createComment(comment, req);
-          console.log('comment : ',newComment)
           res.status(200).json(newComment);
-          console.log('res 전송 성공!')
       } catch (error) {
         res.status(500).json({ error: error.message });
       }

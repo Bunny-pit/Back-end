@@ -31,6 +31,7 @@ const UserController = {
         password,
       };
       const createdUser = await UserService.createUser(registerData);
+      console.log('createdUser중복검사:', createdUser);
       if (createdUser.success) {
         res.status(201).json({ '계정 생성 성공 ': createdUser.newUser });
       } else if (!createdUser.success) {
@@ -40,6 +41,7 @@ const UserController = {
         });
       }
     } catch (error) {
+      console.log(error);
       res.status(500).json({
         error: `회원 가입 오류 발생 - ${error.message}`,
       });
@@ -153,7 +155,6 @@ const UserController = {
   async deleteUser(req, res) {
     try {
       const { email, password, passwordCheck } = req.body.withdrawalData;
-      console.log(req.body);
       const withdrawalData = {
         email,
         password,
@@ -310,6 +311,14 @@ const UserController = {
         error: 'Server Error Occurred',
         code: 'SOMETHING_WENT_WRONG',
       });
+    }
+  },
+  async editImage(req, res) {
+    try {
+      const result = await UserService.editImage(req);
+      res.status(200).send(result);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
   },
 };

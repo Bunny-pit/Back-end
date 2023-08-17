@@ -1,4 +1,5 @@
 import User from '../database/models/user_model.js';
+import { uploadToS3 } from '../config/s3.js';
 
 import {
   generateHashedPassword,
@@ -22,6 +23,8 @@ const UserService = {
         userName: userName,
         email: email,
         password: generateHashedPassword(password),
+        profileImg:
+          'https://bunny-post-bucket.s3.ap-northeast-2.amazonaws.com/profileImage.png',
       };
       const existingUserCheck = await User.findOne({ email });
       const existingUserName = await User.findOne({ userName });
@@ -30,11 +33,10 @@ const UserService = {
         return { success: false, reason: '이미 존재하는 이메일입니다.' };
       } else if (existingUserName) {
         return { success: false, reason: '이미 사용중인 닉네임입니다.' };
-      } else {
-        const newUser = new User(userData);
-        await newUser.save();
-        return { newUser, success: true };
       }
+      const newUser = new User(userData);
+      await newUser.save();
+      return { newUser, success: true };
     } catch (error) {
       console.log(error);
     }
@@ -184,6 +186,25 @@ const UserService = {
     } catch (error) {
       console.error(error);
       return { success: false, reason: '서버 오류 발생' };
+    }
+  },
+
+  //프로필 사진 수정
+  async editImage(req) {
+    try {
+      const user = await User.findById({ _id: req.oid });
+      // const profileImg = user.profileImg;
+      const result = await uploadToS3(req.file);
+      const newImage = await User.findByIdAndUpdate(
+        req.oid,
+        {
+          profileImg: result.url,
+        },
+        { new: true }
+      );
+      return { success: true };
+    } catch (error) {
+      throw error;
     }
   },
 };
