@@ -27,7 +27,7 @@ userRouter.get('/login', UserController.getAllUser); //모든 유저 조회. 개
 
 //팔로우 기능
 userRouter.post('/toggleFollow', loginRequired, UserController.toggleFollow);
-userRouter.get('/followings', UserController.getFollowings);
+userRouter.get('/followings',loginRequired, UserController.getFollowings);
 userRouter.get('/followers', UserController.getFollowers);
 
 //검색기능

@@ -9,7 +9,6 @@ const CommentService = {
       const user = await User.findById({ _id: req.oid })
       const userId = user._id;
       const userName = user.userName;
-      console.log(userId, userName)
       const newComment = new Comment({ comment, postId, userId, userName});
       return newComment.save();
     } catch (err) {
