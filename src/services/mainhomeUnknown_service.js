@@ -31,7 +31,7 @@ const MainhomeUnknownService = {
         .skip((page - 1) * limit)
         .limit(limit);
 
-      return posts.map(post => ({
+      return posts.map((post) => ({
         ...post._doc,
         email: post.email,
       }));
@@ -57,7 +57,7 @@ const MainhomeUnknownService = {
         },
         {
           new: true,
-        },
+        }
       );
 
       return updatedPost;
@@ -96,7 +96,7 @@ const MainhomeUnknownService = {
       }
 
       const alreadyReported = post.reports.some(
-        report => report.userId.toString() === oid,
+        (report) => report.userId.toString() === oid
       );
       if (alreadyReported) {
         throw new Error('이미 신고한 게시글입니다.');

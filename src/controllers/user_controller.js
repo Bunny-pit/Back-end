@@ -287,11 +287,13 @@ const UserController = {
       res.status(500).json({ error: error.message });
     }
   },
+
+  // 관리자에서 사용자 삭제
   async adminDeleteUser(req, res) {
     try {
       const { email } = req.body;
 
-      // 추후 관리자 토큰 확인하기u
+      // 추후 관리자 토큰 확인하기
 
       const deletionResult = await UserService.adminDeleteUser(email);
 

@@ -41,7 +41,7 @@ mainhome_router.post(
 //3회 이상 신고된 게시글 불러오기
 mainhome_router.get(
   '/unknown/reported',
-  loginRequired,
+  // loginRequired,
   MainhomeUnknownController.getReportPosts
 );
 
