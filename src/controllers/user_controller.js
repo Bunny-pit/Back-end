@@ -86,7 +86,7 @@ const UserController = {
             expiresIn: '2h',
             issuer: 'BunnyPit',
           });
-          const refreshToken = jwt.sign({}, process.env.REFRESH_SECRET_KEY, {
+          const refreshToken = jwt.sign(payload, process.env.REFRESH_SECRET_KEY, {
             expiresIn: '3d',
             issuer: 'BunnyPit',
           });
@@ -197,24 +197,33 @@ const UserController = {
   },
   async refreshToken(req, res) {
     const { refreshToken } = req.body;
+
     try {
       const decodedData = jwt.verify(
         refreshToken,
-        process.env.ACCESS_SECRET_KEY,
+        process.env.REFRESH_SECRET_KEY,
       );
+      console.log('decodedData:', decodedData)
+
+      const { iat, exp, iss, ...userData } = decodedData;
 
       const refreshedToken = jwt.sign(
-        decodedData,
+        userData,
         process.env.ACCESS_SECRET_KEY,
         {
           expiresIn: '2h',
-          issuer: 'bunny pit',
         },
       );
-
-      res.status(200).json({ accessToken: refreshedToken });
+      console.log('refreshedToken:', refreshedToken)
+      res.status(200).json({
+        accessToken: refreshedToken
+      });
     } catch (error) {
-      res.status(401).json({ error: 'refresh 토큰 생성 실패, 유효하지 않음.' });
+      console.log(error)
+      res.status(401).json({
+        error: 'refresh 토큰 생성 실패, 유효하지 않음.',
+        errorMsg: error
+      });
     }
   },
 
