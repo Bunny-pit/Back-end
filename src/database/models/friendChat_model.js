@@ -11,15 +11,15 @@ const FriendChatSchema = new Schema({
   messages: [
     {
       type: SchemaTypes.ObjectId,
-      ref: 'Message',
+      ref: 'FriendMessage',
     },
   ],
   lastMessage: {
     type: SchemaTypes.ObjectId,
-    ref: 'Message',
+    ref: 'FriendMessage',
     default: null,
   },
 });
 
-const FriendChat = mongoose.model('friendChat', FriendChatSchema);
+const FriendChat = mongoose.model('FriendChat', FriendChatSchema);
 export default FriendChat;

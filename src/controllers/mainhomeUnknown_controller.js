@@ -67,6 +67,39 @@ const mainhomeUnknownController = {
       res.status(500).json({ error: error.message });
     }
   },
+
+  async reportPost(req, res) {
+    try {
+      const { id: postId } = req.params;
+      const { reason } = req.body;
+
+      const post = await MainhomeUnknownService.reportPost(
+        req.oid,
+        postId,
+        reason,
+      );
+
+      res.json({ message: '게시글을 성공적으로 신고했습니다.', post });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  async getReportPosts(req, res) {
+    try {
+      const reportedPosts = await MainhomeUnknownService.getReportedPosts();
+
+      if (!reportedPosts.length) {
+        return res
+          .status(404)
+          .json({ message: '신고 3회 이상 누적된 게시글이 없습니다.' });
+      }
+
+      res.json(reportedPosts);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
 };
 
 export default mainhomeUnknownController;

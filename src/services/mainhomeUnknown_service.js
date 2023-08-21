@@ -82,6 +82,50 @@ const MainhomeUnknownService = {
       throw err;
     }
   },
+
+  reportPost: async (oid, postId, reason) => {
+    try {
+      const user = await User.findById(oid);
+      if (!user) {
+        throw new Error('유저를 찾을 수 없습니다.');
+      }
+
+      const post = await MainhomeUnknown.findById(postId);
+      if (!post) {
+        throw new Error('게시글을 찾지 못했습니다.');
+      }
+
+      const alreadyReported = post.reports.some(
+        report => report.reportedBy === user.userName,
+      );
+      if (alreadyReported) {
+        throw new Error('이미 신고한 게시글입니다.');
+      }
+
+      post.reports.push({
+        reportedBy: user.userName,
+        reason: reason,
+      });
+
+      await post.save();
+
+      return post;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  getReportedPosts: async () => {
+    try {
+      const reportedPosts = await MainhomeUnknown.find({
+        reports: { $exists: true, $type: 'array' },
+        $expr: { $gte: [{ $size: '$reports' }, 3] },
+      });
+      return reportedPosts;
+    } catch (err) {
+      throw err;
+    }
+  },
 };
 
 export default MainhomeUnknownService;

@@ -87,7 +87,7 @@ const FriendChatService = {
     const populatedMessage = await FriendMessage.findById(
       newMessage._id,
     ).populate('sender', 'email secretName');
-    console.log(content);
+    console.log('friendchat', content);
 
     return populatedMessage;
   },
