@@ -145,6 +145,16 @@ const MainhomeFriendsService = {
       throw err;
     }
   },
+
+  // 관리자 기능 신고 3회 이상 게시글 삭제
+  deleteAdminPost: async (postId) => {
+    try {
+      const deletedPost = await MainhomeFriends.findByIdAndDelete(postId);
+      return deletedPost;
+    } catch (err) {
+      throw err;
+    }
+  },
 };
 
 export default MainhomeFriendsService;
