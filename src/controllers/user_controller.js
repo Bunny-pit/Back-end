@@ -24,11 +24,12 @@ dotenv.config();
 const UserController = {
   async createUser(req, res) {
     try {
-      const { userName, email, password } = req.body;
+      const { userName, email, password, introduction } = req.body;
       const registerData = {
         userName,
         email,
         password,
+        introduction,
       };
       const createdUser = await UserService.createUser(registerData);
       console.log('createdUser중복검사:', createdUser);
@@ -85,10 +86,14 @@ const UserController = {
             expiresIn: '2h',
             issuer: 'BunnyPit',
           });
-          const refreshToken = jwt.sign({}, process.env.REFRESH_SECRET_KEY, {
-            expiresIn: '3d',
-            issuer: 'BunnyPit',
-          });
+          const refreshToken = jwt.sign(
+            payload,
+            process.env.REFRESH_SECRET_KEY,
+            {
+              expiresIn: '3d',
+              issuer: 'BunnyPit',
+            }
+          );
           res.cookie('accessToken', accessToken, {
             secure: false,
             httpOnly: true,
@@ -135,12 +140,19 @@ const UserController = {
   },
   async updateUser(req, res) {
     try {
-      const { email, prevPassword, newPassword, newPasswordCheck } = req.body;
+      const {
+        email,
+        prevPassword,
+        newPassword,
+        newPasswordCheck,
+        newIntroduction,
+      } = req.body;
       const updateData = {
         email,
         prevPassword,
         newPassword,
         newPasswordCheck,
+        newIntroduction,
       };
       const result = await UserService.updateUser(updateData, res);
       res.status(201).json(result);
@@ -154,11 +166,13 @@ const UserController = {
   },
   async deleteUser(req, res) {
     try {
-      const { email, password, passwordCheck } = req.body.withdrawalData;
+      const { email, password, passwordCheck, introduction } =
+        req.body.withdrawalData;
       const withdrawalData = {
         email,
         password,
         passwordCheck,
+        introduction,
       };
       const deletionResult = await UserService.deleteUser(withdrawalData);
 
@@ -196,24 +210,30 @@ const UserController = {
   },
   async refreshToken(req, res) {
     const { refreshToken } = req.body;
+
     try {
       const decodedData = jwt.verify(
         refreshToken,
-        process.env.ACCESS_SECRET_KEY
+        process.env.REFRESH_SECRET_KEY
       );
+      console.log('decodedData:', decodedData);
 
-      const refreshedToken = jwt.sign(
-        decodedData,
-        process.env.ACCESS_SECRET_KEY,
-        {
-          expiresIn: '2h',
-          issuer: 'bunny pit',
-        }
-      );
+      const { iat, exp, iss, ...userData } = decodedData;
 
-      res.status(200).json({ accessToken: refreshedToken });
+      const refreshedToken = jwt.sign(userData, process.env.ACCESS_SECRET_KEY, {
+        expiresIn: '2h',
+        issuer: 'bunny pit',
+      });
+      console.log('refreshedToken:', refreshedToken);
+      res.status(200).json({
+        accessToken: refreshedToken,
+      });
     } catch (error) {
-      res.status(401).json({ error: 'refresh 토큰 생성 실패, 유효하지 않음.' });
+      console.log(error);
+      res.status(401).json({
+        error: 'refresh 토큰 생성 실패, 유효하지 않음.',
+        errorMsg: error,
+      });
     }
   },
 
