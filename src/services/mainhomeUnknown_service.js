@@ -127,6 +127,16 @@ const MainhomeUnknownService = {
       throw err;
     }
   },
+
+  // 관리자 기능 신고 3회 이상 게시글 삭제
+  deleteAdminPost: async (postId) => {
+    try {
+      const deletedPost = await MainhomeUnknown.findByIdAndDelete(postId);
+      return deletedPost;
+    } catch (err) {
+      throw err;
+    }
+  },
 };
 
 export default MainhomeUnknownService;

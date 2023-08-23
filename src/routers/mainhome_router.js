@@ -91,8 +91,13 @@ mainhome_router.get(
 
 // 관리자가 3회 이상 신고받은 게시글 삭제하기
 mainhome_router.delete(
-  '/report/:id',
+  '/report/friends/:id',
   MainhomeFriendsController.deleteAdminPost
+);
+
+mainhome_router.delete(
+  '/report/unknown/:id',
+  MainhomeUnknownController.deleteAdminPost
 );
 
 export default mainhome_router;
