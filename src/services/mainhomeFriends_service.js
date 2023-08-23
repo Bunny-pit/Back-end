@@ -36,7 +36,7 @@ const MainhomeFriendsService = {
         userName: { $in: followedUserNames },
       });
 
-      const followedUserIds = followedUsers.map(user => user._id);
+      const followedUserIds = followedUsers.map((user) => user._id);
 
       // 로그인한 사용자의 oid도 팔로우 목록에 추가
       followedUserIds.push(oid);
@@ -49,7 +49,7 @@ const MainhomeFriendsService = {
         .skip((page - 1) * limit)
         .limit(limit);
 
-      return posts.map(post => ({
+      return posts.map((post) => ({
         ...post._doc,
         email: post.email,
       }));
@@ -75,7 +75,7 @@ const MainhomeFriendsService = {
         },
         {
           new: true,
-        },
+        }
       );
 
       return updatedPost;
@@ -115,7 +115,7 @@ const MainhomeFriendsService = {
 
       // 중복 신고 체크
       const alreadyReported = post.reports.some(
-        report => report.reportedBy === user.userName,
+        (report) => report.reportedBy === user.userName
       );
       if (alreadyReported) {
         throw new Error('이미 신고한 게시글입니다.');
@@ -138,9 +138,19 @@ const MainhomeFriendsService = {
   getReportedPosts: async () => {
     try {
       const reportedPosts = await MainhomeFriends.find({
-        $expr: { $gte: [{ $size: '$reports' }, 3] },
+        reports: { $exists: true, $size: 3 }, // Check if reports array exists and has a size of 3
       });
       return reportedPosts;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  // 관리자 기능 신고 3회 이상 게시글 삭제
+  deleteAdminPost: async (postId) => {
+    try {
+      const deletedPost = await MainhomeFriends.findByIdAndDelete(postId);
+      return deletedPost;
     } catch (err) {
       throw err;
     }

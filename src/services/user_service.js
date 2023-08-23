@@ -16,29 +16,30 @@ import {
 } from '../lib/constant.js';
 
 const UserService = {
-  createUser: async registerData => {
+  createUser: async (registerData) => {
     try {
-      const { userName, email, password,introduction } = registerData;
+      const { userName, email, password, introduction } = registerData;
       const userData = {
         userName: userName,
         email: email,
         password: generateHashedPassword(password),
-        profileImg:"https://bunny-post-bucket.s3.ap-northeast-2.amazonaws.com/profileImage.png",
+        profileImg:
+          'https://bunny-post-bucket.s3.ap-northeast-2.amazonaws.com/profileImage.png',
         introduction: introduction,
       };
       const existingUserCheck = await User.findOne({ email });
-      const existingUserName = await User.findOne({ userName })
+      const existingUserName = await User.findOne({ userName });
 
       if (existingUserCheck) {
-        return { success: false, reason: '이미 존재하는 이메일입니다.' }
+        return { success: false, reason: '이미 존재하는 이메일입니다.' };
       } else if (existingUserName) {
-        return { success: false, reason: '이미 사용중인 닉네임입니다.' }
+        return { success: false, reason: '이미 사용중인 닉네임입니다.' };
       }
       const newUser = new User(userData);
       await newUser.save();
       return { newUser, success: true };
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   },
   //   loginUser: async (userData) => {
@@ -54,7 +55,7 @@ const UserService = {
   //     }
   //   },
 
-  getUserById: async oid => {
+  getUserById: async (oid) => {
     try {
       const user = await User.findById({ _id: oid });
       return user;
@@ -65,11 +66,17 @@ const UserService = {
 
   updateUser: async (updateData, res) => {
     try {
-      const { email, prevPassword, newPassword, newPasswordCheck, newIntroduction } = updateData;
+      const {
+        email,
+        prevPassword,
+        newPassword,
+        newPasswordCheck,
+        newIntroduction,
+      } = updateData;
       // 유저 확인
       const existingUser = await User.find({ email });
       // 기존 비밀번호 확인
-      const isPasswordMatched = password => {
+      const isPasswordMatched = (password) => {
         return generateHashedPassword(password) === existingUser[0].password;
       };
       if (!existingUser) {
@@ -81,9 +88,10 @@ const UserService = {
         ) {
           await User.findOneAndUpdate(
             { email },
-            { password: generateHashedPassword(newPassword),
-              introduction : newIntroduction},
-            
+            {
+              password: generateHashedPassword(newPassword),
+              introduction: newIntroduction,
+            }
           );
           res.status(200).json('비밀번호 변경 완료');
         } else {
@@ -96,11 +104,11 @@ const UserService = {
       res.status(500).json({ 'update service 오류': error.message });
     }
   },
-  deleteUser: async withdrawalData => {
+  deleteUser: async (withdrawalData) => {
     try {
       const { email, password, passwordCheck, introduction } = withdrawalData;
       const existingUserCheck = await User.findOne({ email });
-      const isPasswordMatched = password => {
+      const isPasswordMatched = (password) => {
         return generateHashedPassword(password) === existingUserCheck.password;
       };
 
@@ -168,22 +176,47 @@ const UserService = {
     }
     return user.followers;
   },
+  // 관리자 유저삭제
+  adminDeleteUser: async (email) => {
+    try {
+      // 사용자가 존재하는지 확인
+      const user = await User.findOne({ email });
+
+      if (!user) {
+        return { success: false, reason: '해당하는 사용자가 없습니다.' };
+      }
+
+      // 사용자 삭제
+      await User.deleteOne({ email });
+
+      return {
+        success: true,
+        message: '사용자 정보가 성공적으로 삭제되었습니다.',
+      };
+    } catch (error) {
+      console.error(error);
+      return { success: false, reason: '서버 오류 발생' };
+    }
+  },
 
   //프로필 사진 수정
-  async editImage(req){
-    try{
-      const user = await User.findById({_id:req.oid});
+  async editImage(req) {
+    try {
+      const user = await User.findById({ _id: req.oid });
       // const profileImg = user.profileImg;
       const result = await uploadToS3(req.file);
-      const newImage = await User.findByIdAndUpdate(req.oid, {
-        profileImg: result.url,
-      }, { new: true });
-      return {success:true};
-    }catch(error){
+      const newImage = await User.findByIdAndUpdate(
+        req.oid,
+        {
+          profileImg: result.url,
+        },
+        { new: true }
+      );
+      return { success: true };
+    } catch (error) {
       throw error;
     }
-    
-  }
+  },
 };
 
 export default UserService;

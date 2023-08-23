@@ -31,7 +31,7 @@ const MainhomeUnknownService = {
         .skip((page - 1) * limit)
         .limit(limit);
 
-      return posts.map(post => ({
+      return posts.map((post) => ({
         ...post._doc,
         email: post.email,
       }));
@@ -57,7 +57,7 @@ const MainhomeUnknownService = {
         },
         {
           new: true,
-        },
+        }
       );
 
       return updatedPost;
@@ -96,7 +96,7 @@ const MainhomeUnknownService = {
       }
 
       const alreadyReported = post.reports.some(
-        report => report.userId.toString() === oid,
+        (report) => report.userId.toString() === oid
       );
       if (alreadyReported) {
         throw new Error('이미 신고한 게시글입니다.');
@@ -123,6 +123,16 @@ const MainhomeUnknownService = {
         $expr: { $gte: [{ $size: '$reports' }, 3] },
       });
       return reportedPosts;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  // 관리자 기능 신고 3회 이상 게시글 삭제
+  deleteAdminPost: async (postId) => {
+    try {
+      const deletedPost = await MainhomeUnknown.findByIdAndDelete(postId);
+      return deletedPost;
     } catch (err) {
       throw err;
     }

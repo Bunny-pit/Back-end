@@ -24,7 +24,7 @@ dotenv.config();
 const UserController = {
   async createUser(req, res) {
     try {
-      const { userName, email, password,introduction } = req.body;
+      const { userName, email, password, introduction } = req.body;
       const registerData = {
         userName,
         email,
@@ -32,7 +32,7 @@ const UserController = {
         introduction,
       };
       const createdUser = await UserService.createUser(registerData);
-      console.log('createdUser중복검사:', createdUser)
+      console.log('createdUser중복검사:', createdUser);
       if (createdUser.success) {
         res.status(201).json({ '계정 생성 성공 ': createdUser.newUser });
       } else if (!createdUser.success) {
@@ -41,9 +41,8 @@ const UserController = {
           code: '회원 가입 실패',
         });
       }
-
     } catch (error) {
-      console.log(error)
+      console.log(error);
       res.status(500).json({
         error: `회원 가입 오류 발생 - ${error.message}`,
       });
@@ -72,7 +71,7 @@ const UserController = {
       const { email, password } = req.body;
       const user = await User.findOne({ email });
       if (user && user.email) {
-        const isPasswordMatched = password => {
+        const isPasswordMatched = (password) => {
           return generateHashedPassword(password) === user.password;
         };
         const payload = {
@@ -87,10 +86,14 @@ const UserController = {
             expiresIn: '2h',
             issuer: 'BunnyPit',
           });
-          const refreshToken = jwt.sign(payload, process.env.REFRESH_SECRET_KEY, {
-            expiresIn: '3d',
-            issuer: 'BunnyPit',
-          });
+          const refreshToken = jwt.sign(
+            payload,
+            process.env.REFRESH_SECRET_KEY,
+            {
+              expiresIn: '3d',
+              issuer: 'BunnyPit',
+            }
+          );
           res.cookie('accessToken', accessToken, {
             secure: false,
             httpOnly: true,
@@ -110,7 +113,7 @@ const UserController = {
             403,
             '비밀번호가 일치하지 않습니다.',
             WRONG_PASSWORD,
-            'password',
+            'password'
           );
         }
       } else {
@@ -119,7 +122,7 @@ const UserController = {
           404,
           '회원가입이 필요합니다.',
           USER_DOES_NOT_EXIST,
-          'email',
+          'email'
         );
       }
     } catch (error) {
@@ -137,7 +140,13 @@ const UserController = {
   },
   async updateUser(req, res) {
     try {
-      const { email, prevPassword, newPassword, newPasswordCheck, newIntroduction } = req.body;
+      const {
+        email,
+        prevPassword,
+        newPassword,
+        newPasswordCheck,
+        newIntroduction,
+      } = req.body;
       const updateData = {
         email,
         prevPassword,
@@ -157,7 +166,8 @@ const UserController = {
   },
   async deleteUser(req, res) {
     try {
-      const { email, password, passwordCheck, introduction } = req.body.withdrawalData;
+      const { email, password, passwordCheck, introduction } =
+        req.body.withdrawalData;
       const withdrawalData = {
         email,
         password,
@@ -204,28 +214,25 @@ const UserController = {
     try {
       const decodedData = jwt.verify(
         refreshToken,
-        process.env.REFRESH_SECRET_KEY,
+        process.env.REFRESH_SECRET_KEY
       );
-      console.log('decodedData:', decodedData)
+      console.log('decodedData:', decodedData);
 
       const { iat, exp, iss, ...userData } = decodedData;
 
-      const refreshedToken = jwt.sign(
-        userData,
-        process.env.ACCESS_SECRET_KEY,
-        {
-          expiresIn: '2h',
-        },
-      );
-      console.log('refreshedToken:', refreshedToken)
+      const refreshedToken = jwt.sign(userData, process.env.ACCESS_SECRET_KEY, {
+        expiresIn: '2h',
+        issuer: 'bunny pit',
+      });
+      console.log('refreshedToken:', refreshedToken);
       res.status(200).json({
-        accessToken: refreshedToken
+        accessToken: refreshedToken,
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       res.status(401).json({
         error: 'refresh 토큰 생성 실패, 유효하지 않음.',
-        errorMsg: error
+        errorMsg: error,
       });
     }
   },
@@ -300,14 +307,42 @@ const UserController = {
       res.status(500).json({ error: error.message });
     }
   },
-  async editImage(req,res) {
-    try{
+
+  // 관리자에서 사용자 삭제
+  async adminDeleteUser(req, res) {
+    try {
+      const { email } = req.body;
+
+      // 추후 관리자 토큰 확인하기
+
+      const deletionResult = await UserService.adminDeleteUser(email);
+
+      if (deletionResult.success) {
+        return res
+          .status(200)
+          .json({ message: '사용자 정보가 성공적으로 삭제되었습니다.' });
+      } else {
+        return res.status(400).json({
+          error: deletionResult.reason || '사용자 삭제 실패',
+          code: 'USER_DELETION_FAILED',
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        error: 'Server Error Occurred',
+        code: 'SOMETHING_WENT_WRONG',
+      });
+    }
+  },
+  async editImage(req, res) {
+    try {
       const result = await UserService.editImage(req);
       res.status(200).send(result);
-    }catch(error){
+    } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  }
+  },
 };
 export default UserController;
 

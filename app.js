@@ -24,7 +24,7 @@ const io = initializeSocketIo(server);
 //환경 설정
 dotenv.config();
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 const origin = process.env.ORIGIN || 'http://localhost:3000';
 
@@ -42,7 +42,7 @@ app.use(
   cors({
     origin: origin,
     credentials: true,
-  }),
+  })
 );
 
 // route
@@ -59,7 +59,7 @@ const startServer = async () => {
         const apiEndpoint = '/api/' + file.replace('_router.js', '');
         app.use(apiEndpoint, route.default);
       }
-    }),
+    })
   );
 
   server.listen(port, () => {
@@ -85,7 +85,7 @@ const startServer = async () => {
       const newMessage = await ChatService.createMessageAndEmit(
         senderId,
         chatId,
-        content,
+        content
       );
       io.to(chatId).emit('newMessage', newMessage);
     });
@@ -93,7 +93,7 @@ const startServer = async () => {
       const newMessage = await FriendChatService.createMessageAndEmit(
         senderId,
         chatId,
-        content,
+        content
       );
       io.to(chatId).emit('newMessage', newMessage);
     });
