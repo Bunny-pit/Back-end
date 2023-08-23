@@ -24,11 +24,12 @@ dotenv.config();
 const UserController = {
   async createUser(req, res) {
     try {
-      const { userName, email, password } = req.body;
+      const { userName, email, password,introduction } = req.body;
       const registerData = {
         userName,
         email,
         password,
+        introduction,
       };
       const createdUser = await UserService.createUser(registerData);
       console.log('createdUser중복검사:', createdUser)
@@ -136,12 +137,13 @@ const UserController = {
   },
   async updateUser(req, res) {
     try {
-      const { email, prevPassword, newPassword, newPasswordCheck } = req.body;
+      const { email, prevPassword, newPassword, newPasswordCheck, newIntroduction } = req.body;
       const updateData = {
         email,
         prevPassword,
         newPassword,
         newPasswordCheck,
+        newIntroduction,
       };
       const result = await UserService.updateUser(updateData, res);
       res.status(201).json(result);
@@ -155,11 +157,12 @@ const UserController = {
   },
   async deleteUser(req, res) {
     try {
-      const { email, password, passwordCheck } = req.body.withdrawalData;
+      const { email, password, passwordCheck, introduction } = req.body.withdrawalData;
       const withdrawalData = {
         email,
         password,
         passwordCheck,
+        introduction,
       };
       const deletionResult = await UserService.deleteUser(withdrawalData);
 

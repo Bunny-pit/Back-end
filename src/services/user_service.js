@@ -18,12 +18,13 @@ import {
 const UserService = {
   createUser: async registerData => {
     try {
-      const { userName, email, password } = registerData;
+      const { userName, email, password,introduction } = registerData;
       const userData = {
         userName: userName,
         email: email,
         password: generateHashedPassword(password),
-        profileImg:"https://bunny-post-bucket.s3.ap-northeast-2.amazonaws.com/profileImage.png"
+        profileImg:"https://bunny-post-bucket.s3.ap-northeast-2.amazonaws.com/profileImage.png",
+        introduction: introduction,
       };
       const existingUserCheck = await User.findOne({ email });
       const existingUserName = await User.findOne({ userName })
@@ -64,7 +65,7 @@ const UserService = {
 
   updateUser: async (updateData, res) => {
     try {
-      const { email, prevPassword, newPassword, newPasswordCheck } = updateData;
+      const { email, prevPassword, newPassword, newPasswordCheck, newIntroduction } = updateData;
       // 유저 확인
       const existingUser = await User.find({ email });
       // 기존 비밀번호 확인
@@ -80,7 +81,9 @@ const UserService = {
         ) {
           await User.findOneAndUpdate(
             { email },
-            { password: generateHashedPassword(newPassword) },
+            { password: generateHashedPassword(newPassword),
+              introduction : newIntroduction},
+            
           );
           res.status(200).json('비밀번호 변경 완료');
         } else {
@@ -95,7 +98,7 @@ const UserService = {
   },
   deleteUser: async withdrawalData => {
     try {
-      const { email, password, passwordCheck } = withdrawalData;
+      const { email, password, passwordCheck, introduction } = withdrawalData;
       const existingUserCheck = await User.findOne({ email });
       const isPasswordMatched = password => {
         return generateHashedPassword(password) === existingUserCheck.password;
