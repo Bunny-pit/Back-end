@@ -335,9 +335,10 @@ const UserController = {
       });
     }
   },
-  async editImage(req, res) {
+  //post 프로필 수정
+  async editProfile(req, res) {
     try {
-      const result = await UserService.editImage(req);
+      const result = await UserService.editProfile(req);
       res.status(200).send(result);
     } catch (error) {
       res.status(500).json({ error: error.message });
