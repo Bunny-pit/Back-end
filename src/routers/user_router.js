@@ -37,6 +37,6 @@ userRouter.get('/followers', UserController.getFollowers);
 userRouter.get('/search', UserController.searchUser);
 
 // 유저 이미지 사진 수정
-userRouter.patch('/profile/img', loginRequired,uploadSingle,UserController.editImage)
+userRouter.patch('/profile/edit', loginRequired,uploadSingle,UserController.editProfile)
 
 export default userRouter;

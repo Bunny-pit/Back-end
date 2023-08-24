@@ -71,7 +71,6 @@ const UserService = {
         prevPassword,
         newPassword,
         newPasswordCheck,
-        newIntroduction,
       } = updateData;
       // 유저 확인
       const existingUser = await User.find({ email });
@@ -90,7 +89,6 @@ const UserService = {
             { email },
             {
               password: generateHashedPassword(newPassword),
-              introduction: newIntroduction,
             }
           );
           res.status(200).json('비밀번호 변경 완료');
@@ -199,24 +197,57 @@ const UserService = {
     }
   },
 
-  //프로필 사진 수정
-  async editImage(req) {
+  //post 프로필 수정
+  // async editProfile(req) {
+  //   try {
+  //     const user = await User.findById({ _id: req.oid });
+  //     // const profileImg = user.profileImg;
+  //     const result = await uploadToS3(req.file);
+  //     const newImage = await User.findByIdAndUpdate(
+  //       req.oid,
+  //       {
+  //         profileImg: result.url,
+  //       },
+  //       { new: true }
+  //     );
+  //     return { success: true };
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // },
+  async editProfile(req) {
     try {
-      const user = await User.findById({ _id: req.oid });
-      // const profileImg = user.profileImg;
-      const result = await uploadToS3(req.file);
-      const newImage = await User.findByIdAndUpdate(
-        req.oid,
-        {
-          profileImg: result.url,
-        },
-        { new: true }
-      );
-      return { success: true };
+        let updatedUser;
+        const user = await User.findById({ _id: req.oid });
+
+        if (!user) {
+            throw new Error('유저를 찾을 수 없습니다.');
+        }
+
+        // 이미지 파일이 있다면 S3에 업로드
+        if (req.file) {
+            const result = await uploadToS3(req.file);
+            user.profileImg = result.url;
+        }
+
+        // introduction이 있다면 업데이트
+        if (req.body.introduction) {
+            user.introduction = req.body.introduction;
+        }
+
+        // 변경 사항 저장
+        updatedUser = await user.save();
+
+        if (!updatedUser) {
+            throw new Error('정보 업데이트에 실패했습니다.');
+        }
+
+        return { success: true };
     } catch (error) {
-      throw error;
+        throw error;
     }
-  },
+}
+
 };
 
 export default UserService;
