@@ -5,7 +5,7 @@ const mainhomeFriendsController = {
     try {
       const newPost = await MainhomeFriendsService.createMainhomePost(
         req.oid,
-        req.body,
+        req.body
       );
 
       res.status(201).json(newPost);
@@ -23,7 +23,7 @@ const mainhomeFriendsController = {
       const posts = await MainhomeFriendsService.getAllMainhomePosts(
         oid,
         page,
-        limit,
+        limit
       );
 
       res.json(posts);
@@ -40,7 +40,7 @@ const mainhomeFriendsController = {
         req.oid,
 
         id,
-        req.body,
+        req.body
       );
 
       if (!updatedPost) {
@@ -59,7 +59,7 @@ const mainhomeFriendsController = {
 
       const deletedPost = await MainhomeFriendsService.deleteMainhomePost(
         req.oid,
-        id,
+        id
       );
 
       if (!deletedPost) {
@@ -80,7 +80,7 @@ const mainhomeFriendsController = {
       const post = await MainhomeFriendsService.reportPost(
         req.oid,
         postId,
-        reason,
+        reason
       );
 
       res.json({ message: '게시글을 성공적으로 신고했습니다.', post });
@@ -100,6 +100,23 @@ const mainhomeFriendsController = {
       }
 
       res.json(reportedPosts);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  // 관리자 기능 신고 3회 이상 게시글 삭제
+  async deleteAdminPost(req, res) {
+    try {
+      const { id } = req.params;
+
+      const deletedPost = await MainhomeFriendsService.deleteAdminPost(id);
+
+      if (!deletedPost) {
+        return res.status(404).json({ error: '게시글을 찾지 못했습니다.' });
+      }
+
+      res.json({ message: '게시글을 성공적으로 삭제했습니다.', deletedPost });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
