@@ -72,7 +72,7 @@ const userSchema = new mongoose.Schema(
 
 userSchema.pre('save', async function (next) {
   try {
-    this.secretName = await getRandomName() + ' 버니';
+    this.secretName = (await getRandomName()) + ' 버니';
   } catch (error) {
     console.error('Secret name 생성에 실패했습니다. 기본값으로 대체합니다.');
     this.secretName = '익명의 버니';

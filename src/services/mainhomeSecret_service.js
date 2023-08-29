@@ -1,7 +1,7 @@
-import MainhomeUnknown from '../database/models/mainhomeUnknown_model.js';
+import MainhomeSecret from '../database/models/mainhomeSecret_model.js';
 import User from '../database/models/user_model.js';
 
-const MainhomeUnknownService = {
+const MainhomeSecretService = {
   createMainhomePost: async (oid, data) => {
     try {
       const user = await User.findById(oid);
@@ -10,7 +10,7 @@ const MainhomeUnknownService = {
         throw new Error('유저를 찾을 수 없습니다.');
       }
 
-      const newPost = new MainhomeUnknown({
+      const newPost = new MainhomeSecret({
         ...data,
         userId: oid,
         email: user.email,
@@ -26,7 +26,7 @@ const MainhomeUnknownService = {
 
   getAllMainhomePosts: async (page, limit) => {
     try {
-      const posts = await MainhomeUnknown.find()
+      const posts = await MainhomeSecret.find()
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit);
@@ -42,14 +42,14 @@ const MainhomeUnknownService = {
 
   updateMainhomePost: async (oid, postId, data) => {
     try {
-      const post = await MainhomeUnknown.findById(postId);
+      const post = await MainhomeSecret.findById(postId);
       if (!post) {
         throw new Error('게시글을 찾지 못했습니다.');
       } else if (post.userId.toString() !== oid.toString()) {
         throw new Error('게시글 수정 권한이 없습니다.');
       }
 
-      const updatedPost = await MainhomeUnknown.findByIdAndUpdate(
+      const updatedPost = await MainhomeSecret.findByIdAndUpdate(
         postId,
         {
           ...data,
@@ -68,14 +68,14 @@ const MainhomeUnknownService = {
 
   deleteMainhomePost: async (oid, postId) => {
     try {
-      const post = await MainhomeUnknown.findById(postId);
+      const post = await MainhomeSecret.findById(postId);
       if (!post) {
         throw new Error('게시글을 찾지 못했습니다.');
       } else if (post.userId.toString() !== oid.toString()) {
         throw new Error('게시글 삭제 권한이 없습니다.');
       }
 
-      const deletedPost = await MainhomeUnknown.findByIdAndDelete(postId);
+      const deletedPost = await MainhomeSecret.findByIdAndDelete(postId);
 
       return deletedPost;
     } catch (err) {
@@ -90,7 +90,7 @@ const MainhomeUnknownService = {
         throw new Error('유저를 찾을 수 없습니다.');
       }
 
-      const post = await MainhomeUnknown.findById(postId);
+      const post = await MainhomeSecret.findById(postId);
       if (!post) {
         throw new Error('게시글을 찾지 못했습니다.');
       }
@@ -118,7 +118,7 @@ const MainhomeUnknownService = {
 
   getReportedPosts: async () => {
     try {
-      const reportedPosts = await MainhomeUnknown.find({
+      const reportedPosts = await MainhomeSecret.find({
         reports: { $exists: true, $type: 'array' },
         $expr: { $gte: [{ $size: '$reports' }, 3] },
       });
@@ -129,4 +129,4 @@ const MainhomeUnknownService = {
   },
 };
 
-export default MainhomeUnknownService;
+export default MainhomeSecretService;

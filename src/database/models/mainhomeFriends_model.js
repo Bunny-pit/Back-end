@@ -16,7 +16,7 @@ const mainhomeFriendsSchema = new mongoose.Schema(
     },
     profileImage: {
       type: String,
-      // required: true,
+      required: true,
     },
     content: {
       type: String,

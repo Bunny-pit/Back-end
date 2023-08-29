@@ -1,9 +1,9 @@
-import MainhomeUnknownService from '../services/mainhomeUnknown_service.js';
+import MainhomeSecretService from '../services/mainhomeSecret_service.js';
 
-const mainhomeUnknownController = {
+const mainhomeSecretController = {
   async createMainhomePost(req, res) {
     try {
-      const newPost = await MainhomeUnknownService.createMainhomePost(
+      const newPost = await MainhomeSecretService.createMainhomePost(
         req.oid,
         req.body,
       );
@@ -18,7 +18,7 @@ const mainhomeUnknownController = {
     try {
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
-      const posts = await MainhomeUnknownService.getAllMainhomePosts(
+      const posts = await MainhomeSecretService.getAllMainhomePosts(
         page,
         limit,
       );
@@ -32,7 +32,7 @@ const mainhomeUnknownController = {
     try {
       const { id } = req.params;
 
-      const updatedPost = await MainhomeUnknownService.updateMainhomePost(
+      const updatedPost = await MainhomeSecretService.updateMainhomePost(
         req.oid,
 
         id,
@@ -53,7 +53,7 @@ const mainhomeUnknownController = {
     try {
       const { id } = req.params;
 
-      const deletedPost = await MainhomeUnknownService.deleteMainhomePost(
+      const deletedPost = await MainhomeSecretService.deleteMainhomePost(
         req.oid,
         id,
       );
@@ -73,7 +73,7 @@ const mainhomeUnknownController = {
       const { id: postId } = req.params;
       const { reason } = req.body;
 
-      const post = await MainhomeUnknownService.reportPost(
+      const post = await MainhomeSecretService.reportPost(
         req.oid,
         postId,
         reason,
@@ -87,7 +87,7 @@ const mainhomeUnknownController = {
 
   async getReportPosts(req, res) {
     try {
-      const reportedPosts = await MainhomeUnknownService.getReportedPosts();
+      const reportedPosts = await MainhomeSecretService.getReportedPosts();
 
       if (!reportedPosts.length) {
         return res
@@ -102,4 +102,4 @@ const mainhomeUnknownController = {
   },
 };
 
-export default mainhomeUnknownController;
+export default mainhomeSecretController;
