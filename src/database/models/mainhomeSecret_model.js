@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const mainhomeUnknownSchema = new mongoose.Schema(
+const mainhomeSecretSchema = new mongoose.Schema(
   {
     userId: {
       type: String,
@@ -43,8 +43,5 @@ const mainhomeUnknownSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-const MainhomeUnknown = mongoose.model(
-  'MainhomeUnknown',
-  mainhomeUnknownSchema,
-);
-export default MainhomeUnknown;
+const MainhomeSecret = mongoose.model('MainhomeSecret', mainhomeSecretSchema);
+export default MainhomeSecret;

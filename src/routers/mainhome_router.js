@@ -1,103 +1,91 @@
 import express from 'express';
-import MainhomeUnknownController from '../controllers/mainhomeUnknown_controller.js';
+import MainhomeSecretController from '../controllers/mainhomeSecret_controller.js';
 import MainhomeFriendsController from '../controllers/mainhomeFriends_controller.js';
 import loginRequired from '../middlewares/login_required.js';
 
 const mainhome_router = express.Router();
 
-//--unknown게시판 라우터--
+//--Secret게시판 라우터--
 
-//게시글 작성
 mainhome_router.post(
-  '/unknown',
+  '/secret',
   loginRequired,
-  MainhomeUnknownController.createMainhomePost
+  MainhomeSecretController.createMainhomePost,
 );
 
-//게시글 전부 불러오기
-mainhome_router.get('/unknown', MainhomeUnknownController.getAllMainhomePosts);
+mainhome_router.get('/secret', MainhomeSecretController.getAllMainhomePosts);
 
-//게시글 수정하기
 mainhome_router.patch(
-  '/unknown/:id',
+  '/secret/:id',
   loginRequired,
-  MainhomeUnknownController.updateMainhomePost
+  MainhomeSecretController.updateMainhomePost,
 );
 
-//게시글 삭제하기
 mainhome_router.delete(
-  '/unknown/:id',
+  '/secret/:id',
   loginRequired,
-  MainhomeUnknownController.deleteMainhomePost
+  MainhomeSecretController.deleteMainhomePost,
 );
 
-//게시글 신고하기
 mainhome_router.post(
-  '/unknown/report/:id',
+  '/secret/report/:id',
   loginRequired,
-  MainhomeUnknownController.reportPost
+  MainhomeSecretController.reportPost,
 );
 
-//3회 이상 신고된 게시글 불러오기
 mainhome_router.get(
-  '/unknown/reported',
-  // loginRequired,
-  MainhomeUnknownController.getReportPosts
+  '/secret/reported',
+  loginRequired,
+  MainhomeSecretController.getReportPosts,
 );
 
-//--friends게시판 라우터--
+//--Friends게시판 라우터--
 
-//게시글 작성
 mainhome_router.post(
   '/friends',
   loginRequired,
-  MainhomeFriendsController.createMainhomePost
+  MainhomeFriendsController.createMainhomePost,
 );
 
-//게시글 전부 불러오기
 mainhome_router.get(
   '/friends',
   loginRequired,
-  MainhomeFriendsController.getAllMainhomePosts
+  MainhomeFriendsController.getAllMainhomePosts,
 );
 
-//게시글 수정하기
 mainhome_router.patch(
   '/friends/:id',
   loginRequired,
-  MainhomeFriendsController.updateMainhomePost
+  MainhomeFriendsController.updateMainhomePost,
 );
 
-//게시글 삭제하기
 mainhome_router.delete(
   '/friends/:id',
   loginRequired,
-  MainhomeFriendsController.deleteMainhomePost
+  MainhomeFriendsController.deleteMainhomePost,
 );
 
-//게시글 신고하기
 mainhome_router.post(
   '/friends/report/:id',
   loginRequired,
-  MainhomeFriendsController.reportPost
+  MainhomeFriendsController.reportPost,
 );
 
-//3회 이상 신고된 게시글 불러오기
 mainhome_router.get(
   '/friends/reported',
   // loginRequired,
-  MainhomeFriendsController.getReportedPosts
+  MainhomeFriendsController.getReportedPosts,
 );
 
 // 관리자가 3회 이상 신고받은 게시글 삭제하기
 mainhome_router.delete(
   '/report/friends/:id',
-  MainhomeFriendsController.deleteAdminPost
+  MainhomeFriendsController.deleteAdminPost,
 );
 
 mainhome_router.delete(
-  '/report/unknown/:id',
-  MainhomeUnknownController.deleteAdminPost
+  '/report/secret/:id',
+  MainhomeSecretController.deleteAdminPost,
 );
 
 export default mainhome_router;
