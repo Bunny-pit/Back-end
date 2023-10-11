@@ -26,7 +26,9 @@ dotenv.config();
 
 const port = process.env.PORT || 3001;
 
-const origin = process.env.ORIGIN || 'http://localhost:3000';
+const allowedOrigins = (process.env.ORIGIN || 'http://localhost:3000').split(
+  ',',
+);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -38,11 +40,18 @@ const files = fs.readdirSync(routesPath);
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.use(
   cors({
-    origin: origin,
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
-  })
+  }),
 );
 
 // route
@@ -53,13 +62,13 @@ app.get('/', (req, res) => {
 const startServer = async () => {
   // 모든 라우터 코드를 동적으로 불러오도록 설정
   await Promise.all(
-    files.map(async (file) => {
+    files.map(async file => {
       if (file.endsWith('.js')) {
         const route = await import(path.join('file://', routesPath, file));
         const apiEndpoint = '/api/' + file.replace('_router.js', '');
         app.use(apiEndpoint, route.default);
       }
-    })
+    }),
   );
 
   server.listen(port, () => {
@@ -70,10 +79,10 @@ const startServer = async () => {
         useUnifiedTopology: true,
       })
       .then(() => logger.info('몽고디비 연결에 성공했습니다.'))
-      .catch((e) => console.error(e));
+      .catch(e => console.error(e));
   });
 
-  io.on('connection', (socket) => {
+  io.on('connection', socket => {
     console.log('User connected: ' + socket.id);
 
     socket.on('joinRoom', ({ chatId, userId }) => {
@@ -85,7 +94,7 @@ const startServer = async () => {
       const newMessage = await ChatService.createMessageAndEmit(
         senderId,
         chatId,
-        content
+        content,
       );
       io.to(chatId).emit('newMessage', newMessage);
     });
@@ -93,7 +102,7 @@ const startServer = async () => {
       const newMessage = await FriendChatService.createMessageAndEmit(
         senderId,
         chatId,
-        content
+        content,
       );
       io.to(chatId).emit('newMessage', newMessage);
     });
