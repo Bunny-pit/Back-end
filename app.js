@@ -13,9 +13,6 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
 import { initializeSocketIo } from './src/lib/socket.js';
-//passport에 strategy 적용
-
-// import { applyPassportStrategy } from './src/lib/passport.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -26,9 +23,11 @@ dotenv.config();
 
 const port = process.env.PORT || 3001;
 
-const allowedOrigins = (process.env.ORIGIN || 'http://localhost:3000').split(
-  ',',
-);
+const allowedOrigins = process.env.ORIGIN
+  ? process.env.ORIGIN.split(',')
+  : ['http://localhost:3000'];
+
+console.log('allowedOrigins', allowedOrigins);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -44,10 +43,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        console.log('SUCCESS');
         callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'));
+        callback(
+          new Error(
+            `cors list ${allowedOrigins.join(', ')}, your origin is ${origin}`,
+          ),
+        );
       }
     },
     credentials: true,

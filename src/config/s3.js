@@ -1,14 +1,16 @@
-import AWS from 'aws-sdk';
-import multer from 'multer'
-import dotenv from "dotenv";
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import multer from 'multer';
+import dotenv from 'dotenv';
 import crypto from 'crypto';
 
 dotenv.config();
 
-const s3 = new AWS.S3({
-  accessKeyId: process.env.S3_ACCESS_KEY,
-  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+const s3Client = new S3Client({
   region: process.env.S3_REGION,
+  credentials: {
+    accessKeyId: process.env.S3_ACCESS_KEY,
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+  },
 });
 
 const uploadMultiple = multer({
@@ -24,16 +26,16 @@ const uploadSingle = multer({
     fileSize: 5 * 1024 * 1024, // limit file size to 5MB
   },
   fileFilter: (req, file, cb) => {
-    if (file.mimetype === "image/png" || file.mimetype === "image/jpeg") { // You can add or remove more formats
+    if (file.mimetype === 'image/png' || file.mimetype === 'image/jpeg') {
       cb(null, true);
     } else {
-      cb(new Error("Invalid file type"), false);
+      cb(new Error('Invalid file type'), false);
     }
   },
-}).single('file');  // 'image' is the field name in the form
+}).single('file');
 
-const uploadToS3 = (file) => {
-  return new Promise((resolve, reject) => {
+const uploadToS3 = async file => {
+  return new Promise(async (resolve, reject) => {
     var base64data = Buffer.from(file.buffer, 'binary');
     const randomBytes = crypto.randomBytes(8);
     const fileName = randomBytes.toString('hex') + '.png';
@@ -41,25 +43,18 @@ const uploadToS3 = (file) => {
       Bucket: process.env.S3_BUCKET_NAME,
       Key: fileName,
       Body: base64data,
-      ContentType: "image/png"
+      ContentType: 'image/png',
     };
-    
-    s3.upload(params, (err, data) => {
-      if (err) {
-          console.log("err : ", err)
-          reject({success: false});
-      } else {
-          console.log("data : ", data)
-          console.log(`File uploaded successfully. ${data.Location}`);
-          resolve({success: true, url: data.Location});
-      }
-    });
+
+    try {
+      const data = await s3Client.send(new PutObjectCommand(params));
+      console.log(`File uploaded successfully. ${data.Location}`);
+      resolve({ success: true, url: data.Location });
+    } catch (err) {
+      console.log('err : ', err);
+      reject({ success: false });
+    }
   });
 };
 
-export {
-  s3,
-  uploadMultiple as upload,
-  uploadSingle,
-  uploadToS3,
-};
+export { s3Client as s3, uploadMultiple as upload, uploadSingle, uploadToS3 };
