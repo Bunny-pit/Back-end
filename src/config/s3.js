@@ -47,11 +47,12 @@ const uploadToS3 = async file => {
     };
 
     try {
-      const data = await s3Client.send(new PutObjectCommand(params));
-      console.log(`File uploaded successfully. ${data.Location}`);
-      resolve({ success: true, url: data.Location });
+      await s3Client.send(new PutObjectCommand(params));
+      const uploadedFileURL = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.S3_REGION}.amazonaws.com/${fileName}`;
+      console.log(`File uploaded successfully. ${uploadedFileURL}`);
+      resolve({ success: true, url: uploadedFileURL });
     } catch (err) {
-      console.log('err : ', err);
+      console.log('Error uploading file:', err);
       reject({ success: false });
     }
   });
