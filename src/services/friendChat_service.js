@@ -1,7 +1,6 @@
 import FriendChat from '../database/models/friendChat_model.js';
 import FriendMessage from '../database/models/friendMessage_model.js';
 import mongoose from 'mongoose';
-import { getSocketIo } from '../lib/socket.js';
 import User from '../database/models/user_model.js';
 
 const FriendChatService = {
@@ -30,7 +29,7 @@ const FriendChatService = {
     }
   },
 
-  getUserChats: async (userId) => {
+  getUserChats: async userId => {
     try {
       const objectId = new mongoose.Types.ObjectId(userId);
       const chats = await FriendChat.find({
@@ -42,7 +41,7 @@ const FriendChatService = {
     }
   },
 
-  getChatMessages: async (chatId) => {
+  getChatMessages: async chatId => {
     try {
       const messages = await FriendMessage.find({ chat: chatId }).populate(
         'sender',
@@ -54,7 +53,7 @@ const FriendChatService = {
     }
   },
 
-  deleteChat: async (chatId) => {
+  deleteChat: async chatId => {
     try {
       await FriendMessage.deleteMany({ chat: chatId });
       const deletedChat = await FriendChat.findByIdAndDelete(chatId);

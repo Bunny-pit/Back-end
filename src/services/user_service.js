@@ -1,22 +1,10 @@
 import User from '../database/models/user_model.js';
 import { uploadToS3 } from '../config/s3.js';
 
-import {
-  generateHashedPassword,
-  generateServerErrorCode,
-  registerValidation,
-  loginValidation,
-} from '../lib/utils.js';
-
-import {
-  SOME_THING_WENT_WRONG,
-  USER_EXISTS_ALREADY,
-  WRONG_PASSWORD,
-  USER_DOES_NOT_EXIST,
-} from '../lib/constant.js';
+import { generateHashedPassword } from '../lib/utils.js';
 
 const UserService = {
-  createUser: async (registerData) => {
+  createUser: async registerData => {
     try {
       const { userName, email, password, introduction } = registerData;
       const userData = {
@@ -42,20 +30,8 @@ const UserService = {
       console.log(error);
     }
   },
-  //   loginUser: async (userData) => {
-  //     try {
-  //       const { email, password } = userData;
-  //       const userInfo = await User.findOne({
-  //         email,
-  //         password: generateHashedPassword(password),
-  //       });
-  //       return userInfo;
-  //     } catch (error) {
-  //       res.status(500).json({ error: error.message });
-  //     }
-  //   },
 
-  getUserById: async (oid) => {
+  getUserById: async oid => {
     try {
       const user = await User.findById({ _id: oid });
       return user;
@@ -66,16 +42,11 @@ const UserService = {
 
   updateUser: async (updateData, res) => {
     try {
-      const {
-        email,
-        prevPassword,
-        newPassword,
-        newPasswordCheck,
-      } = updateData;
+      const { email, prevPassword, newPassword, newPasswordCheck } = updateData;
       // 유저 확인
       const existingUser = await User.find({ email });
       // 기존 비밀번호 확인
-      const isPasswordMatched = (password) => {
+      const isPasswordMatched = password => {
         return generateHashedPassword(password) === existingUser[0].password;
       };
       if (!existingUser) {
@@ -89,7 +60,7 @@ const UserService = {
             { email },
             {
               password: generateHashedPassword(newPassword),
-            }
+            },
           );
           res.status(200).json('비밀번호 변경 완료');
         } else {
@@ -102,11 +73,11 @@ const UserService = {
       res.status(500).json({ 'update service 오류': error.message });
     }
   },
-  deleteUser: async (withdrawalData) => {
+  deleteUser: async withdrawalData => {
     try {
       const { email, password, passwordCheck, introduction } = withdrawalData;
       const existingUserCheck = await User.findOne({ email });
-      const isPasswordMatched = (password) => {
+      const isPasswordMatched = password => {
         return generateHashedPassword(password) === existingUserCheck.password;
       };
 
@@ -175,7 +146,7 @@ const UserService = {
     return user.followers;
   },
   // 관리자 유저삭제
-  adminDeleteUser: async (email) => {
+  adminDeleteUser: async email => {
     try {
       // 사용자가 존재하는지 확인
       const user = await User.findOne({ email });
@@ -217,37 +188,36 @@ const UserService = {
   // },
   async editProfile(req) {
     try {
-        let updatedUser;
-        const user = await User.findById({ _id: req.oid });
+      let updatedUser;
+      const user = await User.findById({ _id: req.oid });
 
-        if (!user) {
-            throw new Error('유저를 찾을 수 없습니다.');
-        }
+      if (!user) {
+        throw new Error('유저를 찾을 수 없습니다.');
+      }
 
-        // 이미지 파일이 있다면 S3에 업로드
-        if (req.file) {
-            const result = await uploadToS3(req.file);
-            user.profileImg = result.url;
-        }
+      // 이미지 파일이 있다면 S3에 업로드
+      if (req.file) {
+        const result = await uploadToS3(req.file);
+        user.profileImg = result.url;
+      }
 
-        // introduction이 있다면 업데이트
-        if (req.body.introduction) {
-            user.introduction = req.body.introduction;
-        }
+      // introduction이 있다면 업데이트
+      if (req.body.introduction) {
+        user.introduction = req.body.introduction;
+      }
 
-        // 변경 사항 저장
-        updatedUser = await user.save();
+      // 변경 사항 저장
+      updatedUser = await user.save();
 
-        if (!updatedUser) {
-            throw new Error('정보 업데이트에 실패했습니다.');
-        }
+      if (!updatedUser) {
+        throw new Error('정보 업데이트에 실패했습니다.');
+      }
 
-        return { success: true };
+      return { success: true };
     } catch (error) {
-        throw error;
+      throw error;
     }
-}
-
+  },
 };
 
 export default UserService;

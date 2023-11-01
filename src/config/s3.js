@@ -1,4 +1,8 @@
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
 import multer from 'multer';
 import dotenv from 'dotenv';
 import crypto from 'crypto';
@@ -58,4 +62,28 @@ const uploadToS3 = async file => {
   });
 };
 
-export { s3Client as s3, uploadMultiple as upload, uploadSingle, uploadToS3 };
+const deleteFromS3 = async key => {
+  return new Promise(async (resolve, reject) => {
+    const params = {
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: key,
+    };
+
+    try {
+      await s3Client.send(new DeleteObjectCommand(params));
+      console.log(`File deleted successfully. ${key}`);
+      resolve({ success: true });
+    } catch (err) {
+      console.log('Error deleting file:', err);
+      reject({ success: false });
+    }
+  });
+};
+
+export {
+  s3Client as s3,
+  uploadMultiple as upload,
+  uploadSingle,
+  uploadToS3,
+  deleteFromS3,
+};

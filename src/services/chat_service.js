@@ -1,7 +1,6 @@
 import Chat from '../database/models/chat_model.js';
 import Message from '../database/models/message_model.js';
 import mongoose from 'mongoose';
-import { getSocketIo } from '../lib/socket.js';
 import User from '../database/models/user_model.js';
 
 const ChatService = {
@@ -30,7 +29,7 @@ const ChatService = {
     }
   },
 
-  getUserChats: async (userId) => {
+  getUserChats: async userId => {
     try {
       const objectId = new mongoose.Types.ObjectId(userId);
       const chats = await Chat.find({ users: { $in: [objectId] } }).populate(
@@ -43,7 +42,7 @@ const ChatService = {
     }
   },
 
-  getChatMessages: async (chatId) => {
+  getChatMessages: async chatId => {
     try {
       const messages = await Message.find({ chat: chatId }).populate(
         'sender',
@@ -55,7 +54,7 @@ const ChatService = {
     }
   },
 
-  deleteChat: async (chatId) => {
+  deleteChat: async chatId => {
     try {
       await Message.deleteMany({ chat: chatId });
       const deletedChat = await Chat.findByIdAndDelete(chatId);
