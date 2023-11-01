@@ -17,18 +17,17 @@ const s3Client = new S3Client({
   },
 });
 
-const uploadMultiple = multer({
+const multerOptions = {
   storage: multer.memoryStorage(),
   limits: {
     fileSize: 5 * 1024 * 1024, // limit file size to 5MB
   },
-});
+};
+
+const uploadMultiple = multer(multerOptions);
 
 const uploadSingle = multer({
-  storage: multer.memoryStorage(),
-  limits: {
-    fileSize: 5 * 1024 * 1024, // limit file size to 5MB
-  },
+  ...multerOptions,
   fileFilter: (req, file, cb) => {
     if (file.mimetype === 'image/png' || file.mimetype === 'image/jpeg') {
       cb(null, true);
@@ -39,45 +38,41 @@ const uploadSingle = multer({
 }).single('file');
 
 const uploadToS3 = async file => {
-  return new Promise(async (resolve, reject) => {
-    var base64data = Buffer.from(file.buffer, 'binary');
-    const randomBytes = crypto.randomBytes(8);
-    const fileName = randomBytes.toString('hex') + '.png';
-    const params = {
-      Bucket: process.env.S3_BUCKET_NAME,
-      Key: fileName,
-      Body: base64data,
-      ContentType: 'image/png',
-    };
+  const base64data = Buffer.from(file.buffer, 'binary');
+  const randomBytes = crypto.randomBytes(8);
+  const fileName = randomBytes.toString('hex') + '.png';
+  const params = {
+    Bucket: process.env.S3_BUCKET_NAME,
+    Key: fileName,
+    Body: base64data,
+    ContentType: 'image/png',
+  };
 
-    try {
-      await s3Client.send(new PutObjectCommand(params));
-      const uploadedFileURL = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.S3_REGION}.amazonaws.com/${fileName}`;
-      console.log(`File uploaded successfully. ${uploadedFileURL}`);
-      resolve({ success: true, url: uploadedFileURL });
-    } catch (err) {
-      console.log('Error uploading file:', err);
-      reject({ success: false });
-    }
-  });
+  try {
+    await s3Client.send(new PutObjectCommand(params));
+    const uploadedFileURL = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.S3_REGION}.amazonaws.com/${fileName}`;
+    console.log(`File uploaded successfully. ${uploadedFileURL}`);
+    return { success: true, url: uploadedFileURL };
+  } catch (err) {
+    console.log('Error uploading file:', err);
+    throw { success: false };
+  }
 };
 
 const deleteFromS3 = async key => {
-  return new Promise(async (resolve, reject) => {
-    const params = {
-      Bucket: process.env.S3_BUCKET_NAME,
-      Key: key,
-    };
+  const params = {
+    Bucket: process.env.S3_BUCKET_NAME,
+    Key: key,
+  };
 
-    try {
-      await s3Client.send(new DeleteObjectCommand(params));
-      console.log(`File deleted successfully. ${key}`);
-      resolve({ success: true });
-    } catch (err) {
-      console.log('Error deleting file:', err);
-      reject({ success: false });
-    }
-  });
+  try {
+    await s3Client.send(new DeleteObjectCommand(params));
+    console.log(`File deleted successfully. ${key}`);
+    return { success: true };
+  } catch (err) {
+    console.log('Error deleting file:', err);
+    throw { success: false };
+  }
 };
 
 export {

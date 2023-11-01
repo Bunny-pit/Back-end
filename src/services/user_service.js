@@ -12,7 +12,7 @@ const UserService = {
         email: email,
         password: generateHashedPassword(password),
         profileImg:
-          'https://bunny-post-bucket.s3.ap-northeast-2.amazonaws.com/profileImage.png',
+          'https://bunny-pit-image.s3.ap-northeast-2.amazonaws.com/profileimage.png',
         introduction: introduction,
       };
       const existingUserCheck = await User.findOne({ email });
@@ -168,24 +168,6 @@ const UserService = {
     }
   },
 
-  //post 프로필 수정
-  // async editProfile(req) {
-  //   try {
-  //     const user = await User.findById({ _id: req.oid });
-  //     // const profileImg = user.profileImg;
-  //     const result = await uploadToS3(req.file);
-  //     const newImage = await User.findByIdAndUpdate(
-  //       req.oid,
-  //       {
-  //         profileImg: result.url,
-  //       },
-  //       { new: true }
-  //     );
-  //     return { success: true };
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // },
   async editProfile(req) {
     try {
       let updatedUser;
