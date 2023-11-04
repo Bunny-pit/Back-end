@@ -5,7 +5,6 @@ dotenv.config();
 export default function loginRequired(req, res, next) {
   const userToken =
     req.headers['authorization']?.split(' ')[1] || req.cookies['accessToken'];
-  // 토큰이 없을 경우 login_required 가 필요한 서비스 사용을 제한.
   if (!userToken || userToken === 'null' || userToken === undefined) {
     res.status(403).json({
       result: 'forbidden-approach',
@@ -14,7 +13,7 @@ export default function loginRequired(req, res, next) {
     return;
   }
   try {
-    const accessKey = process.env.ACCESS_SECRET_KEY || 'bunnybunny';
+    const accessKey = process.env.ACCESS_SECRET_KEY;
     const decodedData = jwt.verify(userToken, accessKey);
     req.oid = decodedData.userOid;
     next();
