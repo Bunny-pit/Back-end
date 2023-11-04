@@ -48,6 +48,7 @@ const UserController = {
       });
     }
   },
+
   async getUser(req, res) {
     try {
       const userOid = req.oid;
@@ -58,6 +59,7 @@ const UserController = {
       res.status(500).json({ error: error.message });
     }
   },
+
   async getAllUser(req, res) {
     try {
       const userData = await User.find({});
@@ -66,12 +68,13 @@ const UserController = {
       res.status(500).json({ error: error.message });
     }
   },
+
   async loginUser(req, res) {
     try {
       const { email, password } = req.body;
       const user = await User.findOne({ email });
       if (user && user.email) {
-        const isPasswordMatched = (password) => {
+        const isPasswordMatched = password => {
           return generateHashedPassword(password) === user.password;
         };
         const payload = {
@@ -83,16 +86,17 @@ const UserController = {
         };
         if (isPasswordMatched(password)) {
           const accessToken = jwt.sign(payload, process.env.ACCESS_SECRET_KEY, {
-            expiresIn: '2h',
+            expiresIn: '24h',
             issuer: 'BunnyPit',
           });
+
           const refreshToken = jwt.sign(
             payload,
             process.env.REFRESH_SECRET_KEY,
             {
               expiresIn: '3d',
               issuer: 'BunnyPit',
-            }
+            },
           );
           res.cookie('accessToken', accessToken, {
             secure: false,
@@ -113,7 +117,7 @@ const UserController = {
             403,
             '비밀번호가 일치하지 않습니다.',
             WRONG_PASSWORD,
-            'password'
+            'password',
           );
         }
       } else {
@@ -122,13 +126,14 @@ const UserController = {
           404,
           '회원가입이 필요합니다.',
           USER_DOES_NOT_EXIST,
-          'email'
+          'email',
         );
       }
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   },
+
   async logout(req, res) {
     try {
       res.clearCookie('accessToken');
@@ -138,6 +143,7 @@ const UserController = {
       res.status(500).json(error);
     }
   },
+
   async updateUser(req, res) {
     try {
       const {
@@ -164,6 +170,7 @@ const UserController = {
       });
     }
   },
+
   async deleteUser(req, res) {
     try {
       const { email, password, passwordCheck, introduction } =
@@ -208,13 +215,14 @@ const UserController = {
       res.status(500).json({ error: error });
     }
   },
+
   async refreshToken(req, res) {
     const { refreshToken } = req.body;
 
     try {
       const decodedData = jwt.verify(
         refreshToken,
-        process.env.REFRESH_SECRET_KEY
+        process.env.REFRESH_SECRET_KEY,
       );
       console.log('decodedData:', decodedData);
 
