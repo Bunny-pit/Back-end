@@ -2,7 +2,7 @@ import express from 'express';
 import UserController from '../controllers/user_controller.js';
 import loginRequired from '../middlewares/login_required.js';
 import adminCheck from '../middlewares/adminCheck.js';
-import {upload, uploadSingle} from '../config/s3.js'
+import { upload, uploadSingle } from '../config/s3.js';
 
 const userRouter = express.Router();
 
@@ -22,7 +22,7 @@ userRouter.get('/accessToken', UserController.accessToken);
 userRouter.post('/refreshToken', UserController.refreshToken);
 
 //관리자 기능 : adminCheck 미들웨어 추후 사용.
-userRouter.get('/login', UserController.getAllUser); //모든 유저 조회. 개발 편의를 위해 임시 활성화 하였음.
+// userRouter.get('/login', UserController.getAllUser); //모든 유저 조회. 개발 편의를 위해 임시 활성화 하였음.
 // 관리자 기능 -> 유저 삭제
 userRouter.delete('/admin/deleteUser', UserController.adminDeleteUser);
 
@@ -30,13 +30,18 @@ userRouter.delete('/admin/deleteUser', UserController.adminDeleteUser);
 
 //팔로우 기능
 userRouter.post('/toggleFollow', loginRequired, UserController.toggleFollow);
-userRouter.get('/followings',loginRequired, UserController.getFollowings);
+userRouter.get('/followings', loginRequired, UserController.getFollowings);
 userRouter.get('/followers', UserController.getFollowers);
 
 //검색기능
 userRouter.get('/search', UserController.searchUser);
 
 // 유저 이미지 사진 수정
-userRouter.patch('/profile/edit', loginRequired,uploadSingle,UserController.editProfile)
+userRouter.patch(
+  '/profile/edit',
+  loginRequired,
+  uploadSingle,
+  UserController.editProfile,
+);
 
 export default userRouter;
