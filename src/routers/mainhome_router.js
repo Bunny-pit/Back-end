@@ -46,6 +46,7 @@ mainhome_router.get(
 mainhome_router.post(
   '/friends',
   loginRequired,
+  upload.array('images'),
   MainhomeFriendsController.createMainhomePost,
 );
 

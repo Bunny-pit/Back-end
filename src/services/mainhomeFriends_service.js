@@ -11,9 +11,9 @@ const MainhomeFriendsService = {
         throw new Error('유저를 찾을 수 없습니다.');
       }
       let uploadedImages = await Promise.all(
-        files.map(async files => {
-          let uploadResult = await uploadToS3(files);
-          return uploadResult.success ? uploadResult : null;
+        files.map(async file => {
+          let uploadResult = await uploadToS3(file);
+          return uploadResult.success ? uploadResult.url : null;
         }),
       );
 
