@@ -1,20 +1,32 @@
 import MainhomeSecret from '../database/models/mainhomeSecret_model.js';
 import User from '../database/models/user_model.js';
+import { uploadToS3, deleteFromS3 } from '../config/s3.js';
 
 const MainhomeSecretService = {
-  createMainhomePost: async (oid, data) => {
+  createMainhomePost: async (oid, data, files) => {
     try {
       const user = await User.findById(oid);
 
       if (!user) {
         throw new Error('유저를 찾을 수 없습니다.');
       }
+      let uploadedImages = await Promise.all(
+        files.map(async file => {
+          let uploadResult = await uploadToS3(file);
+          return uploadResult.success ? uploadResult.url : null;
+        }),
+      );
+
+      uploadedImages = uploadedImages.filter(url => url != null);
 
       const newPost = new MainhomeSecret({
         ...data,
         userId: oid,
         email: user.email,
         name: user.secretName,
+        images: uploadedImages,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
       });
 
       await newPost.save();
@@ -75,6 +87,8 @@ const MainhomeSecretService = {
         throw new Error('게시글 삭제 권한이 없습니다.');
       }
 
+      await Promise.all(post.images.map(imageUrl => deleteFromS3(imageUrl)));
+
       const deletedPost = await MainhomeSecret.findByIdAndDelete(postId);
 
       return deletedPost;
@@ -131,6 +145,8 @@ const MainhomeSecretService = {
   // 관리자 기능 신고 3회 이상 게시글 삭제
   deleteAdminPost: async postId => {
     try {
+      await Promise.all(post.images.map(imageUrl => deleteFromS3(imageUrl)));
+
       const deletedPost = await MainhomeSecret.findByIdAndDelete(postId);
       return deletedPost;
     } catch (err) {

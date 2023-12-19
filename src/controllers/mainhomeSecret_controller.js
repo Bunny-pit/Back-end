@@ -6,6 +6,7 @@ const mainhomeSecretController = {
       const newPost = await MainhomeSecretService.createMainhomePost(
         req.oid,
         req.body,
+        req.files,
       );
 
       res.status(201).json(newPost);

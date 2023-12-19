@@ -1,5 +1,6 @@
 import express from 'express';
 import MainhomeSecretController from '../controllers/mainhomeSecret_controller.js';
+import { upload } from '../config/s3.js';
 import MainhomeFriendsController from '../controllers/mainhomeFriends_controller.js';
 import loginRequired from '../middlewares/login_required.js';
 
@@ -10,6 +11,7 @@ const mainhome_router = express.Router();
 mainhome_router.post(
   '/secret',
   loginRequired,
+  upload.array('images'),
   MainhomeSecretController.createMainhomePost,
 );
 

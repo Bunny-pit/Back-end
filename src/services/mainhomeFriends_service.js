@@ -1,14 +1,23 @@
 import MainhomeFriends from '../database/models/mainhomeFriends_model.js';
 import User from '../database/models/user_model.js';
+import { uploadToS3, deleteFromS3 } from '../config/s3.js';
 
 const MainhomeFriendsService = {
-  createMainhomePost: async (oid, data) => {
+  createMainhomePost: async (oid, data, files) => {
     try {
       const user = await User.findById(oid);
 
       if (!user) {
         throw new Error('유저를 찾을 수 없습니다.');
       }
+      let uploadedImages = await Promise.all(
+        files.map(async files => {
+          let uploadResult = await uploadToS3(files);
+          return uploadResult.success ? uploadResult : null;
+        }),
+      );
+
+      uploadedImages = uploadedImages.filter(url => url != null);
 
       const newPost = new MainhomeFriends({
         ...data,
@@ -16,6 +25,9 @@ const MainhomeFriendsService = {
         email: user.email,
         name: user.userName,
         profileImage: user.profileImg,
+        images: uploadedImages,
+        createdAt: Date.now(),
+        uploadedAt: Date.now(),
       });
 
       await newPost.save();
@@ -27,21 +39,17 @@ const MainhomeFriendsService = {
 
   getAllMainhomePosts: async (oid, page, limit) => {
     try {
-      // 로그인한 사용자의 팔로우 목록 가져오기
       const user = await User.findById(oid);
       const followedUserNames = user.followings;
 
-      // 팔로우한 사용자들의 ObjectId를 조회
       const followedUsers = await User.find({
         userName: { $in: followedUserNames },
       });
 
       const followedUserIds = followedUsers.map(user => user._id);
 
-      // 로그인한 사용자의 oid도 팔로우 목록에 추가
       followedUserIds.push(oid);
 
-      // 팔로우한 사용자들의 게시글만 조회
       const posts = await MainhomeFriends.find({
         userId: { $in: followedUserIds },
       })
@@ -93,6 +101,8 @@ const MainhomeFriendsService = {
         throw new Error('게시글 삭제 권한이 없습니다.');
       }
 
+      await Promise.all(post.images.map(imageUrl => deleteFromS3(imageUrl)));
+
       const deletedPost = await MainhomeFriends.findByIdAndDelete(postId);
 
       return deletedPost;
@@ -113,7 +123,6 @@ const MainhomeFriendsService = {
         throw new Error('게시글을 찾지 못했습니다.');
       }
 
-      // 중복 신고 체크
       const alreadyReported = post.reports.some(
         report => report.reportedBy === user.userName,
       );
@@ -138,7 +147,7 @@ const MainhomeFriendsService = {
   getReportedPosts: async () => {
     try {
       const reportedPosts = await MainhomeFriends.find({
-        reports: { $exists: true, $size: 3 }, // Check if reports array exists and has a size of 3
+        reports: { $exists: true, $size: 3 },
       });
       return reportedPosts;
     } catch (err) {
@@ -149,6 +158,8 @@ const MainhomeFriendsService = {
   // 관리자 기능 신고 3회 이상 게시글 삭제
   deleteAdminPost: async postId => {
     try {
+      await Promise.all(post.images.map(imageUrl => deleteFromS3(imageUrl)));
+
       const deletedPost = await MainhomeFriends.findByIdAndDelete(postId);
       return deletedPost;
     } catch (err) {

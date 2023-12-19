@@ -18,6 +18,12 @@ const mainhomeSecretSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    images: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
     reports: [
       {
         reportedBy: {

@@ -5,7 +5,8 @@ const mainhomeFriendsController = {
     try {
       const newPost = await MainhomeFriendsService.createMainhomePost(
         req.oid,
-        req.body
+        req.body,
+        req.files,
       );
 
       res.status(201).json(newPost);
@@ -23,7 +24,7 @@ const mainhomeFriendsController = {
       const posts = await MainhomeFriendsService.getAllMainhomePosts(
         oid,
         page,
-        limit
+        limit,
       );
 
       res.json(posts);
@@ -38,9 +39,8 @@ const mainhomeFriendsController = {
 
       const updatedPost = await MainhomeFriendsService.updateMainhomePost(
         req.oid,
-
         id,
-        req.body
+        req.body,
       );
 
       if (!updatedPost) {
@@ -59,7 +59,7 @@ const mainhomeFriendsController = {
 
       const deletedPost = await MainhomeFriendsService.deleteMainhomePost(
         req.oid,
-        id
+        id,
       );
 
       if (!deletedPost) {
@@ -80,7 +80,7 @@ const mainhomeFriendsController = {
       const post = await MainhomeFriendsService.reportPost(
         req.oid,
         postId,
-        reason
+        reason,
       );
 
       res.json({ message: '게시글을 성공적으로 신고했습니다.', post });
