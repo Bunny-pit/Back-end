@@ -29,7 +29,11 @@ const uploadMultiple = multer(multerOptions);
 const uploadSingle = multer({
   ...multerOptions,
   fileFilter: (req, file, cb) => {
-    if (file.mimetype === 'image/png' || file.mimetype === 'image/jpeg') {
+    if (
+      file.mimetype === 'image/png' ||
+      file.mimetype === 'image/jpeg' ||
+      file.mimetype === 'image/webp'
+    ) {
       cb(null, true);
     } else {
       cb(new Error('Invalid file type'), false);
@@ -40,12 +44,12 @@ const uploadSingle = multer({
 const uploadToS3 = async file => {
   const base64data = Buffer.from(file.buffer, 'binary');
   const randomBytes = crypto.randomBytes(8);
-  const fileName = randomBytes.toString('hex') + '.png';
+  const fileName = randomBytes.toString('hex') + '.webp';
   const params = {
     Bucket: process.env.S3_BUCKET_NAME,
     Key: fileName,
     Body: base64data,
-    ContentType: 'image/png',
+    ContentType: 'image/webp',
   };
 
   try {
